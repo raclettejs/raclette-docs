@@ -1,0 +1,19 @@
+:root {
+  --color-brand: #dd8b41;
+  --color-hover: #f4a661;
+  --color-link: #9c4e00;
+  --color-muted: #f8e8db;
+  --color-bg: #ffffff;
+  --color-surface: #fefaf6;
+  --color-text: #1a1a1a;
+}
+
+.dark {
+  --color-brand: #dd8b41;
+  --color-hover: #b46e34;
+  --color-link: #dd8b41;
+  --color-muted: #2a1d15;
+  --color-bg: #1a1a1a;
+  --color-surface: #2a1d15;
+  --color-text: #ffffff;
+}
