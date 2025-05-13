@@ -1,0 +1,22 @@
+:root {
+  /* brand colors */
+  --vp-c-brand-1: #dd8b41;
+  --vp-c-brand-2: #ecaa6a;
+  --vp-c-brand-3: #b56f2b;
+
+  /* text colors */
+  --vp-c-text-1: #1a1a1a;
+  --vp-c-text-2: #4a4a4a;
+  --vp-c-text-3: #7a7a7a;
+}
+
+.dark {
+  /* brand colors */
+  --vp-c-brand-1: #dd8b41;
+  --vp-c-brand-2: #ecaa6a;
+  --vp-c-brand-3: #b56f2b;
+
+  --vp-c-text-1: #f3e7df;
+  --vp-c-text-2: #c9b8a9;
+  --vp-c-text-3: #a88f78;
+}
