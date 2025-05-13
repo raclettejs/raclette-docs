@@ -29,15 +29,28 @@ export default defineConfig({
               link: "/guide/what-is-raclette",
             },
             { text: "Getting Started", link: "/guide/getting-started" },
+          ],
+        },
+        {
+          text: "Key Concepts",
+          items: [
             {
-              text: "The concept",
-              link: "/guide/the-concept",
+              text: "The basis",
+              link: "/guide/the-basis",
             },
           ],
         },
         {
-          text: "Plugins",
-          items: [],
+          text: "Directory Structure",
+          collapsed: true,
+          items: [
+            {
+              text: "📂 .raclette",
+            },
+            {
+              text: "📂 node_modules",
+            },
+          ],
         },
       ],
 

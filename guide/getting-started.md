@@ -10,11 +10,11 @@
 
 ::: code-group
 
-```yarn [yarn]
+```sh [yarn]
 yarn add -D @raclettejs/raclette-core
 ```
 
-```npm [npm]
+```sh [npm]
 npm add -D @raclettejs/raclette-core
 ```
 
@@ -23,6 +23,8 @@ npm add -D @raclettejs/raclette-core
 ## The Config File
 
 The config file (`raclette.config.js`) allows you to setup your raclette application:
+
+::: code-group
 
 ```js [raclette.config.js]
 import { defineRacletteConfig } from "@raclettejs/raclette-core"
@@ -39,5 +41,7 @@ export default defineRacletteConfig({
   },
 })
 ```
+
+:::
 
 See [Reference: raclette Config](../reference/raclette-config) for more.

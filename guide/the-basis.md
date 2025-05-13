@@ -1,4 +1,4 @@
-# The Concept
+# The Basis
 
 Raclette is designed around a modular and declarative architecture that simplifies the way dynamic user interfaces are built, composed, and interacted with. At the heart of Raclette are a few core concepts that together enable the development of full-featured applications with minimal boilerplate and maximum flexibility.
 
