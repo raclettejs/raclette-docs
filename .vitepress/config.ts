@@ -9,6 +9,11 @@ export default defineConfig({
   // cleanUrls: true, // see: https://vitepress.dev/reference/site-config#cleanurls
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: {
+      src: "./logo.svg",
+      alt: "raclette",
+    },
+    siteTitle: false,
     nav: [
       { text: "Home", link: "/" },
       { text: "Examples", link: "/markdown-examples" },
