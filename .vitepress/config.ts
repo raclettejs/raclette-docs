@@ -32,6 +32,11 @@ export default defineConfig({
           ],
         },
         {
+          text: "Plugins",
+          link: "/guide/plugins",
+          items: [],
+        },
+        {
           text: "Key Concepts",
           items: [
             {
@@ -42,13 +47,47 @@ export default defineConfig({
         },
         {
           text: "Directory Structure",
-          collapsed: true,
+          collapsed: false,
           items: [
             {
               text: "📂 .raclette",
+              link: "/guide/directory-structure/.raclette",
             },
             {
               text: "📂 node_modules",
+              link: "/guide/directory-structure/node_modules",
+            },
+            {
+              text: "📂 plugins",
+              link: "/guide/directory-structure/plugins",
+            },
+            {
+              text: "🐳 docker-compose.override.yml",
+              link: "/guide/directory-structure/docker-compose-override",
+            },
+            {
+              text: "🛠️ eslint.config.mjs",
+              link: "/guide/directory-structure/eslint-config",
+            },
+            {
+              text: "⚙️ package.json",
+              link: "/guide/directory-structure/package",
+            },
+            {
+              text: "⚙️ packages.json",
+              link: "/guide/directory-structure/packages",
+            },
+            {
+              text: "🛠️ raclette.config.js",
+              link: "/guide/directory-structure/raclette-config",
+            },
+            {
+              text: "🛠️ tsconfig.json",
+              link: "/guide/directory-structure/tsconfig",
+            },
+            {
+              text: "⚙️ .gitignore",
+              link: "/guide/directory-structure/gitignore",
             },
           ],
         },
