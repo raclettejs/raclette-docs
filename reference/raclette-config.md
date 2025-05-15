@@ -246,9 +246,11 @@ Advanced socket settings.
 - `pingInterval`: `number`
 - `pingTimeout`: `number`
 
-## TypeScript types
+## Type Declarations
 
+::: details Show Type Declarations
 ```TypeScript
+
 /**
  * Raclette Configuration with ESLint properties
  */
@@ -446,3 +448,4 @@ export interface RacletteModule {
 }
 
 ```
+:::

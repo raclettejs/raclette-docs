@@ -51,6 +51,8 @@ You can apply your own linting rules in two ways:
 1. In `eslint.config.mjs`
 
 ```js
+import { withRaclette } from './.raclette/eslint.config.mjs'
+
 export default withRaclette({
   rules: {
     'indent': ['error', 4],

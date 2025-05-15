@@ -38,3 +38,9 @@ Plugins in Raclette are designed to be self-contained, making them easy to share
 Plugins are automatically discovered based on the directory structure. There’s no need to register them manually.
 
 :::
+
+::: info
+
+Learn more about plugins in the [plugins documentation](/guide/plugins.md).
+
+:::

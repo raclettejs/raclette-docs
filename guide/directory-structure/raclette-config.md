@@ -23,7 +23,7 @@ You can add various configuration properties to this file to control aspects lik
 - ESLint and TypeScript settings
 - And more…
 
-::: tip
+::: info
 
 Discover all the available options in the [raclette configuration documentation](/reference/raclette-config.md).
 
