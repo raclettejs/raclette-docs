@@ -29,6 +29,10 @@ export default defineConfig({
               link: "/guide/what-is-raclette",
             },
             {
+              text: "The concept",
+              link: "/guide/the-basis",
+            },
+            {
               text: "Getting Started",
               link: "/guide/getting-started",
             },
@@ -46,26 +50,13 @@ export default defineConfig({
         {
           text: "Plugins",
           items: [
-            {
-              text: "Plugin Overview",
-              link: "/guide/plugins/overview",
-            },
+            // {
+            //   text: "Plugin Overview",
+            //   link: "/guide/plugins/overview",
+            // },
             {
               text: "Plugin API",
               link: "/guide/plugins/api",
-            },
-            {
-              text: "Plugin Examples",
-              link: "/guide/plugins/examples",
-            },
-          ],
-        },
-        {
-          text: "Key Concepts",
-          items: [
-            {
-              text: "The basis",
-              link: "/guide/the-basis",
             },
           ],
         },
