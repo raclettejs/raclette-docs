@@ -62,10 +62,6 @@ export default defineConfig({
               link: "/guide/directory-structure/plugins",
             },
             {
-              text: "🐳 docker-compose.override.yml",
-              link: "/guide/directory-structure/docker-compose-override",
-            },
-            {
               text: "🛠️ eslint.config.mjs",
               link: "/guide/directory-structure/eslint-config",
             },

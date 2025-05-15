@@ -15,10 +15,11 @@ plugins/
 └── [plugin-name]/
     ├── client/
     │   ├── index.ts                # Exports plugin's frontend API
-    │   └── components/             # Optional UI widgets to be placed in the app
+    │   └── ...                     # Optional: your content
     └── server/
         ├── index.ts                # Registers the plugin's server-side behavior
-        └── routes.ts               # Optional: plugin-specific API routes
+        ├── routes.ts               # Optional: plugin-specific API routes
+        └── ...                     # Optional: your content
 ```
 
 ## Client-Side Plugin (`client/index.ts`)

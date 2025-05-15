@@ -3,9 +3,9 @@
 layout: home
 
 hero:
-  name: "raclette-docs"
-  text: "Documentation of the awesome raclette framework"
-  tagline: My great project tagline
+  name: raclette.js docs
+  # text: "Documentation of the awesome raclette framework"
+  tagline: Documentation of the awesome raclette framework
   actions:
     - theme: brand
       text: Guide
