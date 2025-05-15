@@ -28,13 +28,37 @@ export default defineConfig({
               text: "What is raclette?",
               link: "/guide/what-is-raclette",
             },
-            { text: "Getting Started", link: "/guide/getting-started" },
+            {
+              text: "Getting Started",
+              link: "/guide/getting-started",
+            },
+          ],
+        },
+        {
+          text: "Admindashboard",
+          items: [
+            {
+              text: "Introduction",
+              link: "/guide/admindashboard/introduction",
+            },
           ],
         },
         {
           text: "Plugins",
-          link: "/guide/plugins",
-          items: [],
+          items: [
+            {
+              text: "Plugin Overview",
+              link: "/guide/plugins/overview",
+            },
+            {
+              text: "Plugin API",
+              link: "/guide/plugins/api",
+            },
+            {
+              text: "Plugin Examples",
+              link: "/guide/plugins/examples",
+            },
+          ],
         },
         {
           text: "Key Concepts",
