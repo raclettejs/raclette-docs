@@ -1,0 +1,10 @@
+services:
+  vitepress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: ${CI_REGISTRY_IMAGE:-vitepress_app}:${CI_COMMIT_REF_SLUG:-latest}
+    ports:
+      - "${PORT:-8080}:80"
+    restart: unless-stopped

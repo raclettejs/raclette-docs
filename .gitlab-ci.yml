@@ -1,0 +1,85 @@
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  # Use GitLab's CI/CD variables for authentication
+  CI_REGISTRY: $CI_REGISTRY
+  CI_REGISTRY_USER: $CI_REGISTRY_USER
+  CI_REGISTRY_PASSWORD: $CI_REGISTRY_PASSWORD
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+build_for_merge_request:
+  stage: build
+  tags:
+    - docker
+  script:
+    - docker-compose -f docker-compose.production.yml build --rm
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success # Automatically run for merge requests
+
+# Build the Docker image for the default branch
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - docker-compose -f docker-compose.production.yml build
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+
+# Push the Docker image to the GitLab registry
+push:
+  stage: push
+  tags:
+    - docker
+  script:
+    - docker-compose -f docker-compose.production.yml push
+    - docker container prune -f || true
+    - docker image prune -f || true
+  dependencies:
+    - build
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+
+# Deploy to server
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  script:
+    - |
+      # SSH into the server and deploy
+      ssh -o StrictHostKeyChecking=no -p ${SSH_PORT:-22} ${SSH_USER}@${SSH_HOST} << EOF
+
+      # Navigate to deployment directory
+      cd ${DEPLOYMENT_PATH}
+
+      # Login to registry
+      echo "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+
+      # Pull latest image and restart
+      git stash
+      git pull || (echo "Git pull failed" && exit 1)
+      docker-compose -f ./docker-compose.production.yml pull
+      docker-compose -f ./docker-compose.production.yml up -d
+
+      # Cleanup
+      docker system prune -f
+      EOF
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: on_success

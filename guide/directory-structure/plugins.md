@@ -3,8 +3,9 @@
 The plugins directory allows you to extend your Raclette application through modular, encapsulated features. Each plugin can register both frontend and backend behavior, making it easy to build reusable functionality.
 
 A plugin consists of a **client** and **server** part:
--	The **client** defines the API surface available to frontend code, such as routes and widgets.
--	The **server** registers backend routes and logic specific to the plugin.
+
+- The **client** defines the API surface available to frontend code, such as routes and widgets.
+- The **server** registers backend routes and logic specific to the plugin.
 
 This structure enables clean separation of concerns while maintaining a coherent development experience.
 
@@ -42,6 +43,6 @@ Plugins are automatically discovered based on the directory structure. There’s
 
 ::: info
 
-Learn more about plugins in the [plugins documentation](/guide/plugins.md).
+Learn more about plugins in the [plugins documentation](/guide/plugins/api).
 
 :::
