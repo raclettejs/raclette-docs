@@ -1,6 +1,4 @@
 stages:
-  - build
-  - push
   - deploy
 
 variables:
@@ -14,46 +12,6 @@ before_script:
   - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   - eval $(ssh-agent -s)
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-
-build_for_merge_request:
-  stage: build
-  tags:
-    - docker
-  script:
-    - docker-compose -f docker-compose.production.yml build --rm
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success # Automatically run for merge requests
-
-# Build the Docker image for the default branch
-build:
-  stage: build
-  tags:
-    - docker
-  script:
-    - docker-compose -f docker-compose.production.yml build
-  rules:
-    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: on_success
-
-# Push the Docker image to the GitLab registry
-push:
-  stage: push
-  tags:
-    - docker
-  script:
-    - docker-compose -f docker-compose.production.yml push
-    - docker container prune -f || true
-    - docker image prune -f || true
-  dependencies:
-    - build
-  rules:
-    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
-      when: on_success
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
 
 # Deploy to server
 deploy:
@@ -71,10 +29,17 @@ deploy:
       # Login to registry
       echo "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
 
-      # Pull latest image and restart
+      # Pull latest code and build
       git stash
       git pull || (echo "Git pull failed" && exit 1)
-      docker-compose -f ./docker-compose.production.yml pull
+
+      # Build the Docker image locally
+      docker-compose -f ./docker-compose.production.yml build
+
+      # Stop containers before bringing them up again
+      docker-compose -f ./docker-compose.production.yml down
+
+      # Start containers with the newly built images
       docker-compose -f ./docker-compose.production.yml up -d
 
       # Cleanup
