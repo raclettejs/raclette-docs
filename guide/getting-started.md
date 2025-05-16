@@ -5,6 +5,8 @@
 ### Prerequisites
 
 - Node.js
+- yarn
+- Docker
 - Terminal
 - Code Editor (VSCode is recommended)
 
@@ -12,10 +14,6 @@
 
 ```sh [yarn]
 yarn add -D @raclettejs/raclette-core
-```
-
-```sh [npm]
-npm add -D @raclettejs/raclette-core
 ```
 
 :::

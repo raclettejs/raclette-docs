@@ -53,13 +53,27 @@ export default defineConfig({
         {
           text: "Plugins",
           items: [
-            // {
-            //   text: "Plugin Overview",
-            //   link: "/guide/plugins/overview",
-            // },
             {
               text: "Plugin API",
               link: "/guide/plugins/api",
+            },
+            {
+              text: "Plugin Widgets",
+              link: "/guide/plugins/widgets",
+            },
+            {
+              text: "Plugin Server stuff",
+            },
+          ],
+        },
+        {
+          text: "?",
+          items: [
+            {
+              text: "routing",
+            },
+            {
+              text: "troubleshooting",
             },
           ],
         },
