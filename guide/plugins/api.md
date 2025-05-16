@@ -11,7 +11,7 @@ Each plugin defines its client-side API in the file:
 
 Here, you can register which routes should be available to the frontend using a structured definition. For example:
 
-```ts
+```TypeScript
 const data = [
   {
     type: "composition",
@@ -43,6 +43,8 @@ const data = [
     },
   },
 ]
+
+export default { data }
 ```
 
 In this example, the plugin exposes CRUD endpoints for the resource type composition.

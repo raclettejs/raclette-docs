@@ -28,6 +28,8 @@ const widgets = {
     component: ExampleWidgetComponent,
   },
 }
+
+export { install, widgets }
 ```
 
 ```TypeScript
