@@ -7,7 +7,9 @@ export default defineConfig({
   lang: "en-EU",
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
 
-  // cleanUrls: true, // see: https://vitepress.dev/reference/site-config#cleanurls
+  // https://vitepress.dev/reference/site-config#cleanurls
+  cleanUrls: true,
+
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
@@ -126,4 +128,9 @@ export default defineConfig({
       provider: "local",
     },
   },
+
+  ignoreDeadLinks: [
+    // ignore all localhost links
+    /^https?:\/\/localhost/,
+  ],
 })
