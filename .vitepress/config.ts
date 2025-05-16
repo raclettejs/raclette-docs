@@ -5,6 +5,7 @@ export default defineConfig({
   title: "raclette-docs",
   description: "Documentation of the awesome raclette framework.",
   lang: "en-EU",
+  head: [["link", { rel: "icon", href: "/favicon.svg" }]],
 
   // cleanUrls: true, // see: https://vitepress.dev/reference/site-config#cleanurls
   themeConfig: {

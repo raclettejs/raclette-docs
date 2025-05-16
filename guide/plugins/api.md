@@ -75,7 +75,7 @@ To create, update, or delete resources, use `$store` with the corresponding meth
 You can either call a specific method like `update`, `delete`, etc.:
 
 ```typescript
-await $store.composition.updateData(id.value, { ... })
+await $store.updateData(id.value, { ... })
 ```
 
 Or use the generic helper method `createData`, which takes the data and the type name as arguments:
