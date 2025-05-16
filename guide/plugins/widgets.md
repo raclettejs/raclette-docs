@@ -67,3 +67,52 @@ export default {
   details,
 }
 ```
+
+## Type Declarations
+
+::: details Show Type Declarations
+
+```TypeScript
+type WidgetConf = {
+  [key: string]: {
+    type: VuePropType
+    default: string | number | boolean | Function
+    editor: EditorSettings
+  }
+}
+
+type WidgetDeclaration = {
+  pluginName: string
+  company: string
+  title: string
+  color: string
+  icon: string
+  images: string[]
+  description: string
+  widgetName: string
+}
+
+type EditorInputTypes =
+  | "text"
+  | "number"
+  | "checkbox"
+  | "switch"
+  | "multiselect"
+
+type EditorSettings = {
+  inputType: EditorInputTypes
+  min?: number
+  max?: number
+  step?: number
+  selectionValues?: string[]
+}
+
+type VuePropType =
+  | StringConstructor
+  | NumberConstructor
+  | BooleanConstructor
+  | ArrayConstructor
+  | ObjectConstructor
+  | Function
+```
+:::
