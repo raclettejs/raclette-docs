@@ -83,7 +83,7 @@ export default defineConfig({
           items: [
             {
               text: "📂 .raclette",
-              link: "/guide/directory-structure/.raclette",
+              link: "/guide/directory-structure/raclette",
             },
             {
               text: "📂 node_modules",
