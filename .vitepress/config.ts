@@ -18,7 +18,7 @@ export default defineConfig({
     },
     siteTitle: false,
     nav: [
-      { text: "Guide", link: "/guide/getting-started" },
+      { text: "Guide", link: "/guide/introduction/getting-started" },
       { text: "Reference", link: "/reference/raclette-config" },
     ],
 
@@ -29,15 +29,19 @@ export default defineConfig({
           items: [
             {
               text: "What is raclette?",
-              link: "/guide/what-is-raclette",
+              link: "/guide/introduction/what-is-raclette",
             },
             {
               text: "The concept",
-              link: "/guide/the-basis",
+              link: "/guide/introduction/the-basis",
             },
             {
               text: "Getting Started",
-              link: "/guide/getting-started",
+              link: "/guide/introduction/getting-started",
+            },
+            {
+              text: "Raclette CLI",
+              link: "/guide/introduction/cli-commands",
             },
           ],
         },
