@@ -4,20 +4,6 @@ Raclette is built on a modular and declarative architecture that simplifies how 
 
 This document outlines the key architectural components of a Raclette-based application and how they interact with one another.
 
-## Admin Dashboard
-
-Every Raclette installation includes a built-in, standalone **Admin Dashboard** — a web-based control center used to configure and manage your Raclette application without writing code.
-
-The Admin Dashboard allows you to:
-
-- Initialize and manage projects
-- Configure UI views and layouts
-- Create and assign users and permissions
-- Manage tags and metadata
-- Set up `InteractionLinks`, `Widgets`, and `Compositions`
-
-Essentially, anything that doesn't require code changes can be configured here.
-
 ## Core
 
 The **Raclette Core** is the foundation of every Raclette application. It provides:
@@ -34,6 +20,20 @@ The Core **does not render any UI itself**. Instead, it exposes all necessary da
 - Application-wide configuration and metadata
 
 It’s this separation of data and rendering that makes Raclette so flexible and extensible.
+
+## Admin Dashboard
+
+Every Raclette installation includes a built-in, standalone **Admin Dashboard** — a web-based control center used to configure and manage your Raclette application without writing code.
+
+The Admin Dashboard allows you to:
+
+- Initialize and manage projects
+- Configure UI views and layouts
+- Create and assign users and permissions
+- Manage tags and metadata
+- Set up `InteractionLinks`, `Widgets`, and `Compositions`
+
+Essentially, anything that doesn't require code changes can be configured here.
 
 ## Orchestrator
 
