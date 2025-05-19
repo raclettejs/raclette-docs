@@ -71,3 +71,15 @@ yarn down
 ```
 
 For a complete list of available commands, refer to the [CLI documentation](/guide/introduction/cli-commands.md), and see the [directory-structure/package.json](/guide/directory-structure/package.md) documentation for an overview of the recommended `package.json` setup.
+
+## Local URLs
+
+Once your development environment is running, Raclette exposes the following URLs:
+
+- **Frontend Application** → [http://localhost:8081](http://localhost:8081)  
+  The rendered UI powered by your selected frontend framework (e.g. Vue or React).
+
+- **Admin Dashboard** → [http://localhost:8083](http://localhost:8083)  
+  The visual configuration interface for managing views, users, permissions, and more.
+
+You can access both in your browser while Raclette is running.
