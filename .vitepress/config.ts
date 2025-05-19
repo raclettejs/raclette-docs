@@ -32,8 +32,8 @@ export default defineConfig({
               link: "/guide/introduction/what-is-raclette",
             },
             {
-              text: "The concept",
-              link: "/guide/introduction/the-basis",
+              text: "Architecture Overview",
+              link: "/guide/introduction/architecture",
             },
             {
               text: "Getting Started",
@@ -53,6 +53,10 @@ export default defineConfig({
               link: "/guide/admindashboard/introduction",
             },
           ],
+        },
+        {
+          text: "Orchestrator",
+          items: [],
         },
         {
           text: "Plugins",
