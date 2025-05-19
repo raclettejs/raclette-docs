@@ -106,3 +106,5 @@ This backend layer is fully extensible but ready to use out-of-the-box, so you c
 ## Summary
 
 Raclette provides a clear separation of concerns between configuration, logic, and rendering. The architecture can be visualized as:
+
+![Architecture graphic](/graphics/architecture.jpeg)
