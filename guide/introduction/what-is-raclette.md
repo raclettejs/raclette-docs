@@ -39,7 +39,7 @@ Raclette is ideal for developers who need to:
 
 Raclette consists of three main layers:
 
-### 🧠 The Core
+### The Core
 
 The **Core** handles everything behind the scenes:
 
@@ -50,7 +50,7 @@ The **Core** handles everything behind the scenes:
 
 The Core provides all data and logic — but **renders no UI itself**.
 
-### 🧩 The Orchestrator
+### The Orchestrator
 
 The **Orchestrator** connects the Core to a specific frontend framework (e.g. Vue or React). It decides **how** the UI is rendered based on the structure defined in the Core store.
 
@@ -60,7 +60,7 @@ The Orchestrator:
 - Connects UI logic with state
 - Integrates plugin APIs and view logic
 
-### 🧑‍💼 The Admin Dashboard
+### The Admin Dashboard
 
 A separate, pre-built web interface for non-developers to:
 
