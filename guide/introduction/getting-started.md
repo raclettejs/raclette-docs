@@ -42,7 +42,7 @@ export default defineRacletteConfig({
 
 :::
 
-See [Reference: raclette Config](../reference/raclette-config) for more.
+See [Reference: raclette Config](/reference/raclette-config.md) for more.
 
 ## package.json
 
