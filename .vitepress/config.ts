@@ -55,33 +55,34 @@ export default defineConfig({
           ],
         },
         {
-          text: "Orchestrator",
-          items: [],
-        },
-        {
-          text: "Plugins",
+          text: "Plugin Development",
           items: [
             {
               text: "Plugin API",
-              link: "/guide/plugins/api",
+              link: "/guide/plugin-development/api",
             },
             {
               text: "Plugin Widgets",
-              link: "/guide/plugins/widgets",
+              link: "/guide/plugin-development/widgets",
             },
             {
               text: "Plugin Server stuff",
             },
+            {
+              text: "Examples",
+            },
           ],
         },
         {
-          text: "?",
+          text: "Official Plugins",
           items: [
             {
-              text: "routing",
+              text: "CLI Connector",
+              link: "/guide/official-plugins/cli-connector",
             },
             {
-              text: "troubleshooting",
+              text: "CLI Connector (original by Jan)",
+              link: "/guide/official-plugins/cli-connector-original-jan",
             },
           ],
         },

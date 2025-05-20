@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Guide
-      link: /guide/getting-started
+      link: /guide/introduction/getting-started
     - theme: alt
       text: Reference
       link: /reference/raclette-config
