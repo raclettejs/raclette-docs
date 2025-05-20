@@ -20,7 +20,9 @@ There are three main security concerns when exposing CLI tools on the web:
    Input or output from programs may pose further risks.  
    **Solution**: We provide an optional hooks API to sanitize I/O before or after execution.
 
-> ⚠️ Always involve an experienced Unix administrator. Every exposed function must be reviewed carefully. The broader the use case, the more likely you are to introduce security vulnerabilities.
+:::warning
+⚠️ Always involve an experienced Unix administrator. Every exposed function must be reviewed carefully. The broader the use case, the more likely you are to introduce security vulnerabilities.
+:::
 
 ## User Roles
 
@@ -94,7 +96,9 @@ Content-Type: application/json
 
 This executes `/bin/chmod -R a+r shared` inside `/app/public`.
 
-> ⚠️ Exposing commands like `chmod` without restrictions is dangerous. Always validate input!
+:::warning
+⚠️ Exposing commands like `chmod` without restrictions is dangerous. Always validate input!
+:::
 
 ## Argument Restrictions
 
@@ -192,4 +196,6 @@ Job hook functions (`stdin`, `stdout`, `stderr`) work similarly to script hooks 
 Returns a list of all current and recently completed jobs.  
 **Access restricted to admin users.**
 
-> 🛡️ Keep templates small and focused. It's safer to define multiple restricted scripts than a single powerful one.
+:::tip
+🛡️ Keep templates small and focused. It's safer to define multiple restricted scripts than a single powerful one.
+:::

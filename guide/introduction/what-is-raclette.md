@@ -83,5 +83,7 @@ Raclette is a modern fullstack framework for teams who want to:
 From CLI-based tools to multi-user web apps:  
 **Raclette is your fullstack shortcut — without cutting corners.**
 
-> 🔗 Ready to dive deeper?  
-> Learn about the [Architecture Overview](/guide/introduction/architecture.md) and how Raclette’s core concepts work together to power your app.
+:::tip
+🔗 Ready to dive deeper?  
+Learn about the [Architecture Overview](/guide/introduction/architecture.md) and how Raclette’s core concepts work together to power your app.
+:::
