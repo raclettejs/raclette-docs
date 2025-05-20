@@ -43,6 +43,6 @@ Plugins are automatically discovered based on the directory structure. There’s
 
 ::: info
 
-Learn more about plugins in the [plugins documentation](/guide/plugins/api).
+Learn more about plugins in the [plugins documentation](/guide/plugin-development/api).
 
 :::
