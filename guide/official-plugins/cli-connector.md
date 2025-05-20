@@ -1,7 +1,3 @@
----
-outline: deep
----
-
 # Raclette Script Connector – Securely Integrate Unix Tools into the Raclette Web Interface
 
 The **Raclette Script Connector** is a plugin for the Raclette framework that allows site administrators to safely and efficiently integrate existing Unix command-line tools into graphical user interface (GUI) widgets.
@@ -10,7 +6,7 @@ Command-line programs often offer powerful functionality, but exposing them via 
 
 ---
 
-### Security Principles
+## Security Principles
 
 There are three main security concerns when exposing CLI tools on the web:
 
@@ -30,7 +26,7 @@ There are three main security concerns when exposing CLI tools on the web:
 
 ---
 
-### User Roles
+## User Roles
 
 There are four distinct roles involved when using the Script Connector. While they can be fulfilled by the same person, they typically are not—and should not be.
 
@@ -49,12 +45,12 @@ There are four distinct roles involved when using the Script Connector. While th
 
 ---
 
-### Endpoint: POST /script/:cmd  
-#### Input:  
+## Endpoint: POST /script/:cmd  
+**Input**:   
 ```http
 { args?: string[], input?: string }
 ```  
-#### Output:  
+**Output**:  
 ```http
 { stdout: string, stderr: string, status: number|string }
 ```
@@ -68,7 +64,7 @@ This endpoint executes a short-running command-line tool and returns its output.
 
 ---
 
-### Script Templates
+## Script Templates
 
 To define which command-line tools can be used and how, create a template in `scripts/<:cmd>.yaml` or `scripts/<:cmd>.json`:
 
@@ -85,7 +81,7 @@ Templates may define up to three keys:
 
 ---
 
-#### Example Template
+### Example Template
 
 ```yaml
 exe: /bin/chmod  
@@ -112,7 +108,7 @@ This executes `/bin/chmod -R a+r shared` inside `/app/public`.
 
 ---
 
-### Argument Restrictions
+## Argument Restrictions
 
 There are three mechanisms to restrict placeholder input:
 
@@ -148,7 +144,7 @@ There are three mechanisms to restrict placeholder input:
 
 ---
 
-### Script Hooks
+## Script Hooks
 
 You may define a corresponding hook file that exports up to three functions: `stdin`, `stdout`, and `stderr`.  
 Each function:
@@ -161,12 +157,12 @@ This allows for filtering, transformation, or sanitization.
 
 ---
 
-### Endpoint: POST /run/:cmd  
-#### Input:  
+## Endpoint: POST /run/:cmd  
+**Input**:   
 ```http
 { args?: string[] }
 ```  
-#### Output:  
+**Output**:  
 ```http
 { id: string }
 ```
@@ -179,12 +175,12 @@ Use this for **long-running** or **interactive** processes.
 
 ---
 
-### Endpoint: POST /job/:id  
-#### Input:  
+## Endpoint: POST /job/:id  
+**Input**:   
 ```http
 { input?: string; signal?: string }
 ```  
-#### Output:  
+**Output**:  
 ```http
 { done?: number|string; stdin: string[]; stdout: string[]; stderr: string[] }
 ```
@@ -199,7 +195,7 @@ Returns incremental I/O history until the process ends. After completion (`200` 
 
 ---
 
-### Job Hooks
+## Job Hooks
 
 Job hook functions (`stdin`, `stdout`, `stderr`) work similarly to script hooks but with added context:
 
@@ -209,8 +205,8 @@ Job hook functions (`stdin`, `stdout`, `stderr`) work similarly to script hooks 
 
 ---
 
-### Endpoint: GET /jobs  
-#### Output:  
+## Endpoint: GET /jobs  
+**Output**:  
 ```http
 [{ id: string; cmd: string; argv: string[]; done?: number|string }]
 ```
