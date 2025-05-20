@@ -2,8 +2,11 @@
 
 Raclette plugins expose a flexible and type-safe API to interact with backend routes from within frontend components. This is achieved via the `usePluginApi()` composable, which provides two main access points:
 
-- `$data` – for fetching data from defined API endpoints
-- `$store` – for sending data (create, update, delete)
+- `$data` – for fetching data from or sending data to defined API endpoints
+- `$store` – for sending and retrieving data from the client store
+- `$log`- for loggin into the developer console
+- `$eventbus` - for plugin or raclett wide event communication
+- `$socket` - for the registration of socket listeners
 
 ## Defining the Plugin API
 
