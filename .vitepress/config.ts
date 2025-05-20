@@ -77,8 +77,12 @@ export default defineConfig({
           text: "Official Plugins",
           items: [
             {
-              text: "CLI Connector",
+              text: "CLI Connector (chatGPT)",
               link: "/guide/official-plugins/cli-connector",
+            },
+            {
+              text: "CLI Connector (claude)",
+              link: "/guide/official-plugins/cli-connector-claude",
             },
             {
               text: "CLI Connector (original by Jan)",

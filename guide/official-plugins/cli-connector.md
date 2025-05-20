@@ -43,11 +43,11 @@ There are four distinct roles involved when using the Script Connector. While th
 
 ## Endpoint: POST /script/:cmd  
 **Input**:   
-```http
+```json
 { args?: string[], input?: string }
 ```  
 **Output**:  
-```http
+```json
 { stdout: string, stderr: string, status: number|string }
 ```
 
@@ -87,7 +87,7 @@ opts:
 
 Request:
 
-```http
+```json
 POST /plugin/pacifico/scriptConnector/script/chmod_recursive  
 Content-Type: application/json  
 
@@ -147,13 +147,11 @@ This allows for filtering, transformation, or sanitization.
 
 ## Endpoint: POST /run/:cmd  
 **Input**:   
-```http
+```json
 { args?: string[] }
 ```  
 **Output**:  
-```http
-{ id: string }
-```
+`123456`
 
 Use this for **long-running** or **interactive** processes.
 
@@ -163,11 +161,11 @@ Use this for **long-running** or **interactive** processes.
 
 ## Endpoint: POST /job/:id  
 **Input**:   
-```http
+```json
 { input?: string; signal?: string }
 ```  
 **Output**:  
-```http
+```json
 { done?: number|string; stdin: string[]; stdout: string[]; stderr: string[] }
 ```
 
@@ -189,7 +187,7 @@ Job hook functions (`stdin`, `stdout`, `stderr`) work similarly to script hooks 
 
 ## Endpoint: GET /jobs  
 **Output**:  
-```http
+```json
 [{ id: string; cmd: string; argv: string[]; done?: number|string }]
 ```
 
