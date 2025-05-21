@@ -59,8 +59,19 @@ To interact with these endpoints, you can use the `usePluginApi()` composable in
 ```typescript
 import { usePluginApi } from "@raclettejs/raclette-core/orchestrator"
 
+const props = defineProps({
+  uuid: {
+    type: String,
+    required: true,
+  },
+})
+
 const { $data, $store } = usePluginApi()
 ```
+
+::: danger
+For the moment it is imperative that you provide a uuid prop as stated in the example to your widget entry component. This will not be necessary in v1
+:::
 
 ### Fetching Data
 
