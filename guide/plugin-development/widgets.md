@@ -4,7 +4,7 @@ Plugins in Raclette can define **widgets** — modular, reusable components that
 
 ## Widget Declaration
 
-Widgets are registered inside each plugin’s client entry point: `plugins/[plugin-name]/client/index.ts`
+Widgets are registered inside each plugin’s client entry point: `plugins/[companyName__pluginName]/client/index.ts`
 
 A widget consists of three key parts:
 
@@ -29,7 +29,9 @@ const widgets = {
   },
 }
 
-export { install, widgets }
+[...]
+
+export { widgets, [...] }
 ```
 
 ```TypeScript
@@ -115,4 +117,5 @@ type VuePropType =
   | ObjectConstructor
   | Function
 ```
+
 :::
