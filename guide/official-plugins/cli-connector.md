@@ -1,199 +1,196 @@
-# Raclette Script Connector – Securely Integrate Unix Tools into the Raclette Web Interface
+---
+outline: deep
+---
 
-The **Raclette Script Connector** is a plugin for the Raclette framework that allows site administrators to safely and efficiently integrate existing Unix command-line tools into graphical user interface (GUI) widgets.
+# CLI Connector Plugin
 
-Command-line programs often offer powerful functionality, but exposing them via the web introduces significant security challenges. This plugin provides a structured API and a template system to help mitigate these risks. It is designed for experienced Unix administrators and must always be used in narrow, clearly defined use cases.
+The CLI Connector plugin enables Raclette administrators to securely integrate existing Unix command-line tools into the Raclette GUI.
 
-## Security Principles
+## Security Considerations
 
-There are three main security concerns when exposing CLI tools on the web:
+Exposing command-line tools through a web interface presents three primary security challenges:
 
-1. **Shell injection risks**  
-   When command shells are used to launch processes, code injection can never be fully prevented.  
-   **Solution**: We do not use command shells. Instead, we spawn processes directly with `argv`-based APIs.
+1. **Command Shell Vulnerabilities**: Command shells are vulnerable to code injection attacks
+   - Solution: We use `argv`-based process execution instead of command shells
+   
+2. **Command Tool Power**: Many command-line tools provide excessive capabilities that shouldn't be fully exposed
+   - Solution: We provide YAML/JSON templates to restrict command lines to safe, use-case specific subsets
+   
+3. **I/O Sanitization**: Input and output handling can introduce vulnerabilities
+   - Solution: We provide a hooks API for custom I/O processing
 
-2. **Unsafe argument exposure**  
-   Even when not using a shell, many command-line tools are too powerful to be exposed freely.  
-   **Solution**: We use a simple YAML or JSON-based template system to restrict arguments to safe, use-case-specific subsets.
-
-3. **Unsafe input/output (I/O)**  
-   Input or output from programs may pose further risks.  
-   **Solution**: We provide an optional hooks API to sanitize I/O before or after execution.
-
-:::warning
-⚠️ Always involve an experienced Unix administrator. Every exposed function must be reviewed carefully. The broader the use case, the more likely you are to introduce security vulnerabilities.
+::: warning ⚠️ IMPORTANT
+**Security Note**: Exposing command-line tools through a web interface requires careful consideration. This plugin provides the tools to do so securely, but administrators must:
+- Thoroughly understand both the system and the programs being exposed
+- Strictly limit use cases and parameters
+- Properly sanitize input and output
 :::
 
 ## User Roles
 
-There are four distinct roles involved when using the Script Connector. While they can be fulfilled by the same person, they typically are not—and should not be.
+The CLI Connector plugin involves four distinct roles:
 
-1. **The End User**  
-   Uses the Raclette GUI and does not need to know that command-line tools are involved.
+| Role | Description |
+|------|-------------|
+| **User** | Uses the Raclette GUI without necessarily knowing they're accessing command-line tools |
+| **User Admin** | Uses the web interface with elevated privileges to monitor and manage processes |
+| **Server Admin** | Responsible for configuring which tools are exposed and how they're restricted |
+| **JavaScript Programmer** | Customizes input forms and implements I/O sanitization hooks when needed |
 
-2. **The GUI Admin**  
-   Also interacts only through the web interface, but with elevated privileges. Responsible for cleaning up stalled processes when necessary.
+## API Endpoints
 
-3. **The Server Admin**  
-   Decides which CLI tools can be exposed and how. This role requires in-depth knowledge of the underlying OS and the tools being used.  
-   Ideally, this person is also the JavaScript programmer—or works closely with them.
+### Single-Run Processes: `/script/:cmd`
 
-4. **The JavaScript Developer**  
-   Adjusts and secures the input forms and I/O handling where needed. This role is optional unless custom formatting or sanitization is required.
+**Endpoint**: `POST /script/:cmd`  
+**Request Body**: `{ args?: string[], input?: string }`  
+**Response**: `{ stdout: string, stderr: string, status: number|string }`
 
-## Endpoint: POST /script/:cmd  
-**Input**:   
+This endpoint is designed for short-running programs (default timeout: 2 seconds). It uses the `child_process.spawnSync` Node.js API.
+
+#### Example Request
+
 ```json
-{ args?: string[], input?: string }
-```  
-**Output**:  
-```json
-{ stdout: string, stderr: string, status: number|string }
+POST /plugin/raclette/scriptConnector/script/chmod_recursive
+{
+  "args": ["a+r", "shared"]
+}
 ```
 
-This endpoint executes a short-running command-line tool and returns its output.
+### Long-Running Processes: `/run/:cmd`
 
-- Internally uses `child_process.spawnSync` (Node.js).
-- The process must complete within the browser timeout (default: 2 seconds).
-- Returns `stdout`, `stderr`, and exit code or termination signal.
-- Accepts optional `args` (command-line arguments) and `input` (stdin content).
+**Endpoint**: `POST /run/:cmd`  
+**Request Body**: `{ args?: string[] }`  
+**Response**: `123456`
+
+This endpoint starts a process and returns a job ID for further interaction. It uses the `child_process.spawn` Node.js API.
+
+### Job Management: `/job/:id`
+
+**Endpoint**: `POST /job/:id`  
+**Request Body**: `{ input?: string, signal?: string }`  
+**Response**: `{ done?: number|string, stdin: string[], stdout: string[], stderr: string[] }`
+
+This endpoint allows interaction with running processes and retrieves output incrementally.
+
+**Status Codes**:
+- `202`: Process still running
+- `200`: Process completed
+- `404`, `400`, `500`: Various error conditions
+
+### Job Listing: `/jobs`
+
+**Endpoint**: `GET /jobs`  
+**Response**: `[{ id: string, cmd: string, argv: string[], done?: number|string }, ...]`
+
+Returns a list of all known processes. Restricted to admin users.
 
 ## Script Templates
 
-To define which command-line tools can be used and how, create a template in `scripts/<:cmd>.yaml` or `scripts/<:cmd>.json`:
+To execute a command line tool through the CLI Connector, you must define a script template in `scripts/<cmd>.yaml` or `scripts/<cmd>.json`.
 
-Templates may define up to three keys:
+### Template Components
 
-1. **`exe` (Required)**  
-   The executable to run. Can be a full path or a command resolved via the `PATH` variable.
+1. **Executable (`exe`)** - *Required*
+   - Path to the program or executable name to be run
+   
+2. **Spawn Options (`opts`)** - *Optional*
+   - Control process execution environment
+   - Set working directory (`cwd`), environment variables, etc.
+   
+3. **Command Line Arguments (`args`)** - *Usually Required*
+   - Define the arguments passed to the program
+   - Use placeholders `{}` for runtime values
 
-2. **`opts` (Optional)**  
-   Options passed to `spawnSync`, e.g., working directory (`cwd`), environment variables, user identity, etc.
+### Argument Templates
 
-3. **`args` (Optional but usually needed)**  
-   An `argv`-style array of strings and placeholders. Use `{}` as a placeholder for values to be passed from the request payload.
+Arguments can be defined as:
+
+- Simple strings: `- "-R"`
+- Placeholders for runtime values: `- {}`
+- Concatenations with placeholders: `- ["u+", {}]`
+
+### Restricting Arguments
+
+To limit what values can be provided at runtime:
+
+```yaml
+args:
+  - "-R"
+  - ["u+", {allow: "^[rw]$"}]  # Only allows "r" or "w"
+  - {path: "/app/public"}      # Restricts paths to this directory
+```
+
+Restriction options:
+- `allow`: RegExp pattern to match allowed values
+- `deny`: RegExp pattern to match forbidden values
+- `path`: Base directory to restrict file operations
+
+::: tip
+It's better to create multiple restricted script templates rather than a single powerful one that might introduce security vulnerabilities.
+:::
 
 ### Example Template
 
 ```yaml
-exe: /bin/chmod  
-args:  
-  - -R  
-  - {}  
-  - {}  
-opts:  
+# chmod_recursive.yaml
+exe: /bin/chmod
+args:
+  - "-R"
+  - ["u+", {allow: "^[rw]$"}]
+  - {path: "/app/public"}
+opts:
   cwd: /app/public
 ```
 
-Request:
-
-```json
-POST /plugin/pacifico/scriptConnector/script/chmod_recursive  
-Content-Type: application/json  
-
-{ "args": ["a+r", "shared"] }
-```
-
-This executes `/bin/chmod -R a+r shared` inside `/app/public`.
-
-:::warning
-⚠️ Exposing commands like `chmod` without restrictions is dangerous. Always validate input!
-:::
-
-## Argument Restrictions
-
-There are three mechanisms to restrict placeholder input:
-
-1. **String Concatenation**  
-   Use arrays to enforce fixed prefixes:
-
-   ```yaml
-   args:  
-     - -R  
-     - ["u+", {}]  
-     - {}
-   ```
-
-2. **Regular Expressions**  
-   Use `allow` or `deny` keys to restrict placeholder values:
-
-   ```yaml
-   args:  
-     - -R  
-     - ["u+", { allow: "^[rw]$" }]  
-     - {}
-   ```
-
-3. **Path Restriction**  
-   Use `path` to restrict file access to a specific directory tree:
-
-   ```yaml
-   args:  
-     - -R  
-     - ["u+", { allow: "^[rw]$" }]  
-     - { path: "/app/public" }
-   ```
-
 ## Script Hooks
 
-You may define a corresponding hook file that exports up to three functions: `stdin`, `stdout`, and `stderr`.  
-Each function:
+For custom input/output processing, you can create hook functions:
 
-- Accepts a string
-- Returns a string
-- Is called before input is passed or after output is received
+### Single-Run Hooks
 
-This allows for filtering, transformation, or sanitization.
+For `/script/:cmd` endpoints, hooks process strings once:
 
-## Endpoint: POST /run/:cmd  
-**Input**:   
-```json
-{ args?: string[] }
-```  
-**Output**:  
-`123456`
+```javascript
+// hooks/<cmd>.js
+exports.stdin = function(input) {
+  // Process input before sending to program
+  return transformedInput;
+};
 
-Use this for **long-running** or **interactive** processes.
+exports.stdout = function(output) {
+  // Process output before returning to client
+  return transformedOutput;
+};
 
-- Internally uses `child_process.spawn` (Node.js)
-- Returns a `jobID`, which can be used to interact with the process
-- Script templates are defined similarly to `/script/:cmd`, but use options for `spawn`, not `spawnSync`
-
-## Endpoint: POST /job/:id  
-**Input**:   
-```json
-{ input?: string; signal?: string }
-```  
-**Output**:  
-```json
-{ done?: number|string; stdin: string[]; stdout: string[]; stderr: string[] }
+exports.stderr = function(error) {
+  // Process error output before returning to client
+  return transformedError;
+};
 ```
 
-Use this endpoint to:
+### Long-Running Process Hooks
 
-- Send more input
-- Poll the current output
-- Send Unix signals (e.g. `SIGTERM`, `SIGKILL`)
+For `/run/:cmd` endpoints, hooks can access the full I/O history:
 
-Returns incremental I/O history until the process ends. After completion (`200` or `500`), the `jobID` is no longer valid.
-
-## Job Hooks
-
-Job hook functions (`stdin`, `stdout`, `stderr`) work similarly to script hooks but with added context:
-
-- `this` is bound to the full `IO` object (includes accumulated `stdin`, `stdout`, `stderr`)
-- Hooks may modify or truncate history to reduce bandwidth
-- Input is received as a `Buffer`, so use `.toString('utf-8')` if needed
-
-## Endpoint: GET /jobs  
-**Output**:  
-```json
-[{ id: string; cmd: string; argv: string[]; done?: number|string }]
+```javascript
+// hooks/<cmd>.js
+exports.stdout = function(chunk) {
+  // 'this' references the I/O object with complete history
+  // this.stdout, this.stderr, this.stdin
+  
+  // Process the new chunk
+  return transformedChunk;
+};
 ```
 
-Returns a list of all current and recently completed jobs.  
-**Access restricted to admin users.**
-
-:::tip
-🛡️ Keep templates small and focused. It's safer to define multiple restricted scripts than a single powerful one.
+::: warning
+Changes made to the I/O history through hooks are permanent. Deleted or modified data cannot be recovered.
 :::
+
+## Best Practices
+
+1. **Restrict Access**: Limit what files, directories, and operations are available
+2. **Sanitize I/O**: Always validate inputs and sanitize outputs
+3. **Use Granular Templates**: Create specific templates for each use case
+4. **Monitor Usage**: Regularly audit command execution logs
+5. **Use Timeouts**: Set appropriate timeouts for different operations
