@@ -66,7 +66,8 @@ export default defineConfig({
               link: "/guide/plugin-development/widgets",
             },
             {
-              text: "Plugin Server stuff",
+              text: "Plugin Server-Side",
+              link: "/guide/plugin-development/server",
             },
             {
               text: "Examples",
