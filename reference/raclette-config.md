@@ -10,7 +10,6 @@ outline: deep
 
 Title for the application.
 
----
 
 ## services
 - Type: `object`
@@ -82,14 +81,12 @@ UI dashboard container.
 
 Any additional custom service can be defined here.
 
----
 
 ## volumes
 - Type: `Record<string, VolumeDefinition | null>` *(optional)*
 
 Global volumes for the Docker Compose setup.
 
----
 
 ## modules
 - Type: `Array<string | [string, any]>`
@@ -97,7 +94,6 @@ Global volumes for the Docker Compose setup.
 
 List of Raclette modules to load. You can pass config using `[name, options]`.
 
----
 
 ## env
 - Type: `object`
@@ -118,7 +114,14 @@ Environment-specific values injected at runtime.
 
 You may define additional environments.
 
----
+## global
+- Type: `object`
+
+Global configuration for frontend and backend
+
+### global.requireAuthentication
+- Type: `boolean` *(optional)*  
+  Defines if a login is required.
 
 ## frontend
 - Type: `object`
@@ -141,7 +144,6 @@ Frontend configuration.
 - Type: `Record<string, any>` *(optional)*  
   Custom frontend options.
 
----
 
 ## backend
 - Type: `object`
@@ -155,7 +157,6 @@ See [SocketConfig](#socketconfig) for full details.
 ### backend.custom?
 - Type: `Record<string, any>` *(optional)*
 
----
 
 ## typescript
 - Type: `object` *(optional)*
@@ -166,7 +167,6 @@ TypeScript-specific overrides.
 - Type: `Record<string, any>` *(optional)*  
   Pass-through compiler options.
 
----
 
 ## eslint
 - Type: `object` *(optional)*
@@ -192,7 +192,6 @@ ESLint configuration.
 ### eslint.env?
 - Type: `Record<string, any>` *(optional)*
 
----
 
 ## VolumeDefinition
 
@@ -213,7 +212,6 @@ Defines a volume mount between host and container.
   - `size?`: `number` *(optional)*  
   - `mode?`: `number` *(optional)*
 
----
 
 ## SocketConfig
 
