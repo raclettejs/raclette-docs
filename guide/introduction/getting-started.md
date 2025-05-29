@@ -13,7 +13,7 @@
 ::: code-group
 
 ```sh [yarn]
-yarn add -D @raclettejs/raclette-core
+yarn add @raclettejs/raclette-core
 ```
 
 :::
