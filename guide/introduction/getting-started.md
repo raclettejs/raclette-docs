@@ -5,15 +5,35 @@
 ### Prerequisites
 
 - Node.js
-- yarn
+- yarn & npm
 - Docker
 - Terminal
 - Code Editor (VSCode is recommended)
 
+### create-raclette-app
+
+With our CLI tool [create-raclette-app](https://www.npmjs.com/package/create-raclette-app) you can easily set up your initial raclette project.
+
+::: code-group
+
+```sh [npm]
+npx create-raclette-app
+```
+
+The wizard will guide you along and will create all needed files and folders for you. Following the "next steps" from the wizard.
+
+> ⚠️ **PLEASE NOTE**
+>
+> raclette is currently not live yet. For installation you will need a specific token. [Contact us](https://pacifico.cloud) and we will invite you to our test group. We are happy about everyone interested in raclette.
+
+---
+
+You can also manually create everything you need. The most crucial package is `@raclettejs/raclette-core` and highly recommended the `@raclettejs/raclette-dashboard`
+
 ::: code-group
 
 ```sh [yarn]
-yarn add @raclettejs/raclette-core
+yarn add @raclettejs/raclette-core @raclettejs/raclette-dashboard
 ```
 
 :::
