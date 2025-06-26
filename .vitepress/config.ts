@@ -58,6 +58,10 @@ export default defineConfig({
           text: "Plugin Development",
           items: [
             {
+              text: "Plugin Metadata",
+              link: "/guide/plugin-development/metadata",
+            },
+            {
               text: "Plugin API",
               link: "/guide/plugin-development/api",
             },
