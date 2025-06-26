@@ -22,7 +22,7 @@ export default defineRaclettePluginClient({
   },
   exportComponents: {
     // Exported components
-  }
+  },
 })
 ```
 
@@ -33,21 +33,21 @@ export default defineRaclettePluginClient({
 The install function is called when the plugin is initialized. It receives two parameters that provide access to the Raclette installation and plugin APIs.
 
 ```typescript
-install: (
-  $installApi: InstallApi,
-  $pluginApi: PluginApi,
-) => Promise<unknown> | unknown
+install: ($installApi: InstallApi, $pluginApi: PluginApi) =>
+  Promise<unknown> | unknown
 ```
 
 **Parameters:**
 
 **`$installApi`** provides access to core installation functionality:
+
 - `addDataType`: Register new data types
-- `addNodeDependency`: Add node dependencies  
+- `addNodeDependency`: Add node dependencies
 - `addStoreEffect`: Add store effects
 - `dispatchStore`: Dispatch store actions
 
 **`$pluginApi`** provides access to plugin-specific APIs:
+
 - `$eventbus`: Plugin-scoped event bus
 - `$globalEventbus`: Global event bus
 - `$store`: Plugin store API
@@ -59,16 +59,17 @@ install: (
 - `$i18n`: Internationalization helper
 
 **Example:**
+
 ```typescript
 install: async ($installApi, $pluginApi) => {
   // Add a custom data type
-  $installApi.addDataType('customType', customTypeDefinition)
-  
+  $installApi.addDataType("customType", customTypeDefinition)
+
   // Use plugin store
-  $pluginApi.$store.dispatch('initializePlugin')
-  
+  $pluginApi.$store.dispatch("initializePlugin")
+
   // Setup logging
-  $pluginApi.$log.info('Plugin initialized successfully')
+  $pluginApi.$log.info("Plugin initialized successfully")
 }
 ```
 
@@ -83,11 +84,13 @@ widgets: {
 ```
 
 Each widget consists of:
+
 - `details`: Widget metadata (title, description, author, etc.)
 - `config`: Configurable parameters with types and default values
 - `component`: The Vue component to render
 
 **Example:**
+
 ```typescript
 widgets: {
   'weather-widget': {
@@ -137,6 +140,7 @@ i18n: {
 ```
 
 **Example:**
+
 ```typescript
 i18n: {
   en: {
@@ -161,17 +165,19 @@ i18n: {
 Define data structures and their operations that your plugin will use. Each data definition specifies the type and available CRUD operations.
 
 ```typescript
-data: { 
-  [key: string]: PluginClientDataDefinition 
+data: {
+  [key: string]: PluginClientDataDefinition
 }
 ```
 
 Each data definition includes:
+
 - `type`: The data type identifier
 - `operations`: Available operations (create, update, delete, etc.)
 - `offlineMode`: Whether offline mode is supported
 
 **Example:**
+
 ```typescript
 data: {
   weatherData: {
@@ -220,15 +226,16 @@ exportComponents: {
 ```
 
 **Example:**
+
 ```typescript
-import WeatherCard from './components/WeatherCard.vue'
-import TemperatureDisplay from './components/TemperatureDisplay.vue'
+import WeatherCard from "./components/WeatherCard.vue"
+import TemperatureDisplay from "./components/TemperatureDisplay.vue"
 
 export default defineRaclettePluginClient({
   exportComponents: {
-    'WeatherCard': WeatherCard,
-    'TemperatureDisplay': TemperatureDisplay
-  }
+    WeatherCard: WeatherCard,
+    TemperatureDisplay: TemperatureDisplay,
+  },
 })
 ```
 
@@ -238,134 +245,132 @@ Here's a comprehensive example of a weather plugin:
 
 ```typescript
 import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
-import WeatherWidget from './components/WeatherWidget.vue'
-import WeatherCard from './components/WeatherCard.vue'
+import WeatherWidget from "./components/WeatherWidget.vue"
+import WeatherCard from "./components/WeatherCard.vue"
 
 export default defineRaclettePluginClient({
   install: async ($installApi, $pluginApi) => {
     // Initialize weather service
-    $pluginApi.$log.info('Initializing weather plugin')
-    
+    $pluginApi.$log.info("Initializing weather plugin")
+
     // Add weather data type
-    $installApi.addDataType('weather', {
+    $installApi.addDataType("weather", {
       schema: {
-        temperature: 'number',
-        humidity: 'number',
-        location: 'string'
-      }
+        temperature: "number",
+        humidity: "number",
+        location: "string",
+      },
     })
-    
+
     // Setup error handling
-    $pluginApi.$eventbus.on('weather:error', (error) => {
-      $pluginApi.$log.error('Weather error:', error)
+    $pluginApi.$eventbus.on("weather:error", (error) => {
+      $pluginApi.$log.error("Weather error:", error)
     })
   },
 
   widgets: {
-    'current-weather': {
+    "current-weather": {
       details: {
-        pluginName: 'weather-plugin',
-        author: 'Weather Team',
-        title: 'Current Weather',
-        color: '#3498db',
-        icon: 'weather-cloudy',
-        images: ['weather-widget.png'],
-        description: 'Display current weather conditions',
-        widgetName: 'current-weather'
+        pluginName: "weather-plugin",
+        author: "Weather Team",
+        title: "Current Weather",
+        color: "#3498db",
+        icon: "weather-cloudy",
+        images: ["weather-widget.png"],
+        description: "Display current weather conditions",
+        widgetName: "current-weather",
       },
       config: {
         location: {
-          type: 'string',
-          default: 'Paris',
+          type: "string",
+          default: "Paris",
           editor: {
-            type: 'text',
-            label: 'Location',
-            placeholder: 'Enter city name'
-          }
+            type: "text",
+            label: "Location",
+            placeholder: "Enter city name",
+          },
         },
         showForecast: {
-          type: 'boolean',
+          type: "boolean",
           default: false,
           editor: {
-            type: 'checkbox',
-            label: 'Show 5-day forecast'
-          }
+            type: "checkbox",
+            label: "Show 5-day forecast",
+          },
         },
         refreshInterval: {
-          type: 'number',
+          type: "number",
           default: 300,
           editor: {
-            type: 'number',
-            label: 'Refresh interval (seconds)',
+            type: "number",
+            label: "Refresh interval (seconds)",
             min: 60,
-            max: 3600
-          }
-        }
+            max: 3600,
+          },
+        },
       },
-      component: WeatherWidget
-    }
+      component: WeatherWidget,
+    },
   },
 
   i18n: {
     en: {
-      'weather.current': 'Current Weather',
-      'weather.forecast': 'Forecast',
-      'weather.temperature': 'Temperature',
-      'weather.humidity': 'Humidity',
-      'weather.loading': 'Loading weather data...'
+      "weather.current": "Current Weather",
+      "weather.forecast": "Forecast",
+      "weather.temperature": "Temperature",
+      "weather.humidity": "Humidity",
+      "weather.loading": "Loading weather data...",
     },
     fr: {
-      'weather.current': 'Météo Actuelle',
-      'weather.forecast': 'Prévisions',
-      'weather.temperature': 'Température',
-      'weather.humidity': 'Humidité',
-      'weather.loading': 'Chargement des données météo...'
-    }
+      "weather.current": "Météo Actuelle",
+      "weather.forecast": "Prévisions",
+      "weather.temperature": "Température",
+      "weather.humidity": "Humidité",
+      "weather.loading": "Chargement des données météo...",
+    },
   },
 
   data: {
     weatherData: {
-      type: 'weather',
+      type: "weather",
       operations: {
         get: {
           target: (payload) => `/api/weather/${payload.location}`,
-          method: 'GET'
+          method: "GET",
         },
         getAll: {
-          target: '/api/weather/locations',
-          method: 'GET'
-        },
-        getAll: {
-          target: '/api/weather/locations',
-          method: 'GET'
+          target: "/api/weather/locations",
+          method: "GET",
         },
         create: {
-          target: '/api/weather/locations',
-          method: 'POST'
+          target: "/api/weather/locations",
+          method: "POST",
         },
         update: {
           target: (payload) => `/api/weather/locations/${payload.locationId}`,
-          method: 'PUT',
+          method: "PUT",
           broadcast: true,
-          channels: [{
-            channel: 'weather-updates',
-            channelKey: 'locationId',
-            prefix: 'weather'
-          }]
+          channels: [
+            {
+              channel: "weather-updates",
+              channelKey: "locationId",
+              prefix: "weather",
+            },
+          ],
         },
         delete: {
           target: (payload) => `/api/weather/locations/${payload.locationId}`,
-          method: 'DELETE'
-        }
+          method: "DELETE",
+        },
       },
-      offlineMode: true
-    }
+      offlineMode: true,
+    },
   },
 
   exportComponents: {
-    'WeatherCard': WeatherCard,
-    'WeatherIcon': () => import('./components/WeatherIcon.vue')
-  }
+    WeatherCard: WeatherCard,
+    WeatherIcon: () => import("./components/WeatherIcon.vue"),
+  },
 })
 ```
 
@@ -378,12 +383,12 @@ const { $data } = usePluginApi()
 
 // Get weather data for a specific location
 const { data: weatherData, query: weatherQuery } = $data.weatherData.get({
-  location: 'Paris',
-  options: { immediate: true }
+  location: "Paris",
+  options: { immediate: true },
 })
 
 // Get all weather locations
 const { data: allLocations, query: locationsQuery } = $data.weatherData.getAll({
-  options: { immediate: true }
+  options: { immediate: true },
 })
 ```
