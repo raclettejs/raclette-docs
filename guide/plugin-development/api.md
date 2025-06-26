@@ -1,140 +1,389 @@
-# Plugin API
+# Plugin Client API
 
-Raclette plugins expose a flexible and type-safe API to interact with backend routes from within frontend components. This is achieved via the `usePluginApi()` composable, which provides two main access points:
+The client-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin.
 
-- `$data` – for fetching data from or sending data to defined API endpoints
-- `$store` – for sending and retrieving data from the client store
-- `$log`- for loggin into the developer console
-- `$eventbus` - for plugin or raclett wide event communication
-- `$socket` - for the registration of socket listeners
+## Basic Usage
 
-## Defining the Plugin API
+```typescript
+import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
 
-Plugin API endpoints are provided to the PluginAPI in a declarative manner. This Endpoints are registered inside each plugin’s client entry point: `plugins/[companyName__pluginName]/client/index.ts`
+export default defineRaclettePluginClient({
+  install: async ($installApi, $pluginApi) => {
+    // Plugin initialization logic
+  },
+  widgets: {
+    // Widget definitions
+  },
+  i18n: {
+    // Internationalization strings
+  },
+  data: {
+    // Data definitions
+  },
+  exportComponents: {
+    // Exported components
+  }
+})
+```
 
-Here, you can register which routes should be available to the frontend using a structured definition. For example:
+## Configuration Options
 
-```TypeScript
-[...]
-const data = [
-  {
-    type: "todo",
-    crud: {
-      getAll: {
-        target: "/all",
+### `install`
+
+The install function is called when the plugin is initialized. It receives two parameters that provide access to the Raclette installation and plugin APIs.
+
+```typescript
+install: (
+  $installApi: InstallApi,
+  $pluginApi: PluginApi,
+) => Promise<unknown> | unknown
+```
+
+**Parameters:**
+
+**`$installApi`** provides access to core installation functionality:
+- `addDataType`: Register new data types
+- `addNodeDependency`: Add node dependencies  
+- `addStoreEffect`: Add store effects
+- `dispatchStore`: Dispatch store actions
+
+**`$pluginApi`** provides access to plugin-specific APIs:
+- `$eventbus`: Plugin-scoped event bus
+- `$globalEventbus`: Global event bus
+- `$store`: Plugin store API
+- `$log`: Plugin logging functionality
+- `$file`: File operations
+- `$data`: Plugin data methods
+- `error`: Error handling
+- `$socket`: Socket connections
+- `$i18n`: Internationalization helper
+
+**Example:**
+```typescript
+install: async ($installApi, $pluginApi) => {
+  // Add a custom data type
+  $installApi.addDataType('customType', customTypeDefinition)
+  
+  // Use plugin store
+  $pluginApi.$store.dispatch('initializePlugin')
+  
+  // Setup logging
+  $pluginApi.$log.info('Plugin initialized successfully')
+}
+```
+
+### `widgets`
+
+Define custom widgets that can be used throughout the application. Each widget is identified by a unique key.
+
+```typescript
+widgets: {
+  [key: string]: PluginWidget
+}
+```
+
+Each widget consists of:
+- `details`: Widget metadata (title, description, author, etc.)
+- `config`: Configurable parameters with types and default values
+- `component`: The Vue component to render
+
+**Example:**
+```typescript
+widgets: {
+  'weather-widget': {
+    details: {
+      pluginName: 'weather-plugin',
+      author: 'Weather Corp',
+      title: 'Weather Display',
+      color: '#3498db',
+      icon: 'weather-sunny',
+      images: ['weather-preview.png'],
+      description: 'Display current weather information',
+      widgetName: 'weather-widget'
+    },
+    config: {
+      location: {
+        type: 'string',
+        default: 'Paris',
+        editor: {
+          type: 'text',
+          label: 'Location'
+        }
       },
+      units: {
+        type: 'string',
+        default: 'metric',
+        editor: {
+          type: 'select',
+          options: ['metric', 'imperial']
+        }
+      }
+    },
+    component: WeatherWidgetComponent
+  }
+}
+```
+
+### `i18n`
+
+Internationalization strings for your plugin. Organize translations by locale, then by key.
+
+```typescript
+i18n: {
+  [locale: string]: {
+    [key: string]: string
+  }
+}
+```
+
+**Example:**
+```typescript
+i18n: {
+  en: {
+    'weather.title': 'Weather',
+    'weather.loading': 'Loading weather data...',
+    'weather.error': 'Failed to load weather data',
+    'settings.location': 'Location',
+    'settings.units': 'Units'
+  },
+  fr: {
+    'weather.title': 'Météo',
+    'weather.loading': 'Chargement des données météo...',
+    'weather.error': 'Échec du chargement des données météo',
+    'settings.location': 'Emplacement',
+    'settings.units': 'Unités'
+  }
+}
+```
+
+### `data`
+
+Define data structures and their operations that your plugin will use. Each data definition specifies the type and available CRUD operations.
+
+```typescript
+data: { 
+  [key: string]: PluginClientDataDefinition 
+}
+```
+
+Each data definition includes:
+- `type`: The data type identifier
+- `operations`: Available operations (create, update, delete, etc.)
+- `offlineMode`: Whether offline mode is supported
+
+**Example:**
+```typescript
+data: {
+  weatherData: {
+    type: 'weather',
+    operations: {
       get: {
-        target: (payload) => "/todo/" + payload._id,
-      },
-      update: {
-        target: (payload) => "/todo/" + payload._id,
-        broadcast: true
-      },
-      delete: {
-        target: (payload) => "/todo/" + payload.docId,
-        broadcast: true
+        target: (payload) => `/api/weather/${payload.location}`,
+        method: 'GET'
       },
       create: {
-        target: "/todo",
+        target: '/api/weather',
+        method: 'POST',
         broadcast: true
       },
+      update: {
+        target: (payload) => `/api/weather/${payload.id}`,
+        method: 'PUT'
+      },
+      delete: {
+        target: (payload) => `/api/weather/${payload.id}`,
+        method: 'DELETE'
+      }
     },
+    offlineMode: true
   },
-]
-
-export { data, [...] }
-```
-
-In this example, the plugin exposes CRUD endpoints for the resource type todo. You can define as many endpoints here as you wish. Each endpoint can be defined using the `pluginEndpointDefinition` type.
-
-::: tip
-The endpoints you define under the name "update", "delete", "hardDelete", "restore", "move" and "create" will be available through the $store namespace in the clientApi. All other endpoints will be available in the $data namespace under the data type
-:::
-
-## Expanding the Plugin API or Vue Instance
-
-If the index.ts file provides an export called install,
-
-```TypeScript
-import VueKonva from "vue-konva"
-[...]
-const install = async ($installApi: InstallApi, $pluginApi: PluginApi) =>{
-  $installApi.addNodeDependency(VueKonva, { options: { prefix: "konva" } })
-  const myCustomApiFunctions = {
-    myCustomFunction: () => {
-      // this function will be available in my component
+  userPreferences: {
+    type: 'preferences',
+    operations: {
+      update: {
+        target: '/api/user/preferences',
+        method: 'PATCH'
+      }
     }
   }
-  return myCustomApiFunctions
 }
-
-export { install, [...] }
 ```
 
-## Using the Plugin API in Components
+### `exportComponents`
 
-To interact with these endpoints, you can use the `usePluginApi()` composable inside your Vue component:
+Export Vue components that can be used by other plugins or the main application.
 
 ```typescript
-import { usePluginApi } from "@raclettejs/raclette-core/orchestrator"
+exportComponents: {
+  [key: string]: DefineComponent
+}
+```
 
-const props = defineProps({
-  uuid: {
-    type: String,
-    required: true,
+**Example:**
+```typescript
+import WeatherCard from './components/WeatherCard.vue'
+import TemperatureDisplay from './components/TemperatureDisplay.vue'
+
+export default defineRaclettePluginClient({
+  exportComponents: {
+    'WeatherCard': WeatherCard,
+    'TemperatureDisplay': TemperatureDisplay
+  }
+})
+```
+
+## Complete Example
+
+Here's a comprehensive example of a weather plugin:
+
+```typescript
+import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
+import WeatherWidget from './components/WeatherWidget.vue'
+import WeatherCard from './components/WeatherCard.vue'
+
+export default defineRaclettePluginClient({
+  install: async ($installApi, $pluginApi) => {
+    // Initialize weather service
+    $pluginApi.$log.info('Initializing weather plugin')
+    
+    // Add weather data type
+    $installApi.addDataType('weather', {
+      schema: {
+        temperature: 'number',
+        humidity: 'number',
+        location: 'string'
+      }
+    })
+    
+    // Setup error handling
+    $pluginApi.$eventbus.on('weather:error', (error) => {
+      $pluginApi.$log.error('Weather error:', error)
+    })
   },
+
+  widgets: {
+    'current-weather': {
+      details: {
+        pluginName: 'weather-plugin',
+        author: 'Weather Team',
+        title: 'Current Weather',
+        color: '#3498db',
+        icon: 'weather-cloudy',
+        images: ['weather-widget.png'],
+        description: 'Display current weather conditions',
+        widgetName: 'current-weather'
+      },
+      config: {
+        location: {
+          type: 'string',
+          default: 'Paris',
+          editor: {
+            type: 'text',
+            label: 'Location',
+            placeholder: 'Enter city name'
+          }
+        },
+        showForecast: {
+          type: 'boolean',
+          default: false,
+          editor: {
+            type: 'checkbox',
+            label: 'Show 5-day forecast'
+          }
+        },
+        refreshInterval: {
+          type: 'number',
+          default: 300,
+          editor: {
+            type: 'number',
+            label: 'Refresh interval (seconds)',
+            min: 60,
+            max: 3600
+          }
+        }
+      },
+      component: WeatherWidget
+    }
+  },
+
+  i18n: {
+    en: {
+      'weather.current': 'Current Weather',
+      'weather.forecast': 'Forecast',
+      'weather.temperature': 'Temperature',
+      'weather.humidity': 'Humidity',
+      'weather.loading': 'Loading weather data...'
+    },
+    fr: {
+      'weather.current': 'Météo Actuelle',
+      'weather.forecast': 'Prévisions',
+      'weather.temperature': 'Température',
+      'weather.humidity': 'Humidité',
+      'weather.loading': 'Chargement des données météo...'
+    }
+  },
+
+  data: {
+    weatherData: {
+      type: 'weather',
+      operations: {
+        get: {
+          target: (payload) => `/api/weather/${payload.location}`,
+          method: 'GET'
+        },
+        getAll: {
+          target: '/api/weather/locations',
+          method: 'GET'
+        },
+        getAll: {
+          target: '/api/weather/locations',
+          method: 'GET'
+        },
+        create: {
+          target: '/api/weather/locations',
+          method: 'POST'
+        },
+        update: {
+          target: (payload) => `/api/weather/locations/${payload.locationId}`,
+          method: 'PUT',
+          broadcast: true,
+          channels: [{
+            channel: 'weather-updates',
+            channelKey: 'locationId',
+            prefix: 'weather'
+          }]
+        },
+        delete: {
+          target: (payload) => `/api/weather/locations/${payload.locationId}`,
+          method: 'DELETE'
+        }
+      },
+      offlineMode: true
+    }
+  },
+
+  exportComponents: {
+    'WeatherCard': WeatherCard,
+    'WeatherIcon': () => import('./components/WeatherIcon.vue')
+  }
+})
+```
+
+## Accessing Plugin Data
+
+Within your plugin components, you can access the defined data through the `usePluginApi()` composable:
+
+```typescript
+const { $data } = usePluginApi()
+
+// Get weather data for a specific location
+const { data: weatherData, query: weatherQuery } = $data.weatherData.get({
+  location: 'Paris',
+  options: { immediate: true }
 })
 
-const { $data, $store } = usePluginApi()
-```
-
-::: danger Caution!
-For the moment it is imperative that you provide a uuid prop as stated in the example to your widget entry component. This will not be necessary in v1
-:::
-
-### Fetching Data
-
-All read endpoints are available via $data and are grouped by their defined type. For example, to fetch a specific composition:
-
-```typescript
-const { data, execute, query } = $data.todo.getAll({
-  options: { immediate: true },
+// Get all weather locations
+const { data: allLocations, query: locationsQuery } = $data.weatherData.getAll({
+  options: { immediate: true }
 })
-
-await execute({ _id: "123" })
-console.log(data.value)
 ```
-
-### Sending Data
-
-To create, update, or delete resources, use `$store` with the corresponding method.
-
-You can either call a specific method like `update`, `delete`, etc.:
-
-```typescript
-await $store.updateData(id.value, { ... })
-```
-
-Or use the generic helper method `createData`, which takes the data and the type name as arguments:
-
-```typescript
-await $store.createData({ ... }, "composition")
-```
-
-## Summary
-
-The Plugin API abstracts away raw HTTP calls and provides a declarative way to consume backend functionality. By separating route definitions from component logic, Raclette encourages cleaner, more maintainable code within plugins.
-
-## Type Declarations
-
-::: details Show Type Declarations
-
-```TypeScript
-type pluginEndpointDefinition = {
-  target: function | string
-  method?: string
-  useCore?: boolean
-}
-```
-
-:::
