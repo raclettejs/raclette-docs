@@ -70,6 +70,11 @@ install: async ($installApi, $pluginApi) => {
 
   // Setup logging
   $pluginApi.$log.info("Plugin initialized successfully")
+
+  // the returned object will be appended to the $pluginApi and be available in your component
+  return {
+    myCustomApiEndpoint:([...])=>[...]
+  }
 }
 ```
 
@@ -144,18 +149,26 @@ i18n: {
 ```typescript
 i18n: {
   en: {
-    'weather.title': 'Weather',
-    'weather.loading': 'Loading weather data...',
-    'weather.error': 'Failed to load weather data',
-    'settings.location': 'Location',
-    'settings.units': 'Units'
+    weather:{
+      title: 'Weather',
+      loading: 'Loading weather data...',
+      error: 'Failed to load weather data',
+    },
+    settings:{
+      location: 'Location',
+      units: 'Units'
+    }
   },
   fr: {
-    'weather.title': 'Météo',
-    'weather.loading': 'Chargement des données météo...',
-    'weather.error': 'Échec du chargement des données météo',
-    'settings.location': 'Emplacement',
-    'settings.units': 'Unités'
+    weather:{
+      title: 'Météo',
+      loading: 'Chargement des données météo...',
+      error: 'Échec du chargement des données météo',
+    },
+    settings:{
+      location: 'Emplacement',
+      units: 'Unités'
+    }
   }
 }
 ```
