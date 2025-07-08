@@ -74,7 +74,7 @@ To integrate Raclette into your development workflow, add the following entries 
   "down": "raclette down",
   "update": "raclette update",
   "restart": "raclette restart",
-  "add-package": "raclette add"
+  "add-package": "raclette add-package"
 },
 ```
 

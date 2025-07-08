@@ -13,7 +13,7 @@ The minimal `package.json` of your raclette application should look like:
     "down": "raclette down",
     "update": "raclette update",
     "restart": "raclette restart",
-    "add-package": "raclette add"
+    "add-package": "raclette add-package"
   },
   "dependencies": {
     "@raclettejs/raclette-core": "latest",
@@ -22,7 +22,7 @@ The minimal `package.json` of your raclette application should look like:
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@raclettejs/raclette-types": "latest",
+    "@raclettejs/raclette-types": "latest"
   }
 }
 ```

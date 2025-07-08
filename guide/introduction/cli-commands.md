@@ -103,7 +103,7 @@ raclette build
 
 ---
 
-### `raclette add <target> <package...>`
+### `raclette add-package <target> <package...>`
 
 Adds one or more npm packages to a specific project target.
 
@@ -122,8 +122,8 @@ Adds one or more npm packages to a specific project target.
 **Examples:**
 
 ```bash
-raclette add client lodash
-raclette add both eslint --dev
+raclette add-package client lodash
+raclette add-package both eslint --dev
 ```
 
 ---
