@@ -46,11 +46,11 @@ export default defineConfig({
           ],
         },
         {
-          text: "Admindashboard",
+          text: "Workbench",
           items: [
             {
               text: "Introduction",
-              link: "/guide/admindashboard/introduction",
+              link: "/guide/workbench/introduction",
             },
           ],
         },

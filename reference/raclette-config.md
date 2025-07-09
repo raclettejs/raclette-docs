@@ -5,13 +5,14 @@ outline: deep
 # raclette Config
 
 ## name
+
 - Type: `string`
 - Default: `"raclette-app"`
 
 Title for the application.
 
-
 ## services
+
 - Type: `object`
 
 Configuration of system services used in development and runtime.
@@ -24,78 +25,78 @@ Frontend development server.
   Whether the client service is enabled.
 - `port`: `number`  
   Port the client runs on.
-- `name?`: `string` *(optional)*  
+- `name?`: `string` _(optional)_  
   Custom name for the client container.
-- `nodeModulesVolume?`: `string` *(optional)*  
+- `nodeModulesVolume?`: `string` _(optional)_  
   Volume name for sharing `node_modules`.
-- `installPackages?`: `string[]` *(optional)*  
+- `installPackages?`: `string[]` _(optional)_  
   Additional packages to install.
-- `volumes?`: `VolumeDefinition[]` *(optional)*  
+- `volumes?`: `VolumeDefinition[]` _(optional)_  
   Additional volumes to mount.
 
 ### services.server
 
 Backend service configuration.
 
-- `enabled`: `boolean`  
-- `port`: `number`  
-- `name?`: `string` *(optional)*  
-- `nodeModulesVolume?`: `string` *(optional)*  
-- `enableDebug?`: `boolean` *(optional)*  
+- `enabled`: `boolean`
+- `port`: `number`
+- `name?`: `string` _(optional)_
+- `nodeModulesVolume?`: `string` _(optional)_
+- `enableDebug?`: `boolean` _(optional)_  
   Enables debug mode.
-- `installPackages?`: `string[]` *(optional)*  
-- `volumes?`: `VolumeDefinition[]` *(optional)*
+- `installPackages?`: `string[]` _(optional)_
+- `volumes?`: `VolumeDefinition[]` _(optional)_
 
 ### services.mongodb
 
 MongoDB container configuration.
 
-- `enabled`: `boolean`  
-- `port`: `number`  
-- `name?`: `string` *(optional)*  
-- `volume?`: `string` *(optional)*  
-- `databaseName?`: `string` *(optional)*  
-- `volumes?`: `VolumeDefinition[]` *(optional)*
+- `enabled`: `boolean`
+- `port`: `number`
+- `name?`: `string` _(optional)_
+- `volume?`: `string` _(optional)_
+- `databaseName?`: `string` _(optional)_
+- `volumes?`: `VolumeDefinition[]` _(optional)_
 
 ### services.redis
 
 Redis service definition.
 
-- `enabled`: `boolean`  
-- `port`: `number`  
-- `name?`: `string` *(optional)*  
-- `volume?`: `string` *(optional)*  
-- `db?`: `number` *(optional)*  
+- `enabled`: `boolean`
+- `port`: `number`
+- `name?`: `string` _(optional)_
+- `volume?`: `string` _(optional)_
+- `db?`: `number` _(optional)_  
   Redis DB index to use.
-- `volumes?`: `VolumeDefinition[]` *(optional)*
+- `volumes?`: `VolumeDefinition[]` _(optional)_
 
-### services.dashboard
+### services.workbench
 
-UI dashboard container.
+workbench container (admin area)
 
-- `enabled`: `boolean`  
-- `port`: `number`  
-- `volumes?`: `VolumeDefinition[]` *(optional)*
+- `enabled`: `boolean`
+- `port`: `number`
+- `volumes?`: `VolumeDefinition[]` _(optional)_
 
 ### services.[custom]
 
 Any additional custom service can be defined here.
 
-
 ## volumes
-- Type: `Record<string, VolumeDefinition | null>` *(optional)*
+
+- Type: `Record<string, VolumeDefinition | null>` _(optional)_
 
 Global volumes for the Docker Compose setup.
 
-
 ## modules
+
 - Type: `Array<string | [string, any]>`
 - Default: `[]`
 
 List of Raclette modules to load. You can pass config using `[name, options]`.
 
-
 ## env
+
 - Type: `object`
 
 Environment-specific values injected at runtime.
@@ -115,37 +116,44 @@ Environment-specific values injected at runtime.
 You may define additional environments.
 
 ## global
+
 - Type: `object`
 
 Global configuration for frontend and backend
 
 ### global.requireAuthentication
-- Type: `boolean` *(optional)*  
+
+- Type: `boolean` _(optional)_  
   Defines if a login is required.
 
 ## frontend
+
 - Type: `object`
 
 Frontend configuration.
 
 ### frontend.framework
+
 - Type: `"vue"` | `"react"`  
   Defines the primary frontend framework.
 
 ### frontend.vue.plugins?
-- Type: `string[]` *(optional)*  
+
+- Type: `string[]` _(optional)_  
   Vue plugins to register.
 
 ### frontend.react.plugins?
-- Type: `string[]` *(optional)*  
+
+- Type: `string[]` _(optional)_  
   React plugins to register.
 
 ### frontend.custom?
-- Type: `Record<string, any>` *(optional)*  
+
+- Type: `Record<string, any>` _(optional)_  
   Custom frontend options.
 
-
 ## backend
+
 - Type: `object`
 
 Backend configuration.
@@ -155,43 +163,50 @@ Backend configuration.
 See [SocketConfig](#socketconfig) for full details.
 
 ### backend.custom?
-- Type: `Record<string, any>` *(optional)*
 
+- Type: `Record<string, any>` _(optional)_
 
 ## typescript
-- Type: `object` *(optional)*
+
+- Type: `object` _(optional)_
 
 TypeScript-specific overrides.
 
 ### typescript.compilerOptions?
-- Type: `Record<string, any>` *(optional)*  
+
+- Type: `Record<string, any>` _(optional)_  
   Pass-through compiler options.
 
-
 ## eslint
-- Type: `object` *(optional)*
+
+- Type: `object` _(optional)_
 
 ESLint configuration.
 
 ### eslint.rules?
-- Type: `Record<string, any>` *(optional)*
+
+- Type: `Record<string, any>` _(optional)_
 
 ### eslint.plugins?
-- Type: `string[]` *(optional)*
+
+- Type: `string[]` _(optional)_
 
 ### eslint.extends?
-- Type: `string[]` *(optional)*
+
+- Type: `string[]` _(optional)_
 
 ### eslint.ignores?
-- Type: `string[]` *(optional)*
+
+- Type: `string[]` _(optional)_
 
 ### eslint.useRecommended?
-- Type: `boolean` *(optional)*  
+
+- Type: `boolean` _(optional)_  
   Enable recommended ESLint config.
 
 ### eslint.env?
-- Type: `Record<string, any>` *(optional)*
 
+- Type: `Record<string, any>` _(optional)_
 
 ## VolumeDefinition
 
@@ -201,17 +216,16 @@ Defines a volume mount between host and container.
   Named volume or host path.
 - `target`: `string`  
   Container path.
-- `type?`: `"bind"` | `"volume"` | `"tmpfs"` *(optional)*  
-- `readonly?`: `boolean` *(optional)*  
-- `volumeOptions?`: `object` *(optional)*  
-  - `nocopy?`: `boolean` *(optional)*  
-- `bindOptions?`: `object` *(optional)*  
-  - `propagation?`: `string` *(optional)*  
-  - `createHostPath?`: `boolean` *(optional)*  
-- `tmpfsOptions?`: `object` *(optional)*  
-  - `size?`: `number` *(optional)*  
-  - `mode?`: `number` *(optional)*
-
+- `type?`: `"bind"` | `"volume"` | `"tmpfs"` _(optional)_
+- `readonly?`: `boolean` _(optional)_
+- `volumeOptions?`: `object` _(optional)_
+  - `nocopy?`: `boolean` _(optional)_
+- `bindOptions?`: `object` _(optional)_
+  - `propagation?`: `string` _(optional)_
+  - `createHostPath?`: `boolean` _(optional)_
+- `tmpfsOptions?`: `object` _(optional)_
+  - `size?`: `number` _(optional)_
+  - `mode?`: `number` _(optional)_
 
 ## SocketConfig
 
@@ -225,7 +239,7 @@ Automatically push data when client connects.
 - `interactionLinks`: `boolean`
 - `projectConfig`: `boolean`
 - `additionalDatatypes`: `Record<string, boolean | undefined>`
-- `customData?`: `Record<string, any>` *(optional)*
+- `customData?`: `Record<string, any>` _(optional)_
 
 ### sockets.security
 
@@ -233,7 +247,7 @@ WebSocket authentication config.
 
 - `requireAuth`: `boolean`
 - `tokenValidation`: `"jwt"`
-- `customValidator?`: `string` *(optional)*
+- `customValidator?`: `string` _(optional)_
 
 ### sockets.options
 
@@ -247,6 +261,7 @@ Advanced socket settings.
 ## Type Declarations
 
 ::: details Show Type Declarations
+
 ```TypeScript
 
 /**
@@ -288,7 +303,7 @@ export interface RacletteConfig {
       db?: number
       volumes?: VolumeDefinition[] // Add custom volumes property
     }
-    dashboard?: {
+    workbench?: {
       enabled: boolean
       port: number
       volumes?: VolumeDefinition[] // Add custom volumes property
@@ -446,4 +461,5 @@ export interface RacletteModule {
 }
 
 ```
+
 :::

@@ -47,7 +47,7 @@ Raclette handles steps 1-4 out of the box. You handle your specific business req
 
 **SaaS Applications**: Customer portals, project management, CRM systems
 
-**Internal Tools**: Admin dashboards, workflow management, business intelligence
+**Internal Tools**: Workbench (admin area), workflow management, business intelligence
 
 **Multi-tenant Platforms**: White-label solutions, marketplace platforms
 

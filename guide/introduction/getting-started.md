@@ -28,12 +28,12 @@ The wizard will guide you along and will create all needed files and folders for
 
 ---
 
-You can also manually create everything you need. The most crucial package is `@raclettejs/raclette-core` and highly recommended the `@raclettejs/raclette-dashboard`
+You can also manually create everything you need. The most crucial package is `@raclettejs/raclette-core` and highly recommended the `@raclettejs/raclette-workbench`
 
 ::: code-group
 
 ```sh [yarn]
-yarn add @raclettejs/raclette-core @raclettejs/raclette-dashboard
+yarn add @raclettejs/raclette-core @raclettejs/raclette-workbench
 ```
 
 :::
@@ -99,7 +99,7 @@ Once your development environment is running, Raclette exposes the following URL
 - **Frontend Application** → [http://localhost:8081](http://localhost:8081)  
   The rendered UI powered by your selected frontend framework (e.g. Vue or React).
 
-- **Admin Dashboard** → [http://localhost:8083](http://localhost:8083)  
+- **raclette Workbench** → [http://localhost:8083](http://localhost:8083)  
   The visual configuration interface for managing views, users, permissions, and more.
 
 You can access both in your browser while Raclette is running.

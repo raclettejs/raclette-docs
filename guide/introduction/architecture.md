@@ -21,11 +21,11 @@ The Core **does not render any UI itself**. Instead, it exposes all necessary da
 
 It’s this separation of data and rendering that makes Raclette so flexible and extensible.
 
-## Admin Dashboard
+## raclette Workbench
 
-Every Raclette installation includes a built-in, standalone **Admin Dashboard** — a web-based control center used to configure and manage your Raclette application without writing code.
+Every Raclette installation includes a built-in, standalone **raclette Workbench** — a web-based control center used to configure and manage your Raclette application without writing code.
 
-The Admin Dashboard allows you to:
+The Workbench allows you to:
 
 - Initialize and manage projects
 - Configure UI views and layouts
@@ -84,7 +84,7 @@ At the center of everything is Raclette’s **global Redux store**. It is the si
 - Access to global configuration, metadata, and context
 - Consistent and predictable state management
 
-All parts of the system — including the Admin Dashboard, Orchestrator, and UI components — read from and write to this store.
+All parts of the system — including the raclette Workbench, Orchestrator, and UI components — read from and write to this store.
 
 This allows for powerful features like:
 
