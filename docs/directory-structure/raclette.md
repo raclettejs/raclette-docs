@@ -2,7 +2,7 @@
 
 ::: tip
 
-To avoid tracking dependencies in version control, make sure this directory is listed in your [`.gitignore`](/guide/directory-structure/gitignore.md) file.
+To avoid tracking dependencies in version control, make sure this directory is listed in your [`.gitignore`](/docs/directory-structure/gitignore.md) file.
 
 :::
 

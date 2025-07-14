@@ -90,7 +90,7 @@ Or shut down all services with:
 yarn down
 ```
 
-For a complete list of available commands, refer to the [CLI documentation](/guide/introduction/cli-commands.md), and see the [directory-structure/package.json](/guide/directory-structure/package.md) documentation for an overview of the recommended `package.json` setup.
+For a complete list of available commands, refer to the [CLI documentation](/docs/introduction/cli-commands.md), and see the [directory-structure/package.json](/docs/directory-structure/package.md) documentation for an overview of the recommended `package.json` setup.
 
 ## Local URLs
 

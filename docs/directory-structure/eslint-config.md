@@ -8,16 +8,14 @@ To activate Raclette's ESLint configuration, create an `eslint.config.mjs` file 
 
 ```js
 // eslint.config.mjs
-import { withRaclette } from './.raclette/eslint.config.mjs'
+import { withRaclette } from "./.raclette/eslint.config.mjs"
 
-export default withRaclette(
-  {
-    // Custom rules or overrides
-    rules: {
-      'no-console': 'off'
-    }
-  }
-)
+export default withRaclette({
+  // Custom rules or overrides
+  rules: {
+    "no-console": "off",
+  },
+})
 ```
 
 This setup wraps your custom configuration into Raclette’s default ESLint base, enabling a powerful and extendable linting system.
@@ -51,30 +49,28 @@ You can apply your own linting rules in two ways:
 1. In `eslint.config.mjs`
 
 ```js
-import { withRaclette } from './.raclette/eslint.config.mjs'
+import { withRaclette } from "./.raclette/eslint.config.mjs"
 
 export default withRaclette({
   rules: {
-    'indent': ['error', 4],
-    'quotes': ['error', 'single']
-  }
+    indent: ["error", 4],
+    quotes: ["error", "single"],
+  },
 })
 ```
 
-2. In [`raclette.config.js`](/guide/directory-structure/raclette-config.md)
+2. In [`raclette.config.js`](/docs/directory-structure/raclette-config.md)
 
 ```js
 export default {
   eslint: {
     useRecommended: true, // Set to false to disable Raclette defaults
     rules: {
-      'indent': ['error', 4],
-      'quotes': ['error', 'single']
+      indent: ["error", 4],
+      quotes: ["error", "single"],
     },
-    ignores: [
-      'legacy/**'
-    ]
-  }
+    ignores: ["legacy/**"],
+  },
 }
 ```
 
@@ -83,6 +79,6 @@ Both methods allow flexible override of base rules depending on your workflow.
 ::: warning
 
 - The ESLint configuration is auto-generated and located in the .raclette directory.
--	This directory should **not be edited manually**, as changes will be overwritten during builds.
+- This directory should **not be edited manually**, as changes will be overwritten during builds.
 
 :::

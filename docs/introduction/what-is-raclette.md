@@ -62,7 +62,7 @@ Raclette handles steps 1-4 out of the box. You handle your specific business req
 
 ## Next Steps
 
-Ready to build your platform? Start with the [Getting Started Guide](/guide/introduction/getting-started) or explore the [API Reference](/reference/raclette-config).
+Ready to build your platform? Start with the [Getting Started Guide](/docs/introduction/getting-started) or explore the [API Reference](/reference/raclette-config).
 
 :::tip Development Philosophy
 Raclette follows the principle: **Common patterns should be effortless, custom logic should be powerful**. We handle the infrastructure so you can focus on what makes your platform unique.

@@ -18,30 +18,30 @@ export default defineConfig({
     },
     siteTitle: false,
     nav: [
-      { text: "Guide", link: "/guide/introduction/getting-started" },
+      { text: "Docs", link: "/docs/introduction/getting-started" },
       { text: "Reference", link: "/reference/raclette-config" },
     ],
 
     sidebar: {
-      "/guide/": [
+      "/docs/": [
         {
           text: "Introduction",
           items: [
             {
               text: "What is raclette?",
-              link: "/guide/introduction/what-is-raclette",
+              link: "/docs/introduction/what-is-raclette",
             },
             {
               text: "Architecture Overview",
-              link: "/guide/introduction/architecture",
+              link: "/docs/introduction/architecture",
             },
             {
               text: "Getting Started",
-              link: "/guide/introduction/getting-started",
+              link: "/docs/introduction/getting-started",
             },
             {
               text: "Raclette CLI",
-              link: "/guide/introduction/cli-commands",
+              link: "/docs/introduction/cli-commands",
             },
           ],
         },
@@ -50,7 +50,7 @@ export default defineConfig({
           items: [
             {
               text: "Introduction",
-              link: "/guide/workbench/introduction",
+              link: "/docs/workbench/introduction",
             },
           ],
         },
@@ -59,19 +59,19 @@ export default defineConfig({
           items: [
             {
               text: "Plugin Metadata",
-              link: "/guide/plugin-development/metadata",
+              link: "/docs/plugin-development/metadata",
             },
             {
               text: "Plugin API",
-              link: "/guide/plugin-development/api",
+              link: "/docs/plugin-development/api",
             },
             {
               text: "Plugin Widgets",
-              link: "/guide/plugin-development/widgets",
+              link: "/docs/plugin-development/widgets",
             },
             {
               text: "Plugin Server-Side",
-              link: "/guide/plugin-development/server",
+              link: "/docs/plugin-development/server",
             },
             {
               text: "Examples",
@@ -83,7 +83,7 @@ export default defineConfig({
           items: [
             {
               text: "CLI Connector",
-              link: "/guide/official-plugins/cli-connector",
+              link: "/docs/official-plugins/cli-connector",
             },
           ],
         },
@@ -93,39 +93,39 @@ export default defineConfig({
           items: [
             {
               text: "📂 .raclette",
-              link: "/guide/directory-structure/raclette",
+              link: "/docs/directory-structure/raclette",
             },
             {
               text: "📂 node_modules",
-              link: "/guide/directory-structure/node_modules",
+              link: "/docs/directory-structure/node_modules",
             },
             {
               text: "📂 plugins",
-              link: "/guide/directory-structure/plugins",
+              link: "/docs/directory-structure/plugins",
             },
             {
               text: "🛠️ eslint.config.mjs",
-              link: "/guide/directory-structure/eslint-config",
+              link: "/docs/directory-structure/eslint-config",
             },
             {
               text: "⚙️ package.json",
-              link: "/guide/directory-structure/package",
+              link: "/docs/directory-structure/package",
             },
             {
               text: "⚙️ packages.json",
-              link: "/guide/directory-structure/packages",
+              link: "/docs/directory-structure/packages",
             },
             {
               text: "🛠️ raclette.config.js",
-              link: "/guide/directory-structure/raclette-config",
+              link: "/docs/directory-structure/raclette-config",
             },
             {
               text: "🛠️ tsconfig.json",
-              link: "/guide/directory-structure/tsconfig",
+              link: "/docs/directory-structure/tsconfig",
             },
             {
               text: "⚙️ .gitignore",
-              link: "/guide/directory-structure/gitignore",
+              link: "/docs/directory-structure/gitignore",
             },
           ],
         },
