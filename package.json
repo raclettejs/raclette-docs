@@ -1,7 +1,7 @@
 {
-  "name": "nuxt-app",
-  "private": true,
+  "name": "raclette-documentation",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",

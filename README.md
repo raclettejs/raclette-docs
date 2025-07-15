@@ -103,7 +103,7 @@ We welcome contributions to improve the documentation! Here's how you can help:
 
 ## 📄 License
 
-This documentation is open source and available under the [MIT License](LICENSE).
+This documentation is open source and available under the [MIT License](./LICENSE.md).
 
 ## 🤝 Support
 
