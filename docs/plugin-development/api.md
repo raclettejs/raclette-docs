@@ -1,6 +1,6 @@
 # Plugin Client API
 
-The client-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin.
+The client-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin. If you do not provide a `index.ts` file you will receive a default configured pluginApi based on your route definitions.
 
 ## Basic Usage
 
@@ -15,7 +15,7 @@ export default defineRaclettePluginClient({
     // Internationalization strings
   },
   data: {
-    // Data definitions
+    // Data definitions -> only necessary for non generated values. See client/generated-config.ts
   },
   exportComponents: {
     // Exported components
@@ -27,7 +27,7 @@ export default defineRaclettePluginClient({
 
 ### `install`
 
-The install function is called when the plugin is initialized. It receives two parameters that provide access to the Raclette installation and plugin APIs.
+The install function is called when the plugin is initialized. It receives two parameters that provide access to the Raclette installation and core APIs.
 
 ```typescript
 install: ($installApi: InstallApi, $corePluginApi: CorePluginApi) =>
@@ -43,17 +43,13 @@ install: ($installApi: InstallApi, $corePluginApi: CorePluginApi) =>
 - `addStoreEffect`: Add store effects
 - `dispatchStore`: Dispatch store actions
 
-**`$pluginApi`** provides access to plugin-specific APIs:
+**`$coreApi`** provides access to global core APIs:
 
-- `$eventbus`: Plugin-scoped event bus
-- `$globalEventbus`: Global event bus
-- `$store`: Plugin store API
-- `$log`: Plugin logging functionality
-- `$file`: File operations
-- `$data`: Plugin data methods
-- `error`: Error handling
-- `$socket`: Socket connections
-- `$i18n`: Internationalization helper
+- `$eventbus`: unscoped event bus
+- `$store`: global mini-rx store
+- `$log`: logging functionality
+- `$api`: contains the global axios and fetch interface
+- `$socket`: contains the global socket.io client
 
 **Example:**
 
@@ -129,7 +125,7 @@ data: {
 Each data definition includes:
 
 - `type`: The data type identifier
-- `operations`: Available operations (create, update, delete, etc.)
+- `operations`: Available operations (create, update, delete, getAll, myCustomEndpointName etc.)
 
 **Example:**
 
@@ -204,9 +200,9 @@ import WeatherWidget from "./components/WeatherWidget.vue"
 import WeatherCard from "./components/WeatherCard.vue"
 
 export default defineRaclettePluginClient({
-  install: async ($installApi, $pluginApi) => {
+  install: async ($installApi, $corePluginApi) => {
     // Initialize weather service
-    $pluginApi.$log.info("Initializing weather plugin")
+    $corePluginApi.$log.info("Initializing weather plugin")
 
     // Add weather data type
     $installApi.addDataType("weather", {
@@ -218,8 +214,8 @@ export default defineRaclettePluginClient({
     })
 
     // Setup error handling
-    $pluginApi.$eventbus.on("weather:error", (error) => {
-      $pluginApi.$log.error("Weather error:", error)
+    $corePluginApi.$eventbus.on("weather:error", (error) => {
+      $corePluginApi.$log.error("Weather error:", error)
     })
   },
   i18n: {
