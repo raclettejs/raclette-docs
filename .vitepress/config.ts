@@ -74,7 +74,18 @@ export default defineConfig({
               link: "/docs/plugin-development/server",
             },
             {
-              text: "Examples",
+              text: "Cookbook",
+              link: "/docs/examples/cookbook",
+              items: [
+                {
+                  text: "Recipes",
+                  link: "/docs/examples/recipes/introduction",
+                },
+                {
+                  text: "Cooking Steps",
+                  link: "/docs/examples/cooking-steps/introduction",
+                },
+              ],
             },
           ],
         },
