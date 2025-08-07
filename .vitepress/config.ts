@@ -80,10 +80,12 @@ export default defineConfig({
                 {
                   text: "Recipes",
                   link: "/docs/examples/recipes/introduction",
-                },
-                {
-                  text: "Cooking Steps",
-                  link: "/docs/examples/cooking-steps/introduction",
+                  items: [
+                    {
+                      text: "Reading Data from the server",
+                      link: "/docs/examples/recipes/readingMyDataFromTheServer",
+                    },
+                  ],
                 },
               ],
             },
