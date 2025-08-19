@@ -1,4 +1,4 @@
-# Reading Data from the Server
+# Writing Data to the Server
 
 **Estimated Time:** 10min
 **Difficulty:** Easy
@@ -22,8 +22,6 @@ At first we need to specify our dataType and what we want to query. For this Exa
 PLUGINNAME = "example-todoplugin"
 DATATYPE = "todo"
 ROUTENAME = "getAllTodos"
-ROUTEMETHOD = "get"
-
 ```
 
 ## Our Serverside Setup
@@ -34,9 +32,9 @@ ROUTEMETHOD = "get"
 
 In our `./plugins/PLUGINNAME/client/index.ts` we want to define our Raclette Plugin with our custom clientside endpoints.
 
-<!--@include: ../cooking-steps/client/plugin/routeDeclaration.md{STOREACTIONTYPE:dataPush}-->
+<!--@include: ../cooking-steps/client/plugin/routeDeclaration.md-->
 
-## Reading data in our widget
+## Creating data in our widget
 
 Now we can query our endpoint with the clientApi fron our component
 

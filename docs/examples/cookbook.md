@@ -1,1 +1,3 @@
-A collection of fully fletched examples grouped into recipes to
+# Introduction
+
+The cookbook will provide you a comprehensive list of examples based on reallife usecases we call "recipes".
