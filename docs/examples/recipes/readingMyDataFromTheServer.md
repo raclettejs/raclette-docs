@@ -23,7 +23,6 @@ PLUGINNAME = "example-todoplugin"
 DATATYPE = "todo"
 ROUTENAME = "getAllTodos"
 ROUTEMETHOD = "get"
-
 ```
 
 ## Our Serverside Setup
@@ -40,7 +39,7 @@ In our `./plugins/PLUGINNAME/client/index.ts` we want to define our Raclette Plu
 
 Now we can query our endpoint with the clientApi fron our component
 
-<!--@include: ../cooking-steps/client/api/pluginApiDataRead.md -->
+<!--@include: ../cooking-steps/client/api/pluginApiDataRead.md{RESPONSETYPE:json} -->
 
 ::: tip
 If you want to await the retrieval of your data, set immediate: false and use await execute()

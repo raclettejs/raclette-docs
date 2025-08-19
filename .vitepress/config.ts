@@ -85,10 +85,6 @@ export default defineConfig({
                       text: "Reading Data from the server",
                       link: "/docs/examples/recipes/readingMyDataFromTheServer",
                     },
-                    {
-                      text: "Creating Data on the server",
-                      link: "/docs/examples/recipes/creatingMyDataOnTheServer",
-                    },
                   ],
                 },
               ],

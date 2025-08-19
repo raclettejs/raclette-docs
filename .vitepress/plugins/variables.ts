@@ -35,7 +35,6 @@ function parseVariablesBlock(content: string): Variables {
       let value = match[2]
 
       // Check if this might be a multiline value
-      // Indicators: starts with ( or { or [ or has unmatched brackets/parens
       if (isStartOfMultilineValue(value)) {
         // Collect lines until we have a complete value
         const multilineResult = collectMultilineValue(lines, i)
@@ -51,7 +50,7 @@ function parseVariablesBlock(content: string): Variables {
       } catch {
         // For non-JSON values, check if it's a function or keep as string
         if (value.trim().startsWith("(") && value.includes("=>")) {
-          // Likely a function, keep as string but clean up
+          // It's a function, keep the entire function as string
           variables[key] = value.trim()
         } else {
           // Remove quotes if it's a simple string
@@ -82,15 +81,39 @@ function isStartOfMultilineValue(value: string): boolean {
   if (trimmed.startsWith("[") && !hasMatchingClosing(trimmed, "[", "]"))
     return true
 
+  // Special case for functions that might span multiple lines
+  if (trimmed.includes("=>") && !hasMatchingClosing(trimmed, "{", "}"))
+    return true
+
   return false
 }
 
 // Check if brackets/parens are properly closed
 function hasMatchingClosing(str: string, open: string, close: string): boolean {
   let count = 0
-  for (const char of str) {
-    if (char === open) count++
-    if (char === close) count--
+  let inString = false
+  let stringChar = ""
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i]
+    const prevChar = i > 0 ? str[i - 1] : ""
+
+    // Handle string literals
+    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
+      if (!inString) {
+        inString = true
+        stringChar = char
+      } else if (char === stringChar) {
+        inString = false
+        stringChar = ""
+      }
+    }
+
+    // Only count brackets outside of strings
+    if (!inString) {
+      if (char === open) count++
+      if (char === close) count--
+    }
   }
   return count === 0
 }
@@ -107,15 +130,32 @@ function collectMultilineValue(
   let i = startIndex + 1
   let openCount = 0
   let hasOpenBracket = false
+  let inString = false
+  let stringChar = ""
 
-  // Count initial open brackets/parens
-  for (const char of value) {
-    if (char === "(" || char === "{" || char === "[") {
-      openCount++
-      hasOpenBracket = true
+  // Count initial open brackets/parens, accounting for strings
+  for (let j = 0; j < value.length; j++) {
+    const char = value[j]
+    const prevChar = j > 0 ? value[j - 1] : ""
+
+    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
+      if (!inString) {
+        inString = true
+        stringChar = char
+      } else if (char === stringChar) {
+        inString = false
+        stringChar = ""
+      }
     }
-    if (char === ")" || char === "}" || char === "]") {
-      openCount--
+
+    if (!inString) {
+      if (char === "(" || char === "{" || char === "[") {
+        openCount++
+        hasOpenBracket = true
+      }
+      if (char === ")" || char === "}" || char === "]") {
+        openCount--
+      }
     }
   }
 
@@ -129,9 +169,8 @@ function collectMultilineValue(
         break
       }
 
-      // Stop if we hit a comment or empty line followed by a variable
+      // Stop if we hit a comment followed by a variable
       if (line.startsWith("//") || line.startsWith("#")) {
-        // Check if next non-comment line is a variable
         let j = i + 1
         while (
           j < lines.length &&
@@ -155,13 +194,34 @@ function collectMultilineValue(
       const line = lines[i]
       value += "\n" + line
 
-      // Count brackets in this line
-      for (const char of line) {
-        if (char === "(" || char === "{" || char === "[") {
-          openCount++
+      // Count brackets in this line, accounting for strings
+      inString = false
+      stringChar = ""
+
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j]
+        const prevChar = j > 0 ? line[j - 1] : ""
+
+        if (
+          (char === '"' || char === "'" || char === "`") &&
+          prevChar !== "\\"
+        ) {
+          if (!inString) {
+            inString = true
+            stringChar = char
+          } else if (char === stringChar) {
+            inString = false
+            stringChar = ""
+          }
         }
-        if (char === ")" || char === "}" || char === "]") {
-          openCount--
+
+        if (!inString) {
+          if (char === "(" || char === "{" || char === "[") {
+            openCount++
+          }
+          if (char === ")" || char === "}" || char === "]") {
+            openCount--
+          }
         }
       }
 
@@ -176,19 +236,55 @@ function collectMultilineValue(
 function renderVariablesDisplay(variables: Variables): string {
   const rows = Object.entries(variables)
     .map(([key, value]) => {
-      const displayValue =
-        typeof value === "string"
-          ? `"${value}"`
-          : JSON.stringify(value, null, 2)
-      return `| ${key} | \`${displayValue}\` |`
+      let displayValue: string
+      if (typeof value === "string") {
+        // Escape HTML entities for proper display
+        const escapedValue = value
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+
+        // Check if it's multiline
+        if (value.includes("\n")) {
+          // For multiline content, use <pre> tag to preserve formatting (no quotes for multiline)
+          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; background: #f6f8fa; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedValue}</code></pre>`
+        } else {
+          displayValue = `<code style="background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">"${escapedValue}"</code>`
+        }
+      } else {
+        const jsonValue = JSON.stringify(value, null, 2)
+        const escapedJson = jsonValue
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+
+        if (jsonValue.includes("\n")) {
+          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; background: #f6f8fa; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedJson}</code></pre>`
+        } else {
+          displayValue = `<code style="background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${escapedJson}</code>`
+        }
+      }
+
+      return `  <tr>
+    <td style="padding: 12px; border: 1px solid #d0d7de; vertical-align: top;"><strong>${key}</strong></td>
+    <td style="padding: 12px; border: 1px solid #d0d7de; vertical-align: top;">${displayValue}</td>
+  </tr>`
     })
     .join("\n")
 
   return `
 <!-- VARIABLES_TABLE_START -->
-| Variable | Value |
-|----------|-------|
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <thead>
+    <tr style="background-color: #f6f8fa;">
+      <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Variable</th>
+      <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Value</th>
+    </tr>
+  </thead>
+  <tbody>
 ${rows}
+  </tbody>
+</table>
 <!-- VARIABLES_TABLE_END -->
 `
 }
@@ -198,8 +294,9 @@ function substituteVariables(content: string, variables: Variables): string {
   let processedContent = content
 
   // First, handle fallback syntax: ${VARIABLE_NAME:fallback_value}
+  // This needs to handle nested braces properly for complex fallback values
   processedContent = processedContent.replace(
-    /\$\{(\w+):([^}]+)\}/g,
+    /\$\{(\w+):((?:[^{}]|{[^}]*})*)\}/g,
     (match, varName, fallback) => {
       if (variables.hasOwnProperty(varName)) {
         const value = variables[varName]
@@ -224,7 +321,7 @@ function substituteVariables(content: string, variables: Variables): string {
 
     for (let i = 0; i < parts.length; i += 2) {
       // Only process non-table parts (even indices)
-      // Use word boundary but avoid replacing variables that are part of fallback syntax
+      // Use word boundary but avoid replacing variables that are part of fallback syntax that wasn't already processed
       parts[i] = parts[i].replace(
         new RegExp(`(?<!\\$\\{[^}]*?)\\b${key}\\b(?![^}]*?\\})`, "g"),
         displayValue
@@ -269,45 +366,6 @@ function parseInlineVariables(overrideStr: string): Variables {
   return variables
 }
 
-// Process @include statements
-function processIncludes(content: string, context: ProcessContext): string {
-  return content.replace(
-    /@include:\s*([^{]+)(\{[^}]+\})?/g,
-    (match, includePath, overrides) => {
-      try {
-        const fullPath = path.resolve(
-          path.dirname(context.filePath),
-          includePath.trim()
-        )
-
-        if (!fs.existsSync(fullPath)) {
-          console.warn(`Include file not found: ${fullPath}`)
-          return `<!-- Include file not found: ${includePath} -->`
-        }
-
-        const includeContent = fs.readFileSync(fullPath, "utf-8")
-
-        // Parse inline variable overrides if provided
-        let includeVariables = { ...context.variables }
-        if (overrides) {
-          const inlineVars = parseInlineVariables(overrides)
-          includeVariables = { ...includeVariables, ...inlineVars }
-        }
-
-        // Process the included content with merged variables
-        return processMarkdownContent(includeContent, {
-          variables: includeVariables,
-          filePath: fullPath,
-          rootDir: context.rootDir,
-        })
-      } catch (error) {
-        console.error(`Error processing include ${includePath}:`, error)
-        return `<!-- Error processing include: ${includePath} -->`
-      }
-    }
-  )
-}
-
 // Main content processing function
 function processMarkdownContent(
   content: string,
@@ -319,18 +377,6 @@ function processMarkdownContent(
   // Process content in order: variables blocks, includes, then substitution
   // This ensures proper scoping where variables only affect content after their definition
 
-  const parts: Array<{
-    type: "text" | "variables" | "include"
-    content: string
-    variables?: Variables
-  }> = []
-  let lastIndex = 0
-
-  // First, find all variables blocks and includes in order
-  const variablesRegex = /```variables\n([\s\S]*?)\n```/g
-  const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[^}]+\})?\s*-->/g
-
-  let match
   const allMatches: Array<{
     type: "variables" | "include"
     match: RegExpExecArray
@@ -338,14 +384,15 @@ function processMarkdownContent(
   }> = []
 
   // Collect all variables blocks
+  const variablesRegex = /```variables\n([\s\S]*?)\n```/g
+  let match
   while ((match = variablesRegex.exec(content)) !== null) {
     allMatches.push({ type: "variables", match, index: match.index })
   }
 
-  // Reset regex
-  includeRegex.lastIndex = 0
-
   // Collect all includes
+  const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[^}]+\})?\s*-->/g
+  includeRegex.lastIndex = 0
   while ((match = includeRegex.exec(content)) !== null) {
     allMatches.push({ type: "include", match, index: match.index })
   }
@@ -356,6 +403,7 @@ function processMarkdownContent(
   // Process content sequentially
   let workingContent = content
   let offset = 0
+  let lastProcessedIndex = 0
 
   for (const item of allMatches) {
     if (item.type === "variables") {
@@ -363,16 +411,33 @@ function processMarkdownContent(
       const newVariables = parseVariablesBlock(variablesContent)
       currentVariables = { ...currentVariables, ...newVariables }
 
+      // Apply variables to the content between last processed position and current variables block
+      const beforeVariables = workingContent.substring(
+        lastProcessedIndex,
+        item.match.index - offset
+      )
+      const processedBefore = substituteVariables(
+        beforeVariables,
+        currentVariables
+      )
+
       // Replace variables block with display
       const replacement = renderVariablesDisplay(newVariables)
       const start = item.match.index - offset
       const end = start + item.match[0].length
 
       workingContent =
-        workingContent.substring(0, start) +
+        workingContent.substring(0, lastProcessedIndex) +
+        processedBefore +
         replacement +
         workingContent.substring(end)
-      offset += item.match[0].length - replacement.length
+
+      const lengthDiff =
+        processedBefore.length +
+        replacement.length -
+        (beforeVariables.length + item.match[0].length)
+      offset -= lengthDiff
+      lastProcessedIndex = start + replacement.length
     } else if (item.type === "include") {
       const includePath = item.match[1].trim()
       const overrides = item.match[2]
@@ -404,23 +469,48 @@ function processMarkdownContent(
           rootDir: context.rootDir,
         })
 
+        // Apply variables to content before this include
+        const beforeInclude = workingContent.substring(
+          lastProcessedIndex,
+          item.match.index - offset
+        )
+        const processedBefore = substituteVariables(
+          beforeInclude,
+          currentVariables
+        )
+
         // Replace include with processed content
         const start = item.match.index - offset
         const end = start + item.match[0].length
 
         workingContent =
-          workingContent.substring(0, start) +
+          workingContent.substring(0, lastProcessedIndex) +
+          processedBefore +
           processedInclude +
           workingContent.substring(end)
-        offset += item.match[0].length - processedInclude.length
+
+        const lengthDiff =
+          processedBefore.length +
+          processedInclude.length -
+          (beforeInclude.length + item.match[0].length)
+        offset -= lengthDiff
+        lastProcessedIndex = start + processedInclude.length
       } catch (error) {
         console.error(`Error processing include ${includePath}:`, error)
       }
     }
   }
 
-  // Finally, substitute variables in the remaining content
-  workingContent = substituteVariables(workingContent, currentVariables)
+  // Process any remaining content after the last match
+  if (lastProcessedIndex < workingContent.length) {
+    const remainingContent = workingContent.substring(lastProcessedIndex)
+    const processedRemaining = substituteVariables(
+      remainingContent,
+      currentVariables
+    )
+    workingContent =
+      workingContent.substring(0, lastProcessedIndex) + processedRemaining
+  }
 
   return workingContent
 }

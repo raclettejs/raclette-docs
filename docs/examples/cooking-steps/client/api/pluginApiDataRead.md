@@ -3,12 +3,12 @@ const { $data } = usePluginApi()
 const { data, query, execute, isLoading, error } = $data.${DATATYPE:user}.${ROUTENAME:getAll}({
   params: ${QUERY_PARAMS:null},
   options: {
-    immediate: ${IMMEDIATE:false},
+    immediate: ${IMMEDIATE:false | true},
     cb: ${CALLBACK:(result) => {}},
-    useStore: ${USESTORE:true},
-    notify: ${NOTIFY:true},
+    useStore: ${USESTORE:true | false},
+    notify: ${NOTIFY:true | false},
     responseType: "${RESPONSETYPE:json | stream}",
-    mode: ${MODE:"cors"},
+    mode: ${MODE:"none" | "cors"},
   },
 })
 ```
