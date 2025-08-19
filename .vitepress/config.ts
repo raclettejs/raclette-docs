@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress"
+import { createVariablesConfig } from "./plugins/variables"
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -9,7 +10,7 @@ export default defineConfig({
 
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
-
+  markdown: createVariablesConfig(),
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
@@ -74,7 +75,19 @@ export default defineConfig({
               link: "/docs/plugin-development/server",
             },
             {
-              text: "Examples",
+              text: "Cookbook",
+              link: "/docs/examples/cookbook",
+              items: [
+                {
+                  text: "Recipes",
+                  items: [
+                    {
+                      text: "Reading Data from the server",
+                      link: "/docs/examples/recipes/readingMyDataFromTheServer",
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -145,7 +158,12 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/vuejs/vitepress" },
+      { icon: "gitlab", link: "https://gitlab.com/raclettejs" },
+      { icon: "github", link: "https://github.com/raclettejs" },
+      {
+        icon: "linkedin",
+        link: "https://www.linkedin.com/company/pacifico-digital-explorations-gmbh",
+      },
     ],
 
     search: {
