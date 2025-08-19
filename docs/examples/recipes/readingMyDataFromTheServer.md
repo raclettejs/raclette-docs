@@ -42,11 +42,5 @@ Now we can query our endpoint with the clientApi fron our component
 <!--@include: ../cooking-steps/client/api/pluginApiDataRead.md{RESPONSETYPE:json} -->
 
 ::: tip
-If you want to await the retrieval of your data, set immediate: false and use await execute()
+If you want to await the retrieval of your data, set immediate: false and use `await execute()`
 :::
-
-## What's Next
-
-- [Add User Authentication](docs.raclettejs.com)
-- [Implement Offline Support](docs.raclettejs.com)
-- [Create Plugin Documentation](docs.raclettejs.com)
