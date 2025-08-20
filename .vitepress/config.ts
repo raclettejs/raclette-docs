@@ -7,7 +7,6 @@ export default defineConfig({
   description: "Documentation of the awesome raclette framework.",
   lang: "en-EU",
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
-
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
   markdown: createVariablesConfig(),
@@ -82,8 +81,16 @@ export default defineConfig({
                   text: "Recipes",
                   items: [
                     {
+                      text: "Setting up a Todo Plugin",
+                      link: "/docs/examples/recipes/settingUpATodoPlugin",
+                    },
+                    {
+                      text: "Creating Data on the server",
+                      link: "/docs/examples/recipes/creatingDataOnTheServer",
+                    },
+                    {
                       text: "Reading Data from the server",
-                      link: "/docs/examples/recipes/readingMyDataFromTheServer",
+                      link: "/docs/examples/recipes/readingDataFromTheServer",
                     },
                   ],
                 },
