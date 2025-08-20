@@ -1,6 +1,6 @@
 ```typescript
 const { $data, [...] } = usePluginApi()
-const { ${DATAALIAS:data}, ${QUERYALIAS:query}, ${EXECUTEALIAS:execute}, ${ISLOADINGALIAS:isLoading},${ERRORALIAS:error} } = $data.${DATATYPE:example}.${ROUTENAME:getAll}({
+const { ${DATAALIAS:data}, ${QUERYALIAS:query}, ${EXECUTEALIAS:execute}, ${ISLOADINGALIAS:isLoading}, ${ERRORALIAS:error} } = $data.${DATATYPE:example}.${ROUTENAME:getAll}({
   params: ${QUERY_PARAMS:null},
   options: {
     immediate: ${IMMEDIATE:false | true},
