@@ -1,3 +1,5 @@
+<!--@include: ../wip.md-->
+
 # Writing Data to the Server
 
 **Estimated Time:** 10min
@@ -6,7 +8,7 @@
 
 ## Context
 
-Will teach you how to declare a route and how to create data with it
+Will teach you how to declare a dataType and it's route and how to create data with it
 
 ## Prerequisites
 
@@ -27,11 +29,27 @@ ROUTEMETHOD = "post"
 
 ## Our Serverside Setup
 
-## Declare route on the server side
+## Declare a Schema
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}model.ts` we want to define our Data model.
+In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.schema.ts` we want to define our Data Schema.
+
+<!--@include: ../cooking-steps/server/plugin/schema.md{SCHEMANAME:Todo}-->
+
+## Declare Model
+
+In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.model.ts` we want to define our Data model.
 
 <!--@include: ../cooking-steps/server/plugin/model.md{SCHEMANAME:Todo}-->
+
+## Declare route on the server side
+
+In our `./plugins/${PLUGINNAME:example-plugin}/server/plugin/routes.ts` we want to define our Create route.
+
+<!--@include: ../cooking-steps/server/plugin/singleRoute.md-->
+
+In this example we want to provide a very simple create logic. See the best practice section for a fully fletched best practice example
+
+<!--@include: ../cooking-steps/server/plugin/logics/create.md-->
 
 ## Declare route on the client side
 

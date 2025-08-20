@@ -3,22 +3,21 @@ import type { PluginFastifyInstance } from "@raclettejs/raclette-core"
 import type { Document } from "mongoose"
 import { Schema } from "mongoose"
 import { v4 as uuidv4 } from "uuid"
-import { ${SCHEMANAME:Todo} } from "./${DATATYPE:todo}.schema"
+import { ${SCHEMANAME:Example} } from "./${DATATYPE:example}.schema"
 
 // this will be used to generate the modelName dynamically
-export const MODEL_BASENAME = "${SCHEMANAME:Todo}"
+export const MODEL_BASENAME = "${SCHEMANAME:Example}"
 
 
-export interface ${SCHEMANAME:Todo} extends Document<string, unknown, ${SCHEMANAME:Todo}> {
+export interface ${SCHEMANAME:Example} extends Document<string, unknown, ${SCHEMANAME:Example}> {
   name: string
-  content: string
   isDeleted: boolean
   tags: Array<string>
   owner: string
   lastEditor: string
 }
 
-const ${SCHEMANAME:Todo}Schema: Schema = new Schema(
+const ${SCHEMANAME:Example}Schema: Schema = new Schema(
   {
     _id: {
       type: String,
@@ -27,7 +26,6 @@ const ${SCHEMANAME:Todo}Schema: Schema = new Schema(
     },
     name: { type: String, required: true },
     isDeleted: { type: Boolean, required: false, default: false },
-    content: { type: String, required: false },
     tags: { type: Array, required: false },
     owner: {
       type: Schema.Types.String,
@@ -43,14 +41,14 @@ const ${SCHEMANAME:Todo}Schema: Schema = new Schema(
   },
   { timestamps: true },
 )
-let ${DATATYPE:todo}Model
+let ${DATATYPE:example}Model
 export const createModels = (fastify: PluginFastifyInstance) => {
   // we call the createModel function from the app instance
   // this will handle all necessary prefixing
-  ${DATATYPE:todo}Model = fastify.createModel(MODEL_BASENAME, ${SCHEMANAME:Todo}Schema)
+  ${DATATYPE:example}Model = fastify.createModel(MODEL_BASENAME, ${SCHEMANAME:Example}Schema)
 
   return {
-    ${DATATYPE:todo}: ${DATATYPE:todo}Model,
+    ${DATATYPE:example}: ${DATATYPE:example}Model,
   }
 }
 export default todoModel
