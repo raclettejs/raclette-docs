@@ -13,8 +13,8 @@ export const registerRoutes = async (fastify: PluginFastifyInstance) => {
     },
     onRequest: [fastify.authenticate],
     config: {
-      type: "dataCreate",
-      broadcastChannels: ["${DATATYPE:example}Created"],
+      type: "${STOREACTIONTYPE:dataUpdate}",
+      broadcastChannels: ["${BROADCASTCHANNELS:example}Created"],
     },
     schema: {
       summary: "Example Route",
