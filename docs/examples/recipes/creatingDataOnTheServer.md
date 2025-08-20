@@ -19,7 +19,6 @@ Will teach you how to create an Item for the previous defined DataType
 PLUGINNAME: example-todoplugin
 DATATYPE: todo
 SCHEMANAME: Todo
-BROADCASTCHANNELS: todoCreated
 STOREACTIONTYPE: dataCreate
 BODYSCHEMA: todoCreateSchema
 ROUTENAME: create
@@ -77,9 +76,8 @@ BUSINESSLOGIC: |
         const ${DATATYPE:example} = await this._create${SCHEMANAME:Example}(fastify, ${DATATYPE:example}Body)
 
         const payload = await create${SCHEMANAME:Example}Payload(fastify, [${DATATYPE:example}], requestData)
-
         if (requestData.broadcast) {
-          fastify.emit("${BROADCASTCHANNELS:exampleCreated}", payload)
+          fastify.emit("${DATATYPE:example}Created", payload)
         }
 
         return payload
