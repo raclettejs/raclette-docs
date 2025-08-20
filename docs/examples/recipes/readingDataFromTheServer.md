@@ -16,28 +16,16 @@ Will teach you how to read your previousely defined and created dataItems
 - You have finished the setting up a todo plugin example and it's up and running
 - You have created some todo items during the creating data on the server example
 
-```variables-hide-table
+```variables
 PLUGINNAME: example-todoplugin
 DATATYPE: todo
 BROADCASTCHANNELS: todoUpdated
 STOREACTIONTYPE: dataPush
 BODYSCHEMA: todoUpdateSchema
-ROUTENAME: getAllTodos
+ROUTENAME: getAll${SCHEMANAME:Example}s
 ROUTEMETHOD: get
 RESPONSETYPE: json
 ```
-
-## Declare route on the server side
-
-In our `./plugins/${PLUGINNAME:example-plugin}/server/plugin/routes.ts` we want to define our Create route.
-
-<!--@include: ../cooking-steps/server/plugin/singleRoute.md-->
-
-## Declare route on the client side
-
-In our `./plugins/${PLUGINNAME:example-plugin}/client/index.ts` we want to define our Raclette Plugin with our custom clientside endpoints.
-
-<!--@include: ../cooking-steps/client/plugin/routeDeclaration.md-->
 
 ## Reading data in our widget
 

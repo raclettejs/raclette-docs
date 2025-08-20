@@ -5,7 +5,7 @@ import type {
 } from "./${DATATYPE:example}.schema"
 import type { QueryOptions } from "@_/types/service"
 import { v4 as uuidv4, validate } from "uuid"
-import { createTodoPayload } from "./helpers/${SCHEMANAME:Example}Helper"
+import { createTodoPayload } from "./helpers/${DATATYPE:example}Helper"
 import type {
   PluginFastifyInstance,
   ClientPayload,
