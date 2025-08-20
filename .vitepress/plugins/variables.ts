@@ -2,6 +2,7 @@
 import type { MarkdownRenderer } from "vitepress"
 import fs from "fs"
 import path from "path"
+import yaml from "js-yaml"
 
 interface Variables {
   [key: string]: any
@@ -13,531 +14,535 @@ interface ProcessContext {
   rootDir: string
 }
 
-// Parse variables from a variables code block
-function parseVariablesBlock(content: string): Variables {
-  const variables: Variables = {}
-  const lines = content.trim().split("\n")
+interface ParsedBlock {
+  type: "variables" | "include"
+  start: number
+  end: number
+  content: string
+  data?: any
+}
 
-  let i = 0
-  while (i < lines.length) {
-    const line = lines[i].trim()
+// Modern YAML-based variables parser
+class VariablesParser {
+  parseVariablesBlock(content: string): Variables {
+    try {
+      // Try YAML first (more robust)
+      const parsed = (yaml.load(content) as Variables) || {}
 
-    // Skip empty lines and comments
-    if (!line || line.startsWith("//") || line.startsWith("#")) {
-      i++
-      continue
+      // Post-process to handle function strings
+      return this.processFunctions(parsed)
+    } catch (yamlError) {
+      console.warn("Failed to parse as YAML, trying legacy format:", yamlError)
+      return this.parseLegacyFormat(content)
+    }
+  }
+
+  private processFunctions(variables: Variables): Variables {
+    const processed: Variables = {}
+
+    for (const [key, value] of Object.entries(variables)) {
+      if (typeof value === "string" && this.looksLikeFunction(value)) {
+        // Keep function as string but mark it as a function
+        processed[key] = value.trim()
+      } else {
+        processed[key] = value
+      }
     }
 
-    // Match: VARIABLE_NAME = value (start of assignment)
-    const match = line.match(/^(\w+)\s*=\s*(.*)$/)
-    if (match) {
-      const key = match[1]
-      let value = match[2]
+    return processed
+  }
 
-      // Check if this might be a multiline value
-      if (isStartOfMultilineValue(value)) {
-        // Collect lines until we have a complete value
-        const multilineResult = collectMultilineValue(lines, i)
-        value = multilineResult.value
-        i = multilineResult.nextIndex
-      } else {
-        i++
-      }
+  private looksLikeFunction(value: string): boolean {
+    const trimmed = value.trim()
+    return (
+      // Arrow functions
+      trimmed.includes("=>") ||
+      // Traditional functions
+      trimmed.startsWith("function") ||
+      // Async functions
+      trimmed.startsWith("async") ||
+      // Parentheses start (likely parameters)
+      /^\([^)]*\)\s*=>/.test(trimmed)
+    )
+  }
 
-      // Try to parse the complete value
+  // Fallback for your current format
+  private parseLegacyFormat(content: string): Variables {
+    const variables: Variables = {}
+
+    // Use a more robust approach - split into logical units
+    const assignments = this.extractAssignments(content)
+
+    for (const assignment of assignments) {
+      const { key, value } = assignment
       try {
+        // Try JSON parsing first
         variables[key] = JSON.parse(value)
       } catch {
-        // For non-JSON values, check if it's a function or keep as string
-        if (value.trim().startsWith("(") && value.includes("=>")) {
-          // It's a function, keep the entire function as string
+        // Handle function syntax and plain strings
+        if (this.looksLikeFunction(value)) {
           variables[key] = value.trim()
         } else {
-          // Remove quotes if it's a simple string
-          const cleanValue = value.replace(/^["']|["']$/g, "")
-          variables[key] = cleanValue
+          variables[key] = value.replace(/^["']|["']$/g, "")
         }
       }
-    } else {
-      i++
     }
+
+    return variables
   }
 
-  return variables
-}
+  private extractAssignments(
+    content: string
+  ): Array<{ key: string; value: string }> {
+    const assignments: Array<{ key: string; value: string }> = []
+    const lines = content.split("\n")
 
-// Check if a value might be multiline
-function isStartOfMultilineValue(value: string): boolean {
-  const trimmed = value.trim()
-
-  // Empty value followed by content on next lines
-  if (!trimmed) return true
-
-  // Starts with opening bracket/paren but doesn't close on same line
-  if (trimmed.startsWith("(") && !hasMatchingClosing(trimmed, "(", ")"))
-    return true
-  if (trimmed.startsWith("{") && !hasMatchingClosing(trimmed, "{", "}"))
-    return true
-  if (trimmed.startsWith("[") && !hasMatchingClosing(trimmed, "[", "]"))
-    return true
-
-  // Special case for functions that might span multiple lines
-  if (trimmed.includes("=>") && !hasMatchingClosing(trimmed, "{", "}"))
-    return true
-
-  return false
-}
-
-// Check if brackets/parens are properly closed
-function hasMatchingClosing(str: string, open: string, close: string): boolean {
-  let count = 0
-  let inString = false
-  let stringChar = ""
-
-  for (let i = 0; i < str.length; i++) {
-    const char = str[i]
-    const prevChar = i > 0 ? str[i - 1] : ""
-
-    // Handle string literals
-    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
-      if (!inString) {
-        inString = true
-        stringChar = char
-      } else if (char === stringChar) {
-        inString = false
-        stringChar = ""
-      }
-    }
-
-    // Only count brackets outside of strings
-    if (!inString) {
-      if (char === open) count++
-      if (char === close) count--
-    }
-  }
-  return count === 0
-}
-
-// Collect lines until we have a complete multiline value
-function collectMultilineValue(
-  lines: string[],
-  startIndex: number
-): { value: string; nextIndex: number } {
-  const firstLine = lines[startIndex]
-  const match = firstLine.match(/^(\w+)\s*=\s*(.*)$/)
-  let value = match ? match[2] : ""
-
-  let i = startIndex + 1
-  let openCount = 0
-  let hasOpenBracket = false
-  let inString = false
-  let stringChar = ""
-
-  // Count initial open brackets/parens, accounting for strings
-  for (let j = 0; j < value.length; j++) {
-    const char = value[j]
-    const prevChar = j > 0 ? value[j - 1] : ""
-
-    if ((char === '"' || char === "'" || char === "`") && prevChar !== "\\") {
-      if (!inString) {
-        inString = true
-        stringChar = char
-      } else if (char === stringChar) {
-        inString = false
-        stringChar = ""
-      }
-    }
-
-    if (!inString) {
-      if (char === "(" || char === "{" || char === "[") {
-        openCount++
-        hasOpenBracket = true
-      }
-      if (char === ")" || char === "}" || char === "]") {
-        openCount--
-      }
-    }
-  }
-
-  // If no brackets and value is empty, collect until next variable or end
-  if (!hasOpenBracket && !value.trim()) {
+    let i = 0
     while (i < lines.length) {
       const line = lines[i].trim()
 
-      // Stop if we hit another variable definition
-      if (line.match(/^\w+\s*=/)) {
-        break
+      if (!line || line.startsWith("//") || line.startsWith("#")) {
+        i++
+        continue
       }
 
-      // Stop if we hit a comment followed by a variable
-      if (line.startsWith("//") || line.startsWith("#")) {
-        let j = i + 1
-        while (
-          j < lines.length &&
-          (lines[j].trim() === "" ||
-            lines[j].trim().startsWith("//") ||
-            lines[j].trim().startsWith("#"))
-        ) {
-          j++
-        }
-        if (j < lines.length && lines[j].trim().match(/^\w+\s*=/)) {
-          break
-        }
-      }
+      const match = line.match(/^(\w+)\s*=\s*(.*)$/)
+      if (match) {
+        const key = match[1]
+        let value = match[2]
 
-      value += "\n" + lines[i]
+        // Simple multiline detection
+        if (this.needsMoreLines(value)) {
+          const multilineResult = this.collectMultilineValue(lines, i, key)
+          value = multilineResult.value
+          i = multilineResult.nextIndex
+        } else {
+          i++
+        }
+
+        assignments.push({ key, value })
+      } else {
+        i++
+      }
+    }
+
+    return assignments
+  }
+
+  private needsMoreLines(value: string): boolean {
+    const trimmed = value.trim()
+    if (!trimmed) return true
+
+    // Count brackets
+    const brackets = { "(": 0, "{": 0, "[": 0 }
+    let inString = false
+    let stringChar = ""
+
+    for (const char of trimmed) {
+      if ((char === '"' || char === "'" || char === "`") && !inString) {
+        inString = true
+        stringChar = char
+      } else if (char === stringChar && inString) {
+        inString = false
+      } else if (!inString) {
+        if (char === "(" || char === "{" || char === "[") {
+          brackets[char as keyof typeof brackets]++
+        } else if (char === ")") brackets["("]--
+        else if (char === "}") brackets["{"]--
+        else if (char === "]") brackets["["]--
+      }
+    }
+
+    return Object.values(brackets).some((count) => count > 0)
+  }
+
+  private collectMultilineValue(
+    lines: string[],
+    startIndex: number,
+    key: string
+  ): { value: string; nextIndex: number } {
+    const firstLine = lines[startIndex]
+    const match = firstLine.match(/^(\w+)\s*=\s*(.*)$/)
+    let value = match ? match[2] : ""
+
+    let i = startIndex + 1
+    while (i < lines.length && this.needsMoreLines(value)) {
+      const line = lines[i]
+
+      // Stop at next variable definition
+      if (line.trim().match(/^\w+\s*=/)) break
+
+      value += "\n" + line
       i++
     }
-  } else {
-    // Collect lines until brackets are balanced
-    while (i < lines.length && openCount > 0) {
-      const line = lines[i]
-      value += "\n" + line
 
-      // Count brackets in this line, accounting for strings
-      inString = false
-      stringChar = ""
+    return { value: value.trim(), nextIndex: i }
+  }
+}
 
-      for (let j = 0; j < line.length; j++) {
-        const char = line[j]
-        const prevChar = j > 0 ? line[j - 1] : ""
+// Content processor with better separation of concerns
+class ContentProcessor {
+  private parser = new VariablesParser()
 
-        if (
-          (char === '"' || char === "'" || char === "`") &&
-          prevChar !== "\\"
-        ) {
-          if (!inString) {
-            inString = true
-            stringChar = char
-          } else if (char === stringChar) {
-            inString = false
-            stringChar = ""
-          }
-        }
+  processContent(content: string, context: ProcessContext): string {
+    // Parse all blocks first
+    const blocks = this.parseBlocks(content)
 
-        if (!inString) {
-          if (char === "(" || char === "{" || char === "[") {
-            openCount++
-          }
-          if (char === ")" || char === "}" || char === "]") {
-            openCount--
-          }
+    // Process blocks in reverse order to maintain indices
+    let processedContent = content
+    let currentVariables = { ...context.variables }
+
+    // Forward pass to build variable context
+    for (const block of blocks) {
+      if (block.type === "variables") {
+        const blockVars = this.parser.parseVariablesBlock(block.content)
+        currentVariables = { ...currentVariables, ...blockVars }
+        block.data = { variables: blockVars, context: currentVariables }
+      } else if (block.type === "include") {
+        block.data = { context: currentVariables }
+      }
+    }
+
+    // Backward pass to replace content
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      const block = blocks[i]
+      let replacement = ""
+
+      if (block.type === "variables") {
+        replacement = this.renderVariablesDisplay(block.data.variables)
+      } else if (block.type === "include") {
+        replacement = this.processInclude(block, context)
+      }
+
+      processedContent =
+        processedContent.substring(0, block.start) +
+        replacement +
+        processedContent.substring(block.end)
+    }
+
+    // Apply variable substitution to the final content
+    return this.substituteVariables(processedContent, currentVariables)
+  }
+
+  private parseBlocks(content: string): ParsedBlock[] {
+    const blocks: ParsedBlock[] = []
+
+    // Variables blocks
+    const variablesRegex = /```(?:variables|vars)\n([\s\S]*?)\n```/g
+    let match
+    while ((match = variablesRegex.exec(content)) !== null) {
+      blocks.push({
+        type: "variables",
+        start: match.index,
+        end: match.index + match[0].length,
+        content: match[1],
+      })
+    }
+
+    // Include blocks
+    const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[^}]+\})?\s*-->/g
+    while ((match = includeRegex.exec(content)) !== null) {
+      blocks.push({
+        type: "include",
+        start: match.index,
+        end: match.index + match[0].length,
+        content: match[1].trim(),
+        data: { overrides: match[2] },
+      })
+    }
+
+    return blocks.sort((a, b) => a.start - b.start)
+  }
+
+  private processInclude(block: ParsedBlock, context: ProcessContext): string {
+    try {
+      const includePath = block.content
+      const fullPath = path.resolve(path.dirname(context.filePath), includePath)
+
+      if (!fs.existsSync(fullPath)) {
+        console.warn(`Include file not found: ${fullPath}`)
+        return `<!-- Include not found: ${includePath} -->`
+      }
+
+      const includeContent = fs.readFileSync(fullPath, "utf-8")
+      let includeVariables = { ...block.data.context }
+
+      // Parse inline overrides with support for YAML-like syntax
+      if (block.data.overrides) {
+        try {
+          const inlineVars = this.parseInlineVariables(block.data.overrides)
+          includeVariables = { ...includeVariables, ...inlineVars }
+        } catch (error) {
+          console.warn("Failed to parse include overrides:", error)
         }
       }
 
-      i++
+      return this.processContent(includeContent, {
+        variables: includeVariables,
+        filePath: fullPath,
+        rootDir: context.rootDir,
+      })
+    } catch (error) {
+      console.error(`Error processing include ${block.content}:`, error)
+      return `<!-- Error processing include: ${block.content} -->`
     }
   }
 
-  return { value: value.trim(), nextIndex: i }
-}
+  private parseInlineVariables(overrideStr: string): Variables {
+    const variables: Variables = {}
 
-// Render variables as a nice display
-function renderVariablesDisplay(variables: Variables): string {
-  const rows = Object.entries(variables)
-    .map(([key, value]) => {
-      let displayValue: string
-      if (typeof value === "string") {
-        // Escape HTML entities for proper display
-        const escapedValue = value
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
+    try {
+      // Remove outer braces
+      const content = overrideStr
+        .trim()
+        .replace(/^\{|\}$/g, "")
+        .trim()
 
-        // Check if it's multiline
-        if (value.includes("\n")) {
-          // For multiline content, use <pre> tag to preserve formatting (no quotes for multiline)
-          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedValue}</code></pre>`
-        } else {
-          displayValue = `<code style="padding: 2px 4px; border-radius: 3px; font-family: monospace;">"${escapedValue}"</code>`
+      if (!content) return variables
+
+      // Try YAML parsing first for complex structures
+      try {
+        return (yaml.load(`{${content}}`) as Variables) || {}
+      } catch (yamlError) {
+        // Fall back to manual parsing for mixed syntax
+        return this.parseInlineManual(content)
+      }
+    } catch (error) {
+      console.warn("Failed to parse inline variables:", overrideStr, error)
+      return variables
+    }
+  }
+
+  private parseInlineManual(content: string): Variables {
+    const variables: Variables = {}
+    const lines = content
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line)
+
+    let i = 0
+    while (i < lines.length) {
+      const line = lines[i]
+
+      // Look for key: value pattern
+      const colonMatch = line.match(/^(\w+):\s*(.*)$/)
+      if (colonMatch) {
+        const key = colonMatch[1]
+        let value = colonMatch[2]
+
+        // Handle multiline values (YAML-style with |)
+        if (value === "|") {
+          i++
+          const multilineValue = []
+          while (i < lines.length) {
+            const nextLine = lines[i]
+            // Stop if we hit the next key
+            if (nextLine.match(/^\w+:\s*/)) {
+              break
+            }
+            multilineValue.push(nextLine)
+            i++
+          }
+          value = multilineValue.join("\n").trim()
+          i-- // Back up one since the loop will increment
+        } else if (this.needsMoreLines(value)) {
+          // Handle bracket-based multiline
+          const multilineResult = this.collectInlineMultiline(lines, i, key)
+          value = multilineResult.value
+          i = multilineResult.nextIndex - 1 // -1 because loop will increment
         }
-      } else {
-        const jsonValue = JSON.stringify(value, null, 2)
-        const escapedJson = jsonValue
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
 
-        if (jsonValue.includes("\n")) {
-          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedJson}</code></pre>`
-        } else {
-          displayValue = `<code style=" padding: 2px 4px; border-radius: 3px; font-family: monospace;">${escapedJson}</code>`
+        // Parse the value
+        try {
+          variables[key] = JSON.parse(value)
+        } catch {
+          if (this.looksLikeFunction(value)) {
+            variables[key] = value.trim()
+          } else {
+            // Remove quotes if present
+            variables[key] = value.replace(/^["']|["']$/g, "")
+          }
         }
       }
 
-      return `  <tr>
-    <td style="padding: 12px; border: 1px solid #d0d7de; vertical-align: top;"><strong>${key}</strong></td>
-    <td style="padding: 12px; border: 1px solid #d0d7de; vertical-align: top;">${displayValue}</td>
-  </tr>`
-    })
-    .join("\n")
+      i++
+    }
 
-  return `
+    return variables
+  }
+
+  private collectInlineMultiline(
+    lines: string[],
+    startIndex: number,
+    key: string
+  ): { value: string; nextIndex: number } {
+    const firstLine = lines[startIndex]
+    const match = firstLine.match(/^(\w+):\s*(.*)$/)
+    let value = match ? match[2] : ""
+
+    let i = startIndex + 1
+    while (i < lines.length && this.needsMoreLines(value)) {
+      const line = lines[i]
+
+      // Stop at next key definition
+      if (line.match(/^\w+:\s*/)) break
+
+      value += "\n" + line
+      i++
+    }
+
+    return { value: value.trim(), nextIndex: i }
+  }
+
+  private substituteVariables(content: string, variables: Variables): string {
+    let result = content
+
+    // Handle fallback syntax: ${VAR:fallback}
+    result = result.replace(
+      /\$\{(\w+):([^}]+)\}/g,
+      (match, varName, fallback) => {
+        if (variables.hasOwnProperty(varName)) {
+          const value = variables[varName]
+          return typeof value === "string" ? value : JSON.stringify(value)
+        }
+        return fallback
+      }
+    )
+
+    // Handle simple variables: ${VAR} or VAR_NAME
+    for (const [key, value] of Object.entries(variables)) {
+      const displayValue =
+        typeof value === "string" ? value : JSON.stringify(value)
+
+      // Replace ${VARIABLE} format
+      result = result.replace(new RegExp(`\\$\\{${key}\\}`, "g"), displayValue)
+
+      // Replace standalone variables (with word boundaries, but not in variable tables)
+      if (!result.includes("<!-- VARIABLES_TABLE_START -->")) {
+        result = result.replace(new RegExp(`\\b${key}\\b`, "g"), displayValue)
+      } else {
+        // More careful replacement when tables are present
+        const tableParts = result.split(
+          /(<!-- VARIABLES_TABLE_START -->[\s\S]*?<!-- VARIABLES_TABLE_END -->)/g
+        )
+        for (let i = 0; i < tableParts.length; i += 2) {
+          tableParts[i] = tableParts[i].replace(
+            new RegExp(`\\b${key}\\b`, "g"),
+            displayValue
+          )
+        }
+        result = tableParts.join("")
+      }
+    }
+
+    return result
+  }
+
+  private renderVariablesDisplay(variables: Variables): string {
+    const rows = Object.entries(variables)
+      .map(([key, value]) => {
+        const displayValue = this.formatValueForDisplay(value)
+        return `  <tr>
+    <td style="padding: 12px; border: 1px solid var(--vp-c-border, #d0d7de); vertical-align: top;"><strong>${key}</strong></td>
+    <td style="padding: 12px; border: 1px solid var(--vp-c-border, #d0d7de); vertical-align: top;">${displayValue}</td>
+  </tr>`
+      })
+      .join("\n")
+
+    return `
 <!-- VARIABLES_TABLE_START -->
+<div class="variables-table">
 <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
   <thead>
     <tr>
-      <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Variable</th>
-      <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px; border: 1px solid var(--vp-c-border, #d0d7de); text-align: left; font-weight: 600;">Variable</th>
+      <th style="padding: 12px; border: 1px solid var(--vp-c-border, #d0d7de); text-align: left; font-weight: 600;">Value</th>
     </tr>
   </thead>
   <tbody>
 ${rows}
   </tbody>
 </table>
+</div>
 <!-- VARIABLES_TABLE_END -->
 `
-}
+  }
 
-// Substitute variables in code blocks AND regular text (but protect variable display table)
-function substituteVariables(content: string, variables: Variables): string {
-  let processedContent = content
+  private formatValueForDisplay(value: any): string {
+    if (typeof value === "string") {
+      const escaped = this.escapeHtml(value)
 
-  // First, handle fallback syntax: ${VARIABLE_NAME:fallback_value}
-  // This needs to handle nested braces properly for complex fallback values
-  processedContent = processedContent.replace(
-    /\$\{(\w+):((?:[^{}]|{[^}]*})*)\}/g,
-    (match, varName, fallback) => {
-      if (variables.hasOwnProperty(varName)) {
-        const value = variables[varName]
-        return typeof value === "string" ? value : JSON.stringify(value)
+      // Special formatting for functions
+      if (this.looksLikeFunction(value)) {
+        return `<pre style="margin: 0; white-space: pre-wrap; font-family: var(--vp-font-family-mono); padding: 8px; background: var(--vp-code-bg); border-radius: 4px; font-size: 0.9em; border-left: 3px solid var(--vp-c-brand);"><code class="language-javascript">${escaped}</code></pre>`
       }
 
-      // For fallback values, preserve quotes if they exist
-      // Don't try to parse as JSON - keep the fallback exactly as written
-      return fallback
-    }
-  )
-
-  // Then handle regular variable substitution for defined variables
-  // Split content to avoid replacing in variable tables
-  const parts = processedContent.split(
-    /(<!-- VARIABLES_TABLE_START -->[\s\S]*?<!-- VARIABLES_TABLE_END -->)/g
-  )
-
-  for (const [key, value] of Object.entries(variables)) {
-    const displayValue =
-      typeof value === "string" ? value : JSON.stringify(value)
-
-    for (let i = 0; i < parts.length; i += 2) {
-      // Only process non-table parts (even indices)
-      // Use word boundary but avoid replacing variables that are part of fallback syntax that wasn't already processed
-      parts[i] = parts[i].replace(
-        new RegExp(`(?<!\\$\\{[^}]*?)\\b${key}\\b(?![^}]*?\\})`, "g"),
-        displayValue
-      )
-    }
-  }
-
-  processedContent = parts.join("")
-  return processedContent
-}
-
-// Parse inline variable overrides from include statement
-function parseInlineVariables(overrideStr: string): Variables {
-  const variables: Variables = {}
-
-  try {
-    // Remove outer braces and parse as JSON-like object
-    const cleaned = overrideStr.trim().replace(/^\{|\}$/g, "")
-
-    // Split by commas but respect nested objects/arrays
-    const pairs = cleaned.split(",").map((pair) => pair.trim())
-
-    for (const pair of pairs) {
-      const colonIndex = pair.indexOf(":")
-      if (colonIndex === -1) continue
-
-      const key = pair.substring(0, colonIndex).trim().replace(/['"]/g, "")
-      const value = pair.substring(colonIndex + 1).trim()
-
-      try {
-        // Try to parse as JSON
-        variables[key] = JSON.parse(value)
-      } catch {
-        // Fallback to string, removing quotes
-        variables[key] = value.replace(/^["']|["']$/g, "")
+      if (value.includes("\n")) {
+        return `<pre style="margin: 0; white-space: pre-wrap; font-family: var(--vp-font-family-mono); padding: 8px; background: var(--vp-code-bg); border-radius: 4px; font-size: 0.9em;"><code>${escaped}</code></pre>`
+      } else {
+        return `<code style="padding: 2px 4px; background: var(--vp-code-bg); border-radius: 3px; font-family: var(--vp-font-family-mono);">"${escaped}"</code>`
       }
-    }
-  } catch (error) {
-    console.warn("Failed to parse inline variables:", overrideStr, error)
-  }
+    } else {
+      const jsonValue = JSON.stringify(value, null, 2)
+      const escaped = this.escapeHtml(jsonValue)
 
-  return variables
-}
-
-// Main content processing function
-function processMarkdownContent(
-  content: string,
-  context: ProcessContext
-): string {
-  let processedContent = content
-  let currentVariables = { ...context.variables }
-
-  // Process content in order: variables blocks, includes, then substitution
-  // This ensures proper scoping where variables only affect content after their definition
-
-  const allMatches: Array<{
-    type: "variables" | "include"
-    match: RegExpExecArray
-    index: number
-  }> = []
-
-  // Collect all variables blocks
-  const variablesRegex = /```variables\n([\s\S]*?)\n```/g
-  let match
-  while ((match = variablesRegex.exec(content)) !== null) {
-    allMatches.push({ type: "variables", match, index: match.index })
-  }
-
-  // Collect all includes
-  const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[^}]+\})?\s*-->/g
-  includeRegex.lastIndex = 0
-  while ((match = includeRegex.exec(content)) !== null) {
-    allMatches.push({ type: "include", match, index: match.index })
-  }
-
-  // Sort by position in file
-  allMatches.sort((a, b) => a.index - b.index)
-
-  // Process content sequentially
-  let workingContent = content
-  let offset = 0
-  let lastProcessedIndex = 0
-
-  for (const item of allMatches) {
-    if (item.type === "variables") {
-      const variablesContent = item.match[1]
-      const newVariables = parseVariablesBlock(variablesContent)
-      currentVariables = { ...currentVariables, ...newVariables }
-
-      // Apply variables to the content between last processed position and current variables block
-      const beforeVariables = workingContent.substring(
-        lastProcessedIndex,
-        item.match.index - offset
-      )
-      const processedBefore = substituteVariables(
-        beforeVariables,
-        currentVariables
-      )
-
-      // Replace variables block with display
-      const replacement = renderVariablesDisplay(newVariables)
-      const start = item.match.index - offset
-      const end = start + item.match[0].length
-
-      workingContent =
-        workingContent.substring(0, lastProcessedIndex) +
-        processedBefore +
-        replacement +
-        workingContent.substring(end)
-
-      const lengthDiff =
-        processedBefore.length +
-        replacement.length -
-        (beforeVariables.length + item.match[0].length)
-      offset -= lengthDiff
-      lastProcessedIndex = start + replacement.length
-    } else if (item.type === "include") {
-      const includePath = item.match[1].trim()
-      const overrides = item.match[2]
-
-      try {
-        const fullPath = path.resolve(
-          path.dirname(context.filePath),
-          includePath
-        )
-
-        if (!fs.existsSync(fullPath)) {
-          console.warn(`Include file not found: ${fullPath}`)
-          continue
-        }
-
-        const includeContent = fs.readFileSync(fullPath, "utf-8")
-
-        // Parse inline variable overrides if provided
-        let includeVariables = { ...currentVariables }
-        if (overrides) {
-          const inlineVars = parseInlineVariables(overrides)
-          includeVariables = { ...includeVariables, ...inlineVars }
-        }
-
-        // Process the included content with current variables
-        const processedInclude = processMarkdownContent(includeContent, {
-          variables: includeVariables,
-          filePath: fullPath,
-          rootDir: context.rootDir,
-        })
-
-        // Apply variables to content before this include
-        const beforeInclude = workingContent.substring(
-          lastProcessedIndex,
-          item.match.index - offset
-        )
-        const processedBefore = substituteVariables(
-          beforeInclude,
-          currentVariables
-        )
-
-        // Replace include with processed content
-        const start = item.match.index - offset
-        const end = start + item.match[0].length
-
-        workingContent =
-          workingContent.substring(0, lastProcessedIndex) +
-          processedBefore +
-          processedInclude +
-          workingContent.substring(end)
-
-        const lengthDiff =
-          processedBefore.length +
-          processedInclude.length -
-          (beforeInclude.length + item.match[0].length)
-        offset -= lengthDiff
-        lastProcessedIndex = start + processedInclude.length
-      } catch (error) {
-        console.error(`Error processing include ${includePath}:`, error)
+      if (jsonValue.includes("\n")) {
+        return `<pre style="margin: 0; white-space: pre-wrap; font-family: var(--vp-font-family-mono); padding: 8px; background: var(--vp-code-bg); border-radius: 4px; font-size: 0.9em;"><code>${escaped}</code></pre>`
+      } else {
+        return `<code style="padding: 2px 4px; background: var(--vp-code-bg); border-radius: 3px; font-family: var(--vp-font-family-mono);">${escaped}</code>`
       }
     }
   }
 
-  // Process any remaining content after the last match
-  if (lastProcessedIndex < workingContent.length) {
-    const remainingContent = workingContent.substring(lastProcessedIndex)
-    const processedRemaining = substituteVariables(
-      remainingContent,
-      currentVariables
+  private looksLikeFunction(value: string): boolean {
+    const trimmed = value.trim()
+    return (
+      // Arrow functions
+      trimmed.includes("=>") ||
+      // Traditional functions
+      trimmed.startsWith("function") ||
+      // Async functions
+      trimmed.startsWith("async") ||
+      // Parentheses start (likely parameters)
+      /^\([^)]*\)\s*=>/.test(trimmed)
     )
-    workingContent =
-      workingContent.substring(0, lastProcessedIndex) + processedRemaining
   }
 
-  return workingContent
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;")
+  }
 }
 
-// Markdown plugin for VitePress
+// Main plugin setup
 export function setupVariablesPlugin(
   md: MarkdownRenderer,
   rootDir: string = process.cwd()
 ) {
-  // Store original render method
+  const processor = new ContentProcessor()
   const originalRender = md.render.bind(md)
 
-  // Override render method
   md.render = function (src: string, env: any = {}) {
-    // Process variables before markdown rendering
-    const processedSrc = processMarkdownContent(src, {
-      variables: {},
-      filePath: env.path || env.relativePath || "",
-      rootDir,
-    })
+    try {
+      const processedSrc = processor.processContent(src, {
+        variables: {},
+        filePath: env.path || env.relativePath || "",
+        rootDir,
+      })
 
-    // Call original render with processed content
-    return originalRender(processedSrc, env)
+      return originalRender(processedSrc, env)
+    } catch (error) {
+      console.error("Error in variables plugin:", error)
+      // Fallback to original content on error
+      return originalRender(src, env)
+    }
   }
 }
 
-// For direct use in VitePress config
 export function createVariablesConfig(rootDir: string = process.cwd()) {
   return {
     config: (md: MarkdownRenderer) => {

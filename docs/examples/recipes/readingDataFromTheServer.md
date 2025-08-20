@@ -21,10 +21,10 @@ Will teach you how to declare a data type and it's route and how to read data fr
 At first we need to specify our dataType and what we want to query. For this Example we will assume:
 
 ```variables
-PLUGINNAME = "example-todoplugin"
-DATATYPE = "todo"
-ROUTENAME = "getAllTodos"
-ROUTEMETHOD = "get"
+PLUGINNAME: "example-todoplugin"
+DATATYPE: "todo"
+ROUTENAME: "getAllTodos"
+ROUTEMETHOD: "get"
 ```
 
 ## Our Serverside Setup
