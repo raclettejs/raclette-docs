@@ -15,7 +15,7 @@ interface ProcessContext {
 }
 
 interface ParsedBlock {
-  type: "variables" | "include"
+  type: "variables" | "variables-hide-table" | "include"
   start: number
   end: number
   content: string
@@ -33,7 +33,6 @@ class VariablesParser {
       return this.processFunctions(parsed)
     } catch (yamlError) {
       console.warn("Failed to parse as YAML, trying legacy format:", yamlError)
-      return this.parseLegacyFormat(content)
     }
   }
 
@@ -65,119 +64,6 @@ class VariablesParser {
       /^\([^)]*\)\s*=>/.test(trimmed)
     )
   }
-
-  // Fallback for your current format
-  private parseLegacyFormat(content: string): Variables {
-    const variables: Variables = {}
-
-    // Use a more robust approach - split into logical units
-    const assignments = this.extractAssignments(content)
-
-    for (const assignment of assignments) {
-      const { key, value } = assignment
-      try {
-        // Try JSON parsing first
-        variables[key] = JSON.parse(value)
-      } catch {
-        // Handle function syntax and plain strings
-        if (this.looksLikeFunction(value)) {
-          variables[key] = value.trim()
-        } else {
-          variables[key] = value.replace(/^["']|["']$/g, "")
-        }
-      }
-    }
-
-    return variables
-  }
-
-  private extractAssignments(
-    content: string
-  ): Array<{ key: string; value: string }> {
-    const assignments: Array<{ key: string; value: string }> = []
-    const lines = content.split("\n")
-
-    let i = 0
-    while (i < lines.length) {
-      const line = lines[i].trim()
-
-      if (!line || line.startsWith("//") || line.startsWith("#")) {
-        i++
-        continue
-      }
-
-      const match = line.match(/^(\w+)\s*=\s*(.*)$/)
-      if (match) {
-        const key = match[1]
-        let value = match[2]
-
-        // Simple multiline detection
-        if (this.needsMoreLines(value)) {
-          const multilineResult = this.collectMultilineValue(lines, i, key)
-          value = multilineResult.value
-          i = multilineResult.nextIndex
-        } else {
-          i++
-        }
-
-        assignments.push({ key, value })
-      } else {
-        i++
-      }
-    }
-
-    return assignments
-  }
-
-  private needsMoreLines(value: string): boolean {
-    const trimmed = value.trim()
-    if (!trimmed) return true
-
-    // Count brackets
-    const brackets = { "(": 0, "{": 0, "[": 0 }
-    let inString = false
-    let stringChar = ""
-
-    for (const char of trimmed) {
-      if ((char === '"' || char === "'" || char === "`") && !inString) {
-        inString = true
-        stringChar = char
-      } else if (char === stringChar && inString) {
-        inString = false
-      } else if (!inString) {
-        if (char === "(" || char === "{" || char === "[") {
-          brackets[char as keyof typeof brackets]++
-        } else if (char === ")") brackets["("]--
-        else if (char === "}") brackets["{"]--
-        else if (char === "]") brackets["["]--
-      }
-    }
-
-    return Object.values(brackets).some((count) => count > 0)
-  }
-
-  private collectMultilineValue(
-    lines: string[],
-    startIndex: number,
-    key: string
-  ): { value: string; nextIndex: number } {
-    const firstLine = lines[startIndex]
-    const match = firstLine.match(/^(\w+)\s*=\s*(.*)$/)
-    let value = match ? match[2] : ""
-
-    let i = startIndex + 1
-    while (i < lines.length && this.needsMoreLines(value)) {
-      const line = lines[i]
-
-      // Stop at next variable definition
-      if (line.trim().match(/^\w+\s*=/)) break
-
-      value += "\n" + line
-      i++
-    }
-
-    return { value: value.trim(), nextIndex: i }
-  }
 }
 
 // Content processor with better separation of concerns
@@ -194,12 +80,12 @@ class ContentProcessor {
 
     // Forward pass to build variable context
     for (const block of blocks) {
-      if (block.type === "variables") {
+      if (block.type === "variables" || block.type === "variables-hide-table") {
         const blockVars = this.parser.parseVariablesBlock(block.content)
         currentVariables = { ...currentVariables, ...blockVars }
         block.data = { variables: blockVars, context: currentVariables }
       } else if (block.type === "include") {
-        block.data = { context: currentVariables }
+        block.data = { ...block.data, context: currentVariables }
       }
     }
 
@@ -210,8 +96,11 @@ class ContentProcessor {
 
       if (block.type === "variables") {
         replacement = this.renderVariablesDisplay(block.data.variables)
+      } else if (block.type === "variables-hide-table") {
+        // Hidden variables block - no output, just empty string
+        replacement = ""
       } else if (block.type === "include") {
-        replacement = this.processInclude(block, context)
+        replacement = this.processInclude(block, context, currentVariables)
       }
 
       processedContent =
@@ -227,7 +116,7 @@ class ContentProcessor {
   private parseBlocks(content: string): ParsedBlock[] {
     const blocks: ParsedBlock[] = []
 
-    // Variables blocks
+    // Variables blocks (visible table)
     const variablesRegex = /```(?:variables|vars)\n([\s\S]*?)\n```/g
     let match
     while ((match = variablesRegex.exec(content)) !== null) {
@@ -239,25 +128,50 @@ class ContentProcessor {
       })
     }
 
-    // Include blocks
-    const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[^}]+\})?\s*-->/g
+    // Hidden variables blocks (no table output)
+    const hiddenVariablesRegex =
+      /```(?:variables-hide-table|vars-hide-table|variables-hidden|vars-hidden)\n([\s\S]*?)\n```/g
+    while ((match = hiddenVariablesRegex.exec(content)) !== null) {
+      blocks.push({
+        type: "variables-hide-table",
+        start: match.index,
+        end: match.index + match[0].length,
+        content: match[1],
+      })
+    }
+
+    // Include blocks - Fixed regex to properly capture multiline overrides
+    const includeRegex = /<!--\s*@include:\s*([^{]+?)(\{[\s\S]*?\})?\s*-->/g
     while ((match = includeRegex.exec(content)) !== null) {
+      console.log(`Found include block:`, {
+        fullMatch: match[0],
+        path: match[1]?.trim(),
+        overrides: match[2],
+      }) // Debug log
+
       blocks.push({
         type: "include",
         start: match.index,
         end: match.index + match[0].length,
         content: match[1].trim(),
-        data: { overrides: match[2] },
+        data: { overrides: match[2] || null }, // This was the issue - data was being overwritten
       })
     }
 
     return blocks.sort((a, b) => a.start - b.start)
   }
 
-  private processInclude(block: ParsedBlock, context: ProcessContext): string {
+  private processInclude(
+    block: ParsedBlock,
+    context: ProcessContext,
+    currentVariables: Variables
+  ): string {
     try {
       const includePath = block.content
       const fullPath = path.resolve(path.dirname(context.filePath), includePath)
+
+      console.log(`Processing include: ${includePath}`) // Debug log
+      console.log(`Block data:`, block.data) // Debug log
 
       if (!fs.existsSync(fullPath)) {
         console.warn(`Include file not found: ${fullPath}`)
@@ -265,18 +179,35 @@ class ContentProcessor {
       }
 
       const includeContent = fs.readFileSync(fullPath, "utf-8")
-      let includeVariables = { ...block.data.context }
 
-      // Parse inline overrides with support for YAML-like syntax
-      if (block.data.overrides) {
+      // Start with current variables from context
+      let includeVariables = { ...currentVariables }
+      console.log(
+        `Starting with current variables:`,
+        Object.keys(currentVariables)
+      ) // Debug log
+
+      // Parse and merge inline overrides
+      if (block.data?.overrides) {
+        console.log(`Raw overrides string: "${block.data.overrides}"`) // Debug log
         try {
           const inlineVars = this.parseInlineVariables(block.data.overrides)
+          console.log(`Parsed inline variables for ${includePath}:`, inlineVars) // Debug log
           includeVariables = { ...includeVariables, ...inlineVars }
+          console.log(`Merged variables:`, Object.keys(includeVariables)) // Debug log
         } catch (error) {
           console.warn("Failed to parse include overrides:", error)
         }
+      } else {
+        console.log(`No overrides found in block data`) // Debug log
       }
 
+      console.log(
+        `Processing include ${includePath} with variables:`,
+        includeVariables
+      ) // Debug log
+
+      // Process the included content with the merged variables
       return this.processContent(includeContent, {
         variables: includeVariables,
         filePath: fullPath,
@@ -289,23 +220,40 @@ class ContentProcessor {
   }
 
   private parseInlineVariables(overrideStr: string): Variables {
+    console.log(`Raw override string received: "${overrideStr}"`) // Debug log
+
     const variables: Variables = {}
 
     try {
-      // Remove outer braces
+      // Remove outer braces and trim
       const content = overrideStr
         .trim()
         .replace(/^\{|\}$/g, "")
         .trim()
 
-      if (!content) return variables
+      if (!content) {
+        console.log(`No content after processing override string`) // Debug log
+        return variables
+      }
 
-      // Try YAML parsing first for complex structures
+      console.log(`Content after brace removal: "${content}"`) // Debug log
+
+      // Try YAML parsing first - but format it properly for YAML
       try {
-        return (yaml.load(`{${content}}`) as Variables) || {}
+        // Convert space-separated format to proper YAML
+        const yamlContent = this.convertToYAML(content)
+        console.log(`Converted to YAML format: "${yamlContent}"`) // Debug log
+
+        const yamlResult = yaml.load(yamlContent) as Variables
+        console.log(`YAML parsed result:`, yamlResult) // Debug log
+        return yamlResult || {}
       } catch (yamlError) {
+        console.log(`YAML parsing failed:`, yamlError) // Debug log
+        console.log(`Falling back to manual parsing`) // Debug log
         // Fall back to manual parsing for mixed syntax
-        return this.parseInlineManual(content)
+        const manualResult = this.parseInlineManual(content)
+        console.log(`Manual parsing result:`, manualResult) // Debug log
+        return manualResult
       }
     } catch (error) {
       console.warn("Failed to parse inline variables:", overrideStr, error)
@@ -313,44 +261,62 @@ class ContentProcessor {
     }
   }
 
+  private convertToYAML(content: string): string {
+    // If it already looks like YAML (has newlines), just use it
+    if (content.includes("\n")) {
+      return content
+    }
+
+    // Convert space-separated to YAML format
+    // "BROADCASTCHANNELS: todoCreated STOREACTIONTYPE: dataCreate"
+    // becomes "BROADCASTCHANNELS: todoCreated\nSTOREACTIONTYPE: dataCreate"
+
+    const tokens = content.split(/\s+/)
+    const yamlLines: string[] = []
+    let i = 0
+
+    while (i < tokens.length) {
+      const token = tokens[i]
+
+      // Look for key: pattern
+      if (token.includes(":")) {
+        const [key, ...valueParts] = token.split(":")
+        let value = valueParts.join(":").trim()
+
+        // If no value after the colon, look at the next token(s)
+        if (!value && i + 1 < tokens.length) {
+          i++
+          value = tokens[i]
+
+          // Continue collecting value tokens until we hit the next key
+          while (i + 1 < tokens.length && !tokens[i + 1].includes(":")) {
+            i++
+            value += " " + tokens[i]
+          }
+        }
+
+        yamlLines.push(`${key}: ${value}`)
+      }
+
+      i++
+    }
+
+    return yamlLines.join("\n")
+  }
+
   private parseInlineManual(content: string): Variables {
     const variables: Variables = {}
-    const lines = content
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line)
 
-    let i = 0
-    while (i < lines.length) {
-      const line = lines[i]
+    // Handle space-separated key: value pairs
+    // Use a more sophisticated approach to split on spaces while respecting quoted values
+    const pairs = this.splitInlinePairs(content)
 
+    for (const pair of pairs) {
       // Look for key: value pattern
-      const colonMatch = line.match(/^(\w+):\s*(.*)$/)
+      const colonMatch = pair.match(/^(\w+):\s*(.*)$/)
       if (colonMatch) {
         const key = colonMatch[1]
-        let value = colonMatch[2]
-
-        // Handle multiline values (YAML-style with |)
-        if (value === "|") {
-          i++
-          const multilineValue = []
-          while (i < lines.length) {
-            const nextLine = lines[i]
-            // Stop if we hit the next key
-            if (nextLine.match(/^\w+:\s*/)) {
-              break
-            }
-            multilineValue.push(nextLine)
-            i++
-          }
-          value = multilineValue.join("\n").trim()
-          i-- // Back up one since the loop will increment
-        } else if (this.needsMoreLines(value)) {
-          // Handle bracket-based multiline
-          const multilineResult = this.collectInlineMultiline(lines, i, key)
-          value = multilineResult.value
-          i = multilineResult.nextIndex - 1 // -1 because loop will increment
-        }
+        let value = colonMatch[2].trim()
 
         // Parse the value
         try {
@@ -359,43 +325,135 @@ class ContentProcessor {
           if (this.looksLikeFunction(value)) {
             variables[key] = value.trim()
           } else {
-            // Remove quotes if present
+            // Remove quotes if present, otherwise use as-is
             variables[key] = value.replace(/^["']|["']$/g, "")
           }
         }
+      } else {
+        // Try key=value format as fallback
+        const equalsMatch = pair.match(/^(\w+)\s*=\s*(.*)$/)
+        if (equalsMatch) {
+          const key = equalsMatch[1]
+          let value = equalsMatch[2].trim()
+
+          try {
+            variables[key] = JSON.parse(value)
+          } catch {
+            if (this.looksLikeFunction(value)) {
+              variables[key] = value.trim()
+            } else {
+              variables[key] = value.replace(/^["']|["']$/g, "")
+            }
+          }
+        }
+      }
+    }
+
+    console.log(`Manual parsing result:`, variables) // Debug log
+    return variables
+  }
+
+  private splitInlinePairs(content: string): string[] {
+    const pairs: string[] = []
+    let current = ""
+    let inQuotes = false
+    let quoteChar = ""
+    let i = 0
+
+    while (i < content.length) {
+      const char = content[i]
+
+      if ((char === '"' || char === "'") && !inQuotes) {
+        inQuotes = true
+        quoteChar = char
+        current += char
+      } else if (char === quoteChar && inQuotes) {
+        inQuotes = false
+        quoteChar = ""
+        current += char
+      } else if (char === " " && !inQuotes) {
+        // Look ahead to see if this space separates key:value pairs
+        if (current.trim() && this.looksLikeKeyValuePair(current.trim())) {
+          pairs.push(current.trim())
+          current = ""
+        } else {
+          current += char
+        }
+      } else {
+        current += char
+      }
+      i++
+    }
+
+    if (current.trim()) {
+      pairs.push(current.trim())
+    }
+
+    // If no proper pairs found, try splitting on spaces and recombining
+    if (
+      pairs.length === 0 ||
+      pairs.every((p) => !this.looksLikeKeyValuePair(p))
+    ) {
+      return this.fallbackSplitPairs(content)
+    }
+
+    return pairs
+  }
+
+  private looksLikeKeyValuePair(str: string): boolean {
+    return /^\w+\s*[:=]\s*.+/.test(str.trim())
+  }
+
+  private fallbackSplitPairs(content: string): string[] {
+    // For space-separated format like "BROADCASTCHANNELS: todoCreated STOREACTIONTYPE: dataCreate"
+    // We need to be smart about where to split
+    const tokens = content.split(/\s+/)
+    const pairs: string[] = []
+    let i = 0
+
+    while (i < tokens.length) {
+      const token = tokens[i]
+
+      // Look for key: pattern
+      if (token.includes(":")) {
+        const [key, ...valueParts] = token.split(":")
+        let value = valueParts.join(":").trim()
+
+        // If no value after the colon, look at the next token
+        if (!value && i + 1 < tokens.length) {
+          i++
+          value = tokens[i]
+
+          // Continue collecting value tokens until we hit the next key
+          while (
+            i + 1 < tokens.length &&
+            !tokens[i + 1].includes(":") &&
+            !this.looksLikeKeyValuePair(tokens[i + 1])
+          ) {
+            i++
+            value += " " + tokens[i]
+          }
+        }
+
+        pairs.push(`${key}: ${value}`)
+      } else if (token.includes("=")) {
+        // Handle key=value format
+        pairs.push(token)
       }
 
       i++
     }
 
-    return variables
-  }
-
-  private collectInlineMultiline(
-    lines: string[],
-    startIndex: number,
-    key: string
-  ): { value: string; nextIndex: number } {
-    const firstLine = lines[startIndex]
-    const match = firstLine.match(/^(\w+):\s*(.*)$/)
-    let value = match ? match[2] : ""
-
-    let i = startIndex + 1
-    while (i < lines.length && this.needsMoreLines(value)) {
-      const line = lines[i]
-
-      // Stop at next key definition
-      if (line.match(/^\w+:\s*/)) break
-
-      value += "\n" + line
-      i++
-    }
-
-    return { value: value.trim(), nextIndex: i }
+    return pairs
   }
 
   private substituteVariables(content: string, variables: Variables): string {
     let result = content
+
+    console.log(
+      `Substituting variables in content. Available variables:`,
+      Object.keys(variables)
+    ) // Debug log
 
     // Handle fallback syntax: ${VAR:fallback}
     result = result.replace(
@@ -403,8 +461,12 @@ class ContentProcessor {
       (match, varName, fallback) => {
         if (variables.hasOwnProperty(varName)) {
           const value = variables[varName]
-          return typeof value === "string" ? value : JSON.stringify(value)
+          const substitution =
+            typeof value === "string" ? value : JSON.stringify(value)
+          console.log(`Substituted ${match} with "${substitution}"`) // Debug log
+          return substitution
         }
+        console.log(`Using fallback for ${match}: "${fallback}"`) // Debug log
         return fallback
       }
     )
@@ -415,21 +477,32 @@ class ContentProcessor {
         typeof value === "string" ? value : JSON.stringify(value)
 
       // Replace ${VARIABLE} format
-      result = result.replace(new RegExp(`\\$\\{${key}\\}`, "g"), displayValue)
+      const dollarBraceRegex = new RegExp(`\\$\\{${key}\\}`, "g")
+      if (dollarBraceRegex.test(result)) {
+        result = result.replace(dollarBraceRegex, displayValue)
+        console.log(`Substituted \${${key}} with "${displayValue}"`) // Debug log
+      }
 
       // Replace standalone variables (with word boundaries, but not in variable tables)
       if (!result.includes("<!-- VARIABLES_TABLE_START -->")) {
-        result = result.replace(new RegExp(`\\b${key}\\b`, "g"), displayValue)
+        const standaloneRegex = new RegExp(`\\b${key}\\b`, "g")
+        if (standaloneRegex.test(result)) {
+          result = result.replace(standaloneRegex, displayValue)
+          console.log(`Substituted standalone ${key} with "${displayValue}"`) // Debug log
+        }
       } else {
         // More careful replacement when tables are present
         const tableParts = result.split(
           /(<!-- VARIABLES_TABLE_START -->[\s\S]*?<!-- VARIABLES_TABLE_END -->)/g
         )
         for (let i = 0; i < tableParts.length; i += 2) {
-          tableParts[i] = tableParts[i].replace(
-            new RegExp(`\\b${key}\\b`, "g"),
-            displayValue
-          )
+          const standaloneRegex = new RegExp(`\\b${key}\\b`, "g")
+          if (standaloneRegex.test(tableParts[i])) {
+            tableParts[i] = tableParts[i].replace(standaloneRegex, displayValue)
+            console.log(
+              `Substituted standalone ${key} in non-table section with "${displayValue}"`
+            ) // Debug log
+          }
         }
         result = tableParts.join("")
       }

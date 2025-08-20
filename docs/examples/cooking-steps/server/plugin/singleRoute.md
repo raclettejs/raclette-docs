@@ -4,12 +4,12 @@ import type { FastifyRequest, FastifyReply } from "fastify"
 import payloadHelper from "./payloadHelper"
 
 export const registerRoutes = async (fastify: PluginFastifyInstance) => {
-  fastify.get("/${DATATYPE:example}/get", {
+  fastify.${ROUTEMETHOD:get}("/${DATATYPE:example}/${ROUTENAME:get}", {
     handler: async (
       req: FastifyRequest,
       reply: FastifyReply
     ) => {
-      /* YOUR BUSINESS LOGIC */
+      ${BUSINESSLOGIC:/* YOUR BUSINESS LOGIC */}
     },
     onRequest: [fastify.authenticate],
     config: {
@@ -17,15 +17,11 @@ export const registerRoutes = async (fastify: PluginFastifyInstance) => {
       broadcastChannels: ["${BROADCASTCHANNELS:exampleUpdated}"],
     },
     schema: {
-      summary: "Example Route",
-      description: "Example Route",
+      summary: "Example ${DATATYPE:example} ${ROUTEMETHOD} Route",
+      description: "Example ${DATATYPE:example} ${ROUTENAME} Route",
       tags: ["myApp/${DATATYPE:example}"],
-      body: ${DATATYPE:example}BaseSchema,
+      body: ${BODYSCHEMA:exampleBaseSchema},
     },
   })
 }
 ```
-
-::: tip
-We recommend to put your actual business logic into .service files and call them from your route
-:::

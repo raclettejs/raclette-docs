@@ -1,49 +1,49 @@
-<!--@include: ../wip.md-->
-
 # Reading Data from the Server
 
-**Estimated Time:** 10min
+**Estimated Time:** 5min
 **Difficulty:** Easy
 **Version:** 0.1.\*
 
 ## Context
 
-Will teach you how to declare a data type and it's route and how to read data from it.
+Will teach you how to read your previousely defined and created dataItems
 
 ## Prerequisites
 
 - Raclette CLI installed
 - Raclette Server running
 - Node.js 24+
+- You have finished the setting up a todo plugin example and it's up and running
+- You have created some todo items during the creating data on the server example
 
-## Our Datatype
-
-At first we need to specify our dataType and what we want to query. For this Example we will assume:
-
-```variables
-PLUGINNAME: "example-todoplugin"
-DATATYPE: "todo"
-ROUTENAME: "getAllTodos"
-ROUTEMETHOD: "get"
+```variables-hide-table
+PLUGINNAME: example-todoplugin
+DATATYPE: todo
+BROADCASTCHANNELS: todoUpdated
+STOREACTIONTYPE: dataPush
+BODYSCHEMA: todoUpdateSchema
+ROUTENAME: getAllTodos
+ROUTEMETHOD: get
+RESPONSETYPE: json
 ```
 
-## Our Serverside Setup
-
-## Declare the model
-
 ## Declare route on the server side
+
+In our `./plugins/${PLUGINNAME:example-plugin}/server/plugin/routes.ts` we want to define our Create route.
+
+<!--@include: ../cooking-steps/server/plugin/singleRoute.md-->
 
 ## Declare route on the client side
 
 In our `./plugins/${PLUGINNAME:example-plugin}/client/index.ts` we want to define our Raclette Plugin with our custom clientside endpoints.
 
-<!--@include: ../cooking-steps/client/plugin/routeDeclaration.md{STOREACTIONTYPE:dataPush}-->
+<!--@include: ../cooking-steps/client/plugin/routeDeclaration.md-->
 
 ## Reading data in our widget
 
 Now we can query our endpoint with the clientApi fron our component
 
-<!--@include: ../cooking-steps/client/api/data.md{RESPONSETYPE:json} -->
+<!--@include: ../cooking-steps/client/api/data.md -->
 
 ::: tip
 If you want to await the retrieval of your data, set immediate: false and use `await execute()`

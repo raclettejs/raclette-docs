@@ -82,6 +82,10 @@ export default defineConfig({
                   text: "Recipes",
                   items: [
                     {
+                      text: "Setting up a Todo Plugin",
+                      link: "/docs/examples/recipes/settingUpATodoPlugin",
+                    },
+                    {
                       text: "Creating Data on the server",
                       link: "/docs/examples/recipes/creatingDataOnTheServer",
                     },

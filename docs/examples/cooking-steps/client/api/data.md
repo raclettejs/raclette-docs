@@ -7,7 +7,7 @@ const { ${DATAALIAS:data}, ${QUERYALIAS:query}, ${EXECUTEALIAS:execute}, ${ISLOA
     cb: ${CALLBACK:(result) => {}},
     useStore: ${USESTORE:true | false},
     notify: ${NOTIFY:true | false},
-    responseType: "${RESPONSETYPE:json | stream}",
+    responseType: ${RESPONSETYPE:json | stream},
     mode: ${MODE:"none" | "cors"},
   },
 })
