@@ -22,14 +22,15 @@ DATATYPE: todo
 BROADCASTCHANNELS: todoUpdated
 STOREACTIONTYPE: dataPush
 BODYSCHEMA: todoUpdateSchema
-ROUTENAME: getAll${SCHEMANAME:Example}s
+SCHEMANAME: Todo
+ROUTENAME: getAll
 ROUTEMETHOD: get
 RESPONSETYPE: json
 ```
 
 ## Reading data in our widget
 
-Now we can query our endpoint with the clientApi fron our component
+Now we can query our endpoint with the clientApi from our component
 
 <!--@include: ../cooking-steps/client/api/data.md -->
 
