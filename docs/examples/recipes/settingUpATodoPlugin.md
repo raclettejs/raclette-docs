@@ -49,7 +49,7 @@ ${PLUGINNAME:example-plugin}/
     ├── ${DATATYPE:example}.service.ts
     ├── helpers/
     │   ├── index.ts
-    │   └── route.${DATATYPE:example}.[action].ts
+    │   └── ${DATATYPE:example}Helper.ts
     └── routes/
         ├── index.ts
         └── route.${DATATYPE:example}.[action].ts
