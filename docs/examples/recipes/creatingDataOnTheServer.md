@@ -88,7 +88,7 @@ BUSINESSLOGIC: |
 
 In our `./plugins/${PLUGINNAME:example-plugin}/server/routes/` we want to create a new route called `${DATATYPE:example}.create.ts`
 
-<!--@include: ../cooking-steps/server/plugin/routesRoute.md{
+<!--@include: ../cooking-steps/server/plugin/routes/route.md{
 BUSINESSLOGIC: |
   // Add owner and lastEditor from the authenticated user
         const ${DATATYPE:example}Data = {
