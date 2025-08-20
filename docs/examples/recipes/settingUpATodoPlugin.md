@@ -25,7 +25,7 @@ Will teach you how to setup everything you need to start implementing your busin
 - Node.js 24+
 
 ```variables
-PLUGINNAME: example-todoplugin
+PLUGINNAME: example-todo
 DATATYPE: todo
 WIDGETNAME: TodoList
 SCHEMANAME: Todo
@@ -40,7 +40,9 @@ ${PLUGINNAME:example-plugin}/
 │   ├── index.ts
 │   └── widgets/
 │       └── ${WIDGETNAME:Example}/
-│           └── ${WIDGETNAME:Example}Widget.vue
+│           ├── ${WIDGETNAME:Example}Widget.vue
+│           ├── icon.svg
+│           ├── screenshot.png
 │           └── setup.ts
 └── server/
     ├── index.ts
@@ -80,11 +82,11 @@ In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.model.
 
 In our `./plugins/${PLUGINNAME:example-plugin}/server/helpers/crud.ts` we want to define our crud helpers.
 
-<!--@include: ../cooking-steps/server/plugin/crudHelper.md-->
+<!--@include: ../cooking-steps/server/plugin/helpers/crud.md-->
 
 In our `./plugins/${PLUGINNAME:example-plugin}/server/helpers/${DATATYPE:example}Helper.ts` we want to define our plugin helpers.
 
-<!--@include: ../cooking-steps/server/plugin/pluginHelper.md-->
+<!--@include: ../cooking-steps/server/plugin/helpers/pluginHelper.md-->
 
 ### Declare a service file
 
@@ -149,7 +151,7 @@ BUSINESSLOGIC: |
 
 At first lets create a super simple getAll route for our datatype. Therefor we create a `./plugins/${PLUGINNAME:example-plugin}/server/routes/${DATATYPE:example}.get-all.ts`
 
-<!--@include: ../cooking-steps/server/plugin/routesRoute.md{
+<!--@include: ../cooking-steps/server/plugin/routes/route.md{
 BUSINESSLOGIC: |
   const payload = await fastify.custom.${DATATYPE:example}Service.read${SCHEMANAME:Example}s(fastify, req.requestParams)
         return payload
@@ -157,7 +159,7 @@ BUSINESSLOGIC: |
 
 In our `./plugins/${PLUGINNAME:example-plugin}/server/routes/index.ts` we want define all our routes
 
-<!--@include: ../cooking-steps/server/plugin/routesIndex.md{
+<!--@include: ../cooking-steps/server/plugin/routes/index.md{
 IMPORT: import getAllRoute from "./route.${DATATYPE:example}.get-all"
 BUSINESSLOGIC: |
     await fastify.get("/${DATATYPE:example}/all", getAllRoute(fastify))
@@ -171,4 +173,33 @@ In our `./plugins/${PLUGINNAME:example-plugin}/server/index.ts` we we want to pu
 
 ## Client
 
-[WIP]
+For our Client side we want to create a simple todolist widget. So let's prepare everything to start coding in vue!
+
+### Provide i18n and custom modification ability
+
+At first we will define `./plugins/${PLUGINNAME:example-plugin}/client/index.ts`. This file is optional but will give you the ability to install plugin dependencies, provide fixtures and i18n as well as custom routes.
+
+<!--@include: ../cooking-steps/client/plugin/index.md-->
+
+### Define the widget Metadata
+
+Now we want to provide some widget meta data for later usage in the drag and drop editor and the frontend itself. We do this in the `./plugins/${PLUGINNAME:example-plugin}/client/widgets/${WIDGETNAME:Example}/index.ts`.
+
+<!--@include: ../cooking-steps/client/plugin/widgets/setup.md{
+WIDGETTITLE: My ${WIDGETNAME:} widget
+WIDGETDESCRIPTION: Write ${SCHEMANAME:}s on a list
+}-->
+
+### Define the widgets Entryfile
+
+We have now prepared everything to render our i18n keys in the Frontend. Therefor we need to supply a widget entry file. This Files needs to end on `*Widget.vue` to be detected as such. Lets create the `./plugins/${PLUGINNAME:example-plugin}/client/widgets/${WIDGETNAME:Example}/${WIDGETNAME:Example}Widget.vue`
+
+<!--@include: ../cooking-steps/client/plugin/widgets/entryVue.md{
+IMPORTS: |
+  import { usePluginApi } from "@raclettejs/raclette-core/orchestrator/composables"
+WIDGETTEMPLATE: |
+
+  {{$i18n.t('someText')}}
+BUSINESSLOGIC: |
+  const { $i18n } = usePluginApi()
+}-->

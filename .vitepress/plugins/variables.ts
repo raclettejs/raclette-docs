@@ -194,9 +194,10 @@ class ContentProcessor {
   private substituteVariables(content: string, variables: Variables): string {
     let result = content
 
-    // Handle fallback syntax: ${VAR:fallback}
+    // First, handle all variable substitutions
+    // Handle fallback syntax: ${VAR:fallback} or ${VAR:} (empty fallback)
     result = result.replace(
-      /\$\{(\w+):([^}]+)\}/g,
+      /\$\{(\w+):([^}]*)\}/g,
       (match, varName, fallback) => {
         return variables.hasOwnProperty(varName)
           ? this.formatValue(variables[varName])
@@ -284,6 +285,9 @@ class ContentProcessor {
       // Reset regex for next variable
       standaloneRegex.lastIndex = 0
     }
+
+    // After all substitutions, remove lines that are now empty (whitespace only)
+    result = result.replace(/^\s*$\n/gm, "")
 
     return result
   }
