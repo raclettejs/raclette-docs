@@ -27,11 +27,13 @@ ROUTEMETHOD = "get"
 
 ## Our Serverside Setup
 
+## Declare the model
+
 ## Declare route on the server side
 
 ## Declare route on the client side
 
-In our `./plugins/PLUGINNAME/client/index.ts` we want to define our Raclette Plugin with our custom clientside endpoints.
+In our `./plugins/${PLUGINNAME:example-plugin}/client/index.ts` we want to define our Raclette Plugin with our custom clientside endpoints.
 
 <!--@include: ../cooking-steps/client/plugin/routeDeclaration.md{STOREACTIONTYPE:dataPush}-->
 

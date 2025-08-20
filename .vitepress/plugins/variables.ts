@@ -247,9 +247,9 @@ function renderVariablesDisplay(variables: Variables): string {
         // Check if it's multiline
         if (value.includes("\n")) {
           // For multiline content, use <pre> tag to preserve formatting (no quotes for multiline)
-          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; background: #f6f8fa; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedValue}</code></pre>`
+          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedValue}</code></pre>`
         } else {
-          displayValue = `<code style="background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">"${escapedValue}"</code>`
+          displayValue = `<code style="padding: 2px 4px; border-radius: 3px; font-family: monospace;">"${escapedValue}"</code>`
         }
       } else {
         const jsonValue = JSON.stringify(value, null, 2)
@@ -259,9 +259,9 @@ function renderVariablesDisplay(variables: Variables): string {
           .replace(/>/g, "&gt;")
 
         if (jsonValue.includes("\n")) {
-          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; background: #f6f8fa; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedJson}</code></pre>`
+          displayValue = `<pre style="margin: 0; white-space: pre-wrap; font-family: monospace; padding: 8px; border-radius: 4px; font-size: 0.9em;"><code>${escapedJson}</code></pre>`
         } else {
-          displayValue = `<code style="background: #f6f8fa; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${escapedJson}</code>`
+          displayValue = `<code style=" padding: 2px 4px; border-radius: 3px; font-family: monospace;">${escapedJson}</code>`
         }
       }
 
@@ -276,7 +276,7 @@ function renderVariablesDisplay(variables: Variables): string {
 <!-- VARIABLES_TABLE_START -->
 <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
   <thead>
-    <tr style="background-color: #f6f8fa;">
+    <tr>
       <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Variable</th>
       <th style="padding: 12px; border: 1px solid #d0d7de; text-align: left; font-weight: 600;">Value</th>
     </tr>
