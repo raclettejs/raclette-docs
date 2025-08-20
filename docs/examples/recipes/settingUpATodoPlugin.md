@@ -203,3 +203,7 @@ WIDGETTEMPLATE: |
 BUSINESSLOGIC: |
   const { $i18n } = usePluginApi()
 }-->
+
+### Head to the Worbench and bring your hotsauce!
+
+After finishing the project initialization wizard you should now be able to see your icon on the lefthand side in the widget layout editor in the composition creation/edit screen. Follow our [workbench guide](../../workbench/introduction) for further information
