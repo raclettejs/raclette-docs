@@ -1,6 +1,6 @@
 # Raclette Plugin Architecture: Server-Side Guide
 
-This guide demonstrates how to create robust server-side plugins in the Raclette framework. Plugins in Raclette are self-contained modules that can define their own business logic, database models, API endpoints, and services. This architectural pattern promotes modularity, reusability, and maintainability in your applications.
+This guide demonstrates how to create robust backend-side plugins in the Raclette framework. Plugins in Raclette are self-contained modules that can define their own business logic, database models, API endpoints, and services. This architectural pattern promotes modularity, reusability, and maintainability in your applications.
 
 ## Plugin Structure Overview
 
@@ -9,7 +9,7 @@ A Raclette plugin follows a standardized directory structure that separates conc
 ```
 plugins/
 └── your_plugin_name/
-    └── server/
+    └── backend/
         ├── index.ts              # Plugin entry point and registration
         ├── [model].model.ts      # Database models (Mongoose schemas)
         ├── [model].schema.ts     # TypeBox schemas for validation
@@ -38,15 +38,15 @@ import { createTodoService } from "./todo.service"
 
 const todoPlugin = async (
   fastify: PluginFastifyInstance,
-  opts: PluginOptions,
+  opts: PluginOptions
 ) => {
   // Create and register database models
   const models = createModels(fastify)
-  
+
   // Initialize service layer
   const todoService = createTodoService(models.todo)
   fastify.todoService = todoService
-  
+
   // Register routes with error handling
   try {
     await fastify.register((instance) => registerRoutes(instance, models, opts))
@@ -54,7 +54,7 @@ const todoPlugin = async (
     fastify.log.error(`Failed to register routes.`, error)
     throw error
   }
-  
+
   // Register additional components
   registerPayload(fastify)
   registerTodoSchemas(fastify)
@@ -65,6 +65,7 @@ export default todoPlugin
 ```
 
 **Key Responsibilities:**
+
 - Model creation and registration
 - Service initialization and injection into Fastify instance
 - Route registration with proper error handling
@@ -76,7 +77,7 @@ export default todoPlugin
 Models define the database schema using Mongoose and establish the data structure for your plugin.
 
 ```typescript
-import type { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import type { PluginFastifyInstance } from "@raclettejs/core"
 import type { Document } from "mongoose"
 import { Schema } from "mongoose"
 import { v4 as uuidv4 } from "uuid"
@@ -114,12 +115,12 @@ const TodoSchema: Schema = new Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export const createModels = (fastify: PluginFastifyInstance) => {
   const todoModel = fastify.createModel(MODEL_BASENAME, TodoSchema)
-  
+
   return {
     todo: todoModel,
   }
@@ -127,6 +128,7 @@ export const createModels = (fastify: PluginFastifyInstance) => {
 ```
 
 **Key Features:**
+
 - UUID-based primary keys for distributed systems
 - Soft deletion support via `isDeleted` flag
 - User ownership and editing tracking
@@ -161,7 +163,7 @@ export const todoSchema = Type.Object(
   {
     $id: "#todo/base",
     title: "core/todo",
-  },
+  }
 )
 
 // Create schema (for POST operations)
@@ -171,9 +173,9 @@ export const todoCreateSchema = Type.Object(
     ...baseTodoSchema,
   },
   {
-    $id: "#todo/create", 
+    $id: "#todo/create",
     title: "core/todo-create",
-  },
+  }
 )
 
 // Update schema (for PATCH operations)
@@ -188,7 +190,7 @@ export const todoUpdateSchema = Type.Object(
   {
     $id: "#todo/update",
     title: "core/todo-update",
-  },
+  }
 )
 
 // Type exports for TypeScript
@@ -198,6 +200,7 @@ export type TodoUpdate = Static<typeof todoUpdateSchema>
 ```
 
 **Schema Strategy:**
+
 - **Base Schema**: Common fields shared across operations
 - **Full Schema**: Complete object with timestamps for responses
 - **Create Schema**: Fields required/allowed for creation
@@ -217,14 +220,17 @@ export class TodoService {
   }
 
   // Core CRUD operations (return raw data)
-  async _createTodo(fastify: PluginFastifyInstance, todoBody: TodoCreate): Promise<TodoType> {
+  async _createTodo(
+    fastify: PluginFastifyInstance,
+    todoBody: TodoCreate
+  ): Promise<TodoType> {
     // UUID validation and duplicate checking
     if (todoBody._id) {
       const uuidValid = validate(todoBody._id)
       if (!uuidValid) {
         throw new Error("Invalid ID - not a valid uuid v4")
       }
-      
+
       const duplicate = await this.todoModel.findById(todoBody._id)
       if (duplicate) {
         throw new Error("An entry with this id already exists")
@@ -235,7 +241,7 @@ export class TodoService {
 
     const todo = new this.todoModel(todoBody)
     await todo.save()
-    
+
     fastify.log.info(`[API] Created todo #${todo._id}`)
     return todo.toObject ? todo.toObject() : todo
   }
@@ -243,24 +249,25 @@ export class TodoService {
   // Framework-integrated operations (return wrapped payloads)
   async createTodo(
     fastify: PluginFastifyInstance,
-    requestData: ClientPayloadRequestData,
-    todoBody: TodoCreate,
-  ): Promise<ClientPayload<TodoType[]>> {
+    requestData: FrontendPayloadRequestData,
+    todoBody: TodoCreate
+  ): Promise<FrontendPayload<TodoType[]>> {
     const todo = await this._createTodo(fastify, todoBody)
     const payload = await createTodoPayload(fastify, [todo], requestData)
-    
+
     if (requestData.broadcast) {
       fastify.emit("coreTodoCreated", payload)
     }
-    
+
     return payload
   }
-  
+
   // Additional CRUD methods...
 }
 ```
 
 **Service Architecture:**
+
 - **Dual Method Pattern**: Core methods (`_methodName`) return raw data, public methods return framework payloads
 - **Event Integration**: Automatic event emission for real-time updates
 - **Error Handling**: Comprehensive error catching and logging
@@ -271,7 +278,7 @@ export class TodoService {
 Centralized route registration provides a clean interface for organizing API endpoints.
 
 ```typescript
-import type { PluginFastifyInstance, PluginOptions } from "@raclettejs/raclette-core"
+import type { PluginFastifyInstance, PluginOptions } from "@raclettejs/core"
 import type { Model } from "mongoose"
 import getAllRoute from "./route.todo.get-all"
 import getByIdRoute from "./route.todo.get"
@@ -283,10 +290,10 @@ import hardDeleteRoute from "./route.todo.hard-delete"
 export const registerRoutes = async (
   fastify: PluginFastifyInstance,
   models: Record<string, Model<any>>,
-  options: PluginOptions,
+  options: PluginOptions
 ) => {
   const { key: pluginKey } = options
-  
+
   // Register individual routes
   fastify.get("/all", getAllRoute(fastify))
   fastify.get("/todo/:_id", getByIdRoute(fastify))
@@ -307,12 +314,12 @@ Each route handler is a focused module that handles a specific API endpoint.
 import type { TodoCreate } from "../todo.schema"
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { todoCreateSchema } from "../todo.schema"
-import type { PluginFastifyInstance } from "@raclettejs/raclette-types"
+import type { PluginFastifyInstance } from "@raclettejs/types"
 
 export default (fastify: PluginFastifyInstance) => {
   const handler = async (
     req: FastifyRequest<{ Body: TodoCreate }>,
-    reply: FastifyReply,
+    reply: FastifyReply
   ) => {
     try {
       const todoData = {
@@ -324,7 +331,7 @@ export default (fastify: PluginFastifyInstance) => {
       const payload = await fastify.todoService.createTodo(
         fastify,
         req.requestParams,
-        todoData,
+        todoData
       )
 
       return reply.status(201).send(payload)
@@ -351,6 +358,7 @@ export default (fastify: PluginFastifyInstance) => {
 ```
 
 **Route Handler Pattern:**
+
 - **Factory Function**: Returns route configuration object
 - **Authentication**: Built-in authentication middleware
 - **Error Handling**: Consistent error responses
@@ -452,7 +460,7 @@ const payload = await createTodoPayload(fastify, [todo], requestData)
 
 To create a new plugin following this architecture:
 
-1. **Create the directory structure**: `plugins/your_plugin_name/server/`
+1. **Create the directory structure**: `plugins/your_plugin_name/backend/`
 2. **Define your models**: Create Mongoose schemas in `[model].model.ts`
 3. **Create validation schemas**: Define TypeBox schemas in `[model].schema.ts`
 4. **Implement business logic**: Create service classes in `[model].service.ts`
@@ -497,14 +505,14 @@ async _readTodos(
   options: QueryOptions = {},
 ): Promise<TodoType[]> {
   let query = this.todoModel.find(filter)
-  
+
   if (options.limit !== undefined) {
     query = query.limit(options.limit)
   }
   if (options.offset !== undefined) {
     query = query.skip(options.offset)
   }
-  
+
   return await query.lean()
 }
 ```

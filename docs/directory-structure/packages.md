@@ -2,28 +2,28 @@
 
 The `packages.json` file serves a similar purpose to the standard `package.json`, but is specifically designed for Raclette-based applications. It allows you to define Node.js dependencies that should be installed and available within the Raclette environment.
 
-This file is structured to separate dependencies for both the **client** and the **server** layers of your application. Each section supports both `dependencies` and `devDependencies`, following the standard npm format.
+This file is structured to separate dependencies for both the **frontend** and the **backend** layers of your application. Each section supports both `dependencies` and `devDependencies`, following the standard npm format.
 
-This setup enables more fine-grained control over what packages are included in which runtime context, and helps keep the client and server environments clean and purpose-driven.
+This setup enables more fine-grained control over what packages are included in which runtime context, and helps keep the frontend and backend environments clean and purpose-driven.
 
 ::: code-group
 
 ```json [packages.json]
 {
-  "client": {
+  "frontend": {
     "dependencies": {
-      // client-side dependencies here
+      // frontend-side dependencies here
     },
     "devDependencies": {
-      // client-side dev dependencies here
+      // frontend-side dev dependencies here
     }
   },
-  "server": {
+  "backend": {
     "dependencies": {
-      // server-side dependencies here
+      // backend-side dependencies here
     },
     "devDependencies": {
-      // server-side dev dependencies here
+      // backend-side dev dependencies here
     }
   }
 }

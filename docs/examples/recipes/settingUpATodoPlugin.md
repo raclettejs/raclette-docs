@@ -36,7 +36,7 @@ SCHEMANAME: Todo
 ```
 ${PLUGINNAME:example-plugin}/
 ├── raclette.plugin.ts
-├── client/
+├── frontend/
 │   ├── index.ts
 │   └── widgets/
 │       └── ${WIDGETNAME:Example}/
@@ -44,7 +44,7 @@ ${PLUGINNAME:example-plugin}/
 │           ├── icon.svg
 │           ├── screenshot.png
 │           └── setup.ts
-└── server/
+└── backend/
     ├── index.ts
     ├── ${DATATYPE:example}.model.ts
     ├── ${DATATYPE:example}.schema.ts
@@ -62,37 +62,37 @@ ${PLUGINNAME:example-plugin}/
 
 In our `./plugins/${PLUGINNAME:example-plugin}/raclette.plugin.ts` we want to define our meta data
 
-<!--@include: ../cooking-steps/server/plugin/raclette.plugin.md-->
+<!--@include: ../cooking-steps/backend/plugin/raclette.plugin.md-->
 
 ## Server
 
 ### Declare a Schema
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.schema.ts` we want to define our Data Schema.
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/${DATATYPE:example}.schema.ts` we want to define our Data Schema.
 
-<!--@include: ../cooking-steps/server/plugin/schema.md-->
+<!--@include: ../cooking-steps/backend/plugin/schema.md-->
 
 ### Declare Model
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.model.ts` we want to define our Data model.
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/${DATATYPE:example}.model.ts` we want to define our Data model.
 
-<!--@include: ../cooking-steps/server/plugin/model.md-->
+<!--@include: ../cooking-steps/backend/plugin/model.md-->
 
 ### Declare your Helpers
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/helpers/crud.ts` we want to define our crud helpers.
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/helpers/crud.ts` we want to define our crud helpers.
 
-<!--@include: ../cooking-steps/server/plugin/helpers/crud.md-->
+<!--@include: ../cooking-steps/backend/plugin/helpers/crud.md-->
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/helpers/${DATATYPE:example}Helper.ts` we want to define our plugin helpers.
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/helpers/${DATATYPE:example}Helper.ts` we want to define our plugin helpers.
 
-<!--@include: ../cooking-steps/server/plugin/helpers/pluginHelper.md-->
+<!--@include: ../cooking-steps/backend/plugin/helpers/pluginHelper.md-->
 
 ### Declare a service file
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.service.ts` we want to define all necessary services. For now we will only provide the ability to query all ${DATATYPE:example}s
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/${DATATYPE:example}.service.ts` we want to define all necessary services. For now we will only provide the ability to query all ${DATATYPE:example}s
 
-<!--@include: ../cooking-steps/server/plugin/service.md{
+<!--@include: ../cooking-steps/backend/plugin/service.md{
 BUSINESSLOGIC: |
   async _read${SCHEMANAME:Example}s(
       fastify: PluginFastifyInstance,
@@ -133,9 +133,9 @@ BUSINESSLOGIC: |
     */
     async read${SCHEMANAME:Example}s(
       fastify: PluginFastifyInstance,
-      requestData: ClientPayloadRequestData,
+      requestData: FrontendPayloadRequestData,
       filter: { id?: string } = {},
-    ): Promise<ClientPayload<${SCHEMANAME:Example}Type[]>> {
+    ): Promise<FrontendPayload<${SCHEMANAME:Example}Type[]>> {
       try {
         const ${DATATYPE:example}s = await this._read${SCHEMANAME:Example}s(fastify, filter)
 
@@ -149,17 +149,17 @@ BUSINESSLOGIC: |
 
 ### Declare an index.ts for your routes and a simple getAll route
 
-At first lets create a super simple getAll route for our datatype. Therefor we create a `./plugins/${PLUGINNAME:example-plugin}/server/routes/${DATATYPE:example}.get-all.ts`
+At first lets create a super simple getAll route for our datatype. Therefor we create a `./plugins/${PLUGINNAME:example-plugin}/backend/routes/${DATATYPE:example}.get-all.ts`
 
-<!--@include: ../cooking-steps/server/plugin/routes/route.md{
+<!--@include: ../cooking-steps/backend/plugin/routes/route.md{
 BUSINESSLOGIC: |
   const payload = await fastify.custom.${DATATYPE:example}Service.read${SCHEMANAME:Example}s(fastify, req.requestParams)
         return payload
 }-->
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/routes/index.ts` we want define all our routes
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/routes/index.ts` we want define all our routes
 
-<!--@include: ../cooking-steps/server/plugin/routes/index.md{
+<!--@include: ../cooking-steps/backend/plugin/routes/index.md{
 IMPORT: import getAllRoute from "./route.${DATATYPE:example}.get-all"
 BUSINESSLOGIC: |
     await fastify.get("/${DATATYPE:example}/all", getAllRoute(fastify))
@@ -167,36 +167,36 @@ BUSINESSLOGIC: |
 
 ### Glue it together with cheese
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/index.ts` we we want to put everything together
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/index.ts` we we want to put everything together
 
-<!--@include: ../cooking-steps/server/plugin/index.md-->
+<!--@include: ../cooking-steps/backend/plugin/index.md-->
 
-## Client
+## Frontend
 
-For our Client side we want to create a simple todolist widget. So let's prepare everything to start coding in vue!
+For our Frontend side we want to create a simple todolist widget. So let's prepare everything to start coding in vue!
 
 ### Provide i18n and custom modification ability
 
-At first we will define `./plugins/${PLUGINNAME:example-plugin}/client/index.ts`. This file is optional but will give you the ability to install plugin dependencies, provide fixtures and i18n as well as custom routes.
+At first we will define `./plugins/${PLUGINNAME:example-plugin}/frontend/index.ts`. This file is optional but will give you the ability to install plugin dependencies, provide fixtures and i18n as well as custom routes.
 
-<!--@include: ../cooking-steps/client/plugin/index.md-->
+<!--@include: ../cooking-steps/frontend/plugin/index.md-->
 
 ### Define the widget Metadata
 
-Now we want to provide some widget meta data for later usage in the drag and drop editor and the frontend itself. We do this in the `./plugins/${PLUGINNAME:example-plugin}/client/widgets/${WIDGETNAME:Example}/index.ts`.
+Now we want to provide some widget meta data for later usage in the drag and drop editor and the frontend itself. We do this in the `./plugins/${PLUGINNAME:example-plugin}/frontend/widgets/${WIDGETNAME:Example}/index.ts`.
 
-<!--@include: ../cooking-steps/client/plugin/widgets/setup.md{
+<!--@include: ../cooking-steps/frontend/plugin/widgets/setup.md{
 WIDGETTITLE: My ${WIDGETNAME:} widget
 WIDGETDESCRIPTION: Write ${SCHEMANAME:}s on a list
 }-->
 
 ### Define the widgets Entryfile
 
-We have now prepared everything to render our i18n keys in the Frontend. Therefor we need to supply a widget entry file. This Files needs to end on `*Widget.vue` to be detected as such. Lets create the `./plugins/${PLUGINNAME:example-plugin}/client/widgets/${WIDGETNAME:Example}/${WIDGETNAME:Example}Widget.vue`
+We have now prepared everything to render our i18n keys in the Frontend. Therefor we need to supply a widget entry file. This Files needs to end on `*Widget.vue` to be detected as such. Lets create the `./plugins/${PLUGINNAME:example-plugin}/frontend/widgets/${WIDGETNAME:Example}/${WIDGETNAME:Example}Widget.vue`
 
-<!--@include: ../cooking-steps/client/plugin/widgets/entryVue.md{
+<!--@include: ../cooking-steps/frontend/plugin/widgets/entryVue.md{
 IMPORTS: |
-  import { usePluginApi } from "@raclettejs/raclette-core/orchestrator/composables"
+  import { usePluginApi } from "@raclettejs/core/orchestrator/composables"
 WIDGETTEMPLATE: |
 
   {{$i18n.t('someText')}}

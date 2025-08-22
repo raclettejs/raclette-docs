@@ -4,20 +4,20 @@ Plugins in Raclette can define **widgets** — modular, reusable components that
 
 ## Widget Declaration
 
-Widgets are registered based on their location and Foldername. Additional configuration can be provided inside each plugin’s client optional entry point: `plugins/[companyName__pluginName]/client/index.ts`
+Widgets are registered based on their location and Foldername. Additional configuration can be provided inside each plugin’s frontend optional entry point: `plugins/[companyName__pluginName]/frontend/index.ts`
 
 A widget should be organized in the following folderstructure:
 
 ```
 my-plugin/
 ├── raclette.plugin.ts            # Main plugin configuration
-├── client/                       # Client-side code (if clientDir specified)
+├── frontend/                       # Frontend-side code (if frontendDir specified)
 │   ├── [...]                     # See plugin metadata for more
 │   └── widgets/                  # Plugin widgets
 │       └── FOLDERNAME/           # Your custom Widget folder name (optional)
 │           └── NameWidget.vue    # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
 │           └── setup.ts          # Contains details and config for the widget
-└── server/                       # Server-side code (if serverDir specified)
+└── backend/                       # Server-side code (if backendDir specified)
     └── [...]                     # See plugin metadata for more
 
 ```
@@ -29,8 +29,8 @@ An example `setup.ts` would look like this:
 Here is a generic example of how a widget can be described and configured in a plugin:
 
 ```TypeScript
-// plugins/examplePlugin/client/widgets/example/setup.ts
-import type { WidgetDeclaration } from "@raclettejs/raclette-core"
+// plugins/examplePlugin/frontend/widgets/example/setup.ts
+import type { WidgetDeclaration } from "@raclettejs/core"
 import type { PropType } from "vue"
 
 export const details = {

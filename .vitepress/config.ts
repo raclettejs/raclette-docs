@@ -70,8 +70,8 @@ export default defineConfig({
               link: "/docs/plugin-development/widgets",
             },
             {
-              text: "Plugin Server-Side",
-              link: "/docs/plugin-development/server",
+              text: "Plugin Backend Side",
+              link: "/docs/plugin-development/backend",
             },
             {
               text: "Cookbook",
@@ -85,12 +85,12 @@ export default defineConfig({
                       link: "/docs/examples/recipes/settingUpATodoPlugin",
                     },
                     {
-                      text: "Creating Data on the server",
-                      link: "/docs/examples/recipes/creatingDataOnTheServer",
+                      text: "Creating Data on the backend",
+                      link: "/docs/examples/recipes/creatingDataInTheBackend",
                     },
                     {
-                      text: "Reading Data from the server",
-                      link: "/docs/examples/recipes/readingDataFromTheServer",
+                      text: "Reading Data from the backend",
+                      link: "/docs/examples/recipes/readingDataFromTheBackend",
                     },
                   ],
                 },

@@ -19,7 +19,7 @@ Configuration of system services used in development and runtime.
 
 ### services.client
 
-Frontend development server.
+Frontend development backend.
 
 - `enabled`: `boolean`  
   Whether the client service is enabled.
@@ -34,7 +34,7 @@ Frontend development server.
 - `volumes?`: `VolumeDefinition[]` _(optional)_  
   Additional volumes to mount.
 
-### services.server
+### services.backend
 
 Backend service configuration.
 
@@ -278,7 +278,7 @@ export interface RacletteConfig {
       installPackages?: string[]
       volumes?: VolumeDefinition[] // Add custom volumes property
     }
-    server?: {
+    backend?: {
       enabled: boolean
       port: number
       name?: string
@@ -449,7 +449,7 @@ export interface RacletteModule {
   name: string
   services?: Record<string, any>
   extendConfig?: (config: RacletteConfig, options: any) => RacletteConfig
-  serverExtensions?: {
+  backendExtensions?: {
     plugins?: string[]
     routes?: string[]
   }

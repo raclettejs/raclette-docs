@@ -1,5 +1,5 @@
 ```typescript
-import type { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import type { PluginFastifyInstance } from "@raclettejs/core"
 import type { Document } from "mongoose"
 import { Schema } from "mongoose"
 import { v4 as uuidv4 } from "uuid"

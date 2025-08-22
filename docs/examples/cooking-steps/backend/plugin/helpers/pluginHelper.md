@@ -1,14 +1,14 @@
 ```typescript
 import {
-  ClientPayloadRequestData,
+  FrontendPayloadRequestData,
   PluginFastifyInstance,
-} from "@raclettejs/raclette-core"
+} from "@raclettejs/core"
 import { ${SCHEMANAME:Example} } from "../${DATATYPE:example}.schema"
 
 export const create${SCHEMANAME:Example}Payload = async (
   fastify: PluginFastifyInstance,
   items: ${SCHEMANAME:Example}[],
-  requestData: ClientPayloadRequestData,
+  requestData: FrontendPayloadRequestData,
 ) => {
   const res = await fastify.createPayload("${DATATYPE:example}", items, requestData)
   return res
@@ -20,7 +20,7 @@ export const registerPayload = (fastify: PluginFastifyInstance) => {
     displayName: (item) => item.name || "",
     completion: (item) => item.name || "",
 
-    fields: (item, requestData: ClientPayloadRequestData) => ({
+    fields: (item, requestData: FrontendPayloadRequestData) => ({
       owner: "NONE",
       project: requestData.project!,
       tags: [],

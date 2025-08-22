@@ -1,5 +1,5 @@
 ```typescript
-import { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import { PluginFastifyInstance } from "@raclettejs/core"
 
 export const register${SCHEMANAME:Example}Crud = (fastify: PluginFastifyInstance) => {
   fastify.registerCrudHandlers("${DATATYPE:example}", {

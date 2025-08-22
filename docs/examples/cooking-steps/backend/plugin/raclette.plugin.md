@@ -1,5 +1,5 @@
 ```typescript
-import type { PluginMetadata } from "@raclettejs/raclette-core"
+import type { PluginMetadata } from "@raclettejs/core"
 
 export default {
   name: "Example ${SCHEMANAME:Example} Plugin",

@@ -206,13 +206,13 @@ Your plugin should follow this structure:
 ```
 my-plugin/
 ├── raclette.plugin.ts            # Main plugin configuration
-├── client/                       # Client-side code (if clientDir specified)
-│   ├── index.ts                  # Client entry point
+├── frontend/                       # Frontend-side code (if frontendDir specified)
+│   ├── index.ts                  # Frontend entry point
 │   ├── components/               # Vue components
 │   └── widgets/                  # Plugin widgets
 │       └── FOLDERNAME/           # Your custom Widget folder name (optional)
 │           └── NameWidget.vue    # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
-├── server/                       # Server-side code (if serverDir specified)
+├── backend/                       # Server-side code (if backendDir specified)
 │   ├── index.ts                  # Server entry point
 │   ├── routes/                   # API routes
 │   └── services/                 # Business logic

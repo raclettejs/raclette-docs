@@ -9,7 +9,7 @@ This configuration file is automatically loaded by Raclette when your applicatio
 A basic, empty configuration file for Raclette might look like this:
 
 ```js
-import { defineRacletteConfig } from "@raclettejs/raclette-core"
+import { defineRacletteConfig } from "@raclettejs/core"
 
 export default defineRacletteConfig({
   // Your Raclette configuration goes here
@@ -17,8 +17,9 @@ export default defineRacletteConfig({
 ```
 
 You can add various configuration properties to this file to control aspects like:
+
 - Frontend framework (e.g., Vue, React)
-- Backend services (e.g., server, database, caching)
+- Backend services (e.g., backend, database, caching)
 - Custom environment variables
 - ESLint and TypeScript settings
 - And more…

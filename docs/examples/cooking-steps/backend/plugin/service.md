@@ -8,9 +8,9 @@ import { v4 as uuidv4, validate } from "uuid"
 import { createTodoPayload } from "./helpers/${DATATYPE:example}Helper"
 import type {
   PluginFastifyInstance,
-  ClientPayload,
-  ClientPayloadRequestData,
-} from "@raclettejs/raclette-core/types"
+  FrontendPayload,
+  FrontendPayloadRequestData,
+} from "@raclettejs/core/types"
 import { Model } from "mongoose"
 
 export class ${SCHEMANAME:Example}Service {

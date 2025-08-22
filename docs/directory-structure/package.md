@@ -16,13 +16,13 @@ The minimal `package.json` of your raclette application should look like:
     "add-package": "raclette add-package"
   },
   "dependencies": {
-    "@raclettejs/raclette-core": "latest",
+    "@raclettejs/core": "latest",
     "nuxt": "latest",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
-    "@raclettejs/raclette-types": "latest"
+    "@raclettejs/types": "latest"
   }
 }
 ```

@@ -2,7 +2,7 @@
 import type { Static } from "@sinclair/typebox"
 import type { Document } from "mongoose"
 import { Type } from "@sinclair/typebox"
-import { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import { PluginFastifyInstance } from "@raclettejs/core"
 
 /**
  * Base ${SCHEMANAME:Example} Schema - Fields common to all operations

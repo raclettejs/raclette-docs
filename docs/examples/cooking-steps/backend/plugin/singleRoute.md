@@ -1,5 +1,5 @@
 ```typescript
-import type { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import type { PluginFastifyInstance } from "@raclettejs/core"
 import type { FastifyRequest, FastifyReply } from "fastify"
 import payloadHelper from "./payloadHelper"
 

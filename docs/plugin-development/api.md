@@ -1,13 +1,13 @@
-# Plugin Client API
+# Plugin Frontend API
 
-The client-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin. If you do not provide a `index.ts` file you will receive a default configured pluginApi based on your route definitions.
+The frontend-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin. If you do not provide a `index.ts` file you will receive a default configured pluginApi based on your route definitions.
 
 ## Basic Usage
 
 ```typescript
-import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
+import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
 
-export default defineRaclettePluginClient({
+export default defineRaclettePluginFrontend({
   install: async ($installApi, $corePluginApi) => {
     // Plugin initialization logic
   },
@@ -15,7 +15,7 @@ export default defineRaclettePluginClient({
     // Internationalization strings
   },
   data: {
-    // Data definitions -> only necessary for non generated values. See client/generated-config.ts
+    // Data definitions -> only necessary for non generated values. See frontend/generated-config.ts
   },
   exportComponents: {
     // Exported components
@@ -49,7 +49,7 @@ install: ($installApi: InstallApi, $corePluginApi: CorePluginApi) =>
 - `$store`: global mini-rx store
 - `$log`: logging functionality
 - `$api`: contains the global axios and fetch interface
-- `$socket`: contains the global socket.io client
+- `$socket`: contains the global socket.io frontend
 
 **Example:**
 
@@ -118,7 +118,7 @@ Define data structures and their operations that your plugin will use. Each data
 
 ```typescript
 data: {
-  [key: string]: PluginClientDataDefinition
+  [key: string]: PluginFrontendDataDefinition
 }
 ```
 
@@ -182,7 +182,7 @@ exportComponents: {
 import WeatherCard from "./components/WeatherCard.vue"
 import TemperatureDisplay from "./components/TemperatureDisplay.vue"
 
-export default defineRaclettePluginClient({
+export default defineRaclettePluginFrontend({
   exportComponents: {
     WeatherCard: WeatherCard,
     TemperatureDisplay: TemperatureDisplay,
@@ -195,11 +195,11 @@ export default defineRaclettePluginClient({
 Here's a comprehensive example of a weather plugin:
 
 ```typescript
-import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
+import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
 import WeatherWidget from "./components/WeatherWidget.vue"
 import WeatherCard from "./components/WeatherCard.vue"
 
-export default defineRaclettePluginClient({
+export default defineRaclettePluginFrontend({
   install: async ($installApi, $corePluginApi) => {
     // Initialize weather service
     $corePluginApi.$log.info("Initializing weather plugin")

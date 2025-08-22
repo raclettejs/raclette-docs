@@ -2,7 +2,7 @@
 import type {
   PluginOptions,
   PluginFastifyInstance,
-} from "@raclettejs/raclette-core"
+} from "@raclettejs/core"
 import { createModels } from "./${DATATYPE:example}.model"
 import { registerRoutes } from "./routes"
 import { registerPayload } from "./helpers/${DATATYPE:example}Helper"

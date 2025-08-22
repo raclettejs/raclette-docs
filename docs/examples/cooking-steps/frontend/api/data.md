@@ -25,7 +25,7 @@ const { ${DATAALIAS:data}, ${QUERYALIAS:query}, ${EXECUTEALIAS:execute}, ${ISLOA
 
 ::: details Props
 
-- params - The object you want to send to the server
+- params - The object you want to send to the backend
 - options
   - immediate - If true, the action will be executed right away, defaults to false
   - cb - A function which will get called after the action is resolved. Receives the result object

@@ -28,12 +28,12 @@ The wizard will guide you along and will create all needed files and folders for
 
 ---
 
-You can also manually create everything you need. The most crucial package is `@raclettejs/raclette-core` and highly recommended the `@raclettejs/raclette-workbench`
+You can also manually create everything you need. The most crucial package is `@raclettejs/core` and highly recommended the `@raclettejs/workbench`
 
 ::: code-group
 
 ```sh [yarn]
-yarn add @raclettejs/raclette-core @raclettejs/raclette-workbench
+yarn add @raclettejs/core @raclettejs/workbench
 ```
 
 :::
@@ -45,7 +45,7 @@ The config file (`raclette.config.js`) allows you to setup your raclette applica
 ::: code-group
 
 ```js [raclette.config.js]
-import { defineRacletteConfig } from "@raclettejs/raclette-core"
+import { defineRacletteConfig } from "@raclettejs/core"
 
 export default defineRacletteConfig({
   name: "raclette-dev",
@@ -78,7 +78,7 @@ To integrate Raclette into your development workflow, add the following entries 
 },
 ```
 
-This setup allows you to interact with the Raclette CLI using familiar `yarn` commands. For example, you can start your development server with:
+This setup allows you to interact with the Raclette CLI using familiar `yarn` commands. For example, you can start your development backend with:
 
 ```bash
 yarn dev

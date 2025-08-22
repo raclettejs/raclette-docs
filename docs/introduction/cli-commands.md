@@ -31,14 +31,14 @@ Starts the local development environment using Docker Compose or optionally runs
 - `-q, --quiet`  
   Run Docker Compose in detached mode without following logs.
 - `--filter <services>`  
-  Filter logs to specific services (comma-separated). Default: `client,server`.
+  Filter logs to specific services (comma-separated). Default: `frontend,backend`.
 - `--force-rebuild`  
   Force rebuild of Docker images, even if no files changed.
 
 **Example:**
 
 ```bash
-raclette dev --filter client
+raclette dev --filter frontend
 ```
 
 ---
@@ -67,7 +67,7 @@ Restarts one or more specific Docker services by name.
 **Example:**
 
 ```bash
-raclette restart client server
+raclette restart frontend backend
 ```
 
 ---
@@ -78,13 +78,13 @@ Updates project dependencies by running internal package update scripts inside c
 
 **Arguments:**
 
-- `target`: One of `client`, `server`, or `both`.  
+- `target`: One of `frontend`, `backend`, or `both`.  
   Default: `both`.
 
 **Example:**
 
 ```bash
-raclette update server
+raclette update backend
 ```
 
 ---
@@ -109,7 +109,7 @@ Adds one or more npm packages to a specific project target.
 
 **Arguments:**
 
-- `target`: One of `client`, `server`, or `both`.
+- `target`: One of `frontend`, `backend`, or `both`.
 - `package`: One or more package names to install.
 
 **Options:**
@@ -122,7 +122,7 @@ Adds one or more npm packages to a specific project target.
 **Examples:**
 
 ```bash
-raclette add-package client lodash
+raclette add-package frontend lodash
 raclette add-package both eslint --dev
 ```
 
@@ -135,7 +135,7 @@ Rebuilds Docker images for specified services. If no services are passed, Raclet
 **Example:**
 
 ```bash
-raclette rebuild client
+raclette rebuild frontend
 ```
 
 ---
@@ -154,7 +154,7 @@ raclette init
 
 ## 🧠 Tips
 
-- If you add new packages, consider running `raclette update` or restarting services with `raclette restart client server` to apply changes.
+- If you add new packages, consider running `raclette update` or restarting services with `raclette restart frontend backend` to apply changes.
 - For complete rebuilds, use:
   ```bash
   raclette dev --force-rebuild

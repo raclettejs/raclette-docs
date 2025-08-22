@@ -15,7 +15,7 @@ This expands the raclette functionality by allowing developers to not only inter
 Add the CLI Connector plugin to your Raclette project:
 
 ```bash
-yarn add @raclettejs/cli-connector-plugin
+yarn add @raclettejs/plugin-cli-connector
 ```
 
 ### 2. Configure the Plugin
@@ -27,7 +27,7 @@ Add the plugin to your `raclette.config.js` file in the `plugins` section:
 export default {
   // ... other configuration options
   plugins: [
-    "@raclettejs/cli-connector-plugin",
+    "@raclettejs/plugin-cli-connector",
     // ... other plugins
   ],
   // ... rest of configuration
@@ -38,16 +38,16 @@ export default {
 
 Create an initialization function to register your CLI commands, typically in your application's startup code or inside your self-written plugins index.ts file.
 
-Adding this to the **server** part is crucial!
+Adding this to the **backend** part is crucial!
 
 Below the example within a self-written plugin context:
 
 ```typescript
-import type { PluginFastifyInstance } from "@raclettejs/raclette-core"
+import type { PluginFastifyInstance } from "@raclettejs/core"
 import {
   registerScriptByConfig,
   setupFastify,
-} from "@raclettejs/cli-connector-plugin"
+} from "@raclettejs/plugin-cli-connector"
 
 export const initializeCliCommands = (fastify: PluginFastifyInstance) => {
   // Initialize the plugin with the Fastify instance
@@ -84,7 +84,7 @@ export default async function (fastify: PluginFastifyInstance) {
 }
 ```
 
-Once installed and configured, the plugin will be available at the `/plugin/raclette/cli-connector-plugin/` endpoint prefix. See [API Endpoints](#api-endpoints) for more details.
+Once installed and configured, the plugin will be available at the `/plugin/raclette/plugin-cli-connector/` endpoint prefix. See [API Endpoints](#api-endpoints) for more details.
 
 ## Script Registration
 
@@ -97,7 +97,7 @@ Scripts are registered programmatically using import functions. This approach pr
 Register a script using a configuration object directly in your code.
 
 ```typescript
-import { registerScriptByConfig } from "@raclettejs/cli-connector-plugin"
+import { registerScriptByConfig } from "@raclettejs/plugin-cli-connector"
 
 registerScriptByConfig("list-files", {
   exe: "/bin/ls",
@@ -113,7 +113,7 @@ registerScriptByConfig("list-files", {
 Register a script using an external YAML or JSON configuration file. Make sure to provide an absolute path to the file(s).
 
 ```typescript
-import { registerScriptByPath } from "@raclettejs/cli-connector-plugin"
+import { registerScriptByPath } from "@raclettejs/plugin-cli-connector"
 import path from "path"
 
 await registerScriptByPath(
@@ -185,7 +185,7 @@ Hooks transform input and output data. For long-running processes (jobs), it is 
 For short-running programs (default timeout: 2 seconds). Executes synchronously and returns complete results.
 
 ```json
-POST /plugin/raclette/cli-connector-plugin/script/list-files
+POST /plugin/raclette/plugin-cli-connector/script/list-files
 {
   "args": ["/home/user"]
 }
@@ -200,7 +200,7 @@ POST /plugin/raclette/cli-connector-plugin/script/list-files
 Starts a process and returns a job ID for interaction. Use this for commands that take longer than a few seconds.
 
 ```json
-POST /plugin/raclette/cli-connector-plugin/run/backup-database
+POST /plugin/raclette/plugin-cli-connector/run/backup-database
 {
   "args": ["full", "production"]
 }

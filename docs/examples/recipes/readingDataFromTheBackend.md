@@ -14,7 +14,7 @@ Will teach you how to read your previousely defined and created dataItems
 - Raclette Server running
 - Node.js 24+
 - You have finished the setting up a todo plugin example and it's up and running
-- You have created some todo items during the creating data on the server example
+- You have created some todo items during the creating data on the backend example
 
 ```variables
 PLUGINNAME: example-todoplugin
@@ -30,9 +30,9 @@ RESPONSETYPE: json
 
 ## Reading data in our widget
 
-Now we can query our endpoint with the clientApi from our component
+Now we can query our endpoint with the frontendApi from our component
 
-<!--@include: ../cooking-steps/client/api/data.md -->
+<!--@include: ../cooking-steps/frontend/api/data.md -->
 
 ::: tip
 If you want to await the retrieval of your data, set immediate: false and use `await execute()`

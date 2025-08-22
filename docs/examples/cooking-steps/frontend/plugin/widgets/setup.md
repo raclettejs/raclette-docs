@@ -1,5 +1,5 @@
 ```typescript
-import type { WidgetDeclaration } from "@raclettejs/raclette-core"
+import type { WidgetDeclaration } from "@raclettejs/core"
 
 export const details = {
   title: "${WIDGETTITLE:My Example Widget}",

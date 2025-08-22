@@ -28,9 +28,9 @@ RESPONSETYPE: json
 
 ## Declare create Service
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/${DATATYPE:example}.service.ts` we now want to define the service logic for our data creation
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/${DATATYPE:example}.service.ts` we now want to define the service logic for our data creation
 
-<!--@include: ../cooking-steps/server/plugin/service.md{
+<!--@include: ../cooking-steps/backend/plugin/service.md{
 BUSINESSLOGIC: |
   async _create${SCHEMANAME:Example}(
         fastify: PluginFastifyInstance,
@@ -70,9 +70,9 @@ BUSINESSLOGIC: |
       */
       async create${SCHEMANAME:Example}(
         fastify: PluginFastifyInstance,
-        requestData: ClientPayloadRequestData,
+        requestData: FrontendPayloadRequestData,
         ${DATATYPE:example}Body: ${SCHEMANAME:Example}Create,
-      ): Promise<ClientPayload<${SCHEMANAME:Example}Type[]>> {
+      ): Promise<FrontendPayload<${SCHEMANAME:Example}Type[]>> {
         const ${DATATYPE:example} = await this._create${SCHEMANAME:Example}(fastify, ${DATATYPE:example}Body)
 
         const payload = await create${SCHEMANAME:Example}Payload(fastify, [${DATATYPE:example}], requestData)
@@ -84,11 +84,11 @@ BUSINESSLOGIC: |
       }
 }-->
 
-## Declare route on the server side
+## Declare route on the backend side
 
-In our `./plugins/${PLUGINNAME:example-plugin}/server/routes/` we want to create a new route called `${DATATYPE:example}.create.ts`
+In our `./plugins/${PLUGINNAME:example-plugin}/backend/routes/` we want to create a new route called `${DATATYPE:example}.create.ts`
 
-<!--@include: ../cooking-steps/server/plugin/routes/route.md{
+<!--@include: ../cooking-steps/backend/plugin/routes/route.md{
 BUSINESSLOGIC: |
   // Add owner and lastEditor from the authenticated user
         const ${DATATYPE:example}Data = {
@@ -108,9 +108,9 @@ BUSINESSLOGIC: |
 
 ## Creating data in our widget
 
-Now we can query our endpoint with the clientApi fron our component
+Now we can query our endpoint with the frontendApi fron our component
 
-<!--@include: ../cooking-steps/client/api/data.md -->
+<!--@include: ../cooking-steps/frontend/api/data.md -->
 
 After defining our action and the corresponding outputs we can now trigger the action when needed.
 

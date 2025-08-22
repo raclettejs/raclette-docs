@@ -1,8 +1,8 @@
 ```typescript
-import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
+import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
 ${IMPORTEXPORTCOMPONENTS:}
 
-export default defineRaclettePluginClient({
+export default defineRaclettePluginFrontend({
   ${INSTALLFUNCTIONBODY:}
   ${DATADEFINITIONS:}
   ${EXPORTCOMPONENTS:}

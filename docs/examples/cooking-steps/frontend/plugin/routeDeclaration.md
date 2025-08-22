@@ -1,7 +1,7 @@
 ```typescript
-import { defineRaclettePluginClient } from "@raclettejs/raclette-core/client"
+import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
 
-export default defineRaclettePluginClient({
+export default defineRaclettePluginFrontend({
   data: {
     ${DATATYPE:example}: {
       operations: {

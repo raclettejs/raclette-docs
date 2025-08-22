@@ -2,7 +2,7 @@
 import type { Static } from "@sinclair/typebox"
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { Type } from "@sinclair/typebox"
-import type { PluginFastifyInstance } from "@raclettejs/raclette-types"
+import type { PluginFastifyInstance } from "@raclettejs/types"
 
 const ParamsSchema = Type.Object({
   _id: Type.String(),
