@@ -1,6 +1,8 @@
 import { defineConfig } from "vitepress"
 import { createVariablesConfig } from "./plugins/variables"
 
+const variablesConfig = createVariablesConfig()
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "raclette-docs",
@@ -9,7 +11,8 @@ export default defineConfig({
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
-  markdown: createVariablesConfig(),
+  transformPageData: variablesConfig.transformPageData,
+  //  markdown: createVariablesConfig(),
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {

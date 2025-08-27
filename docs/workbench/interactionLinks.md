@@ -6,10 +6,18 @@ Interaction Links define how and where your compositions are rendered. For now r
 
 In the interaction link list view, you can create new interaction links or edit existing ones.
 
-![Interaction Link List](/graphics/workbench/interactionLinks/list-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/interactionLinks/list-light.png"
+  dark-src="/graphics/workbench/interactionLinks/list-dark.png"
+  alt="Interaction Link List"
+/>
 
 ## Create/Edit Interaction Links
 
 The Edit and Creation Dialogues are identical. Here you can define meta data for the link, what composition is triggered and how.
 
-![Interaction Link Edit](/graphics/workbench/interactionLinks/create-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/interactionLinks/create-light.png"
+  dark-src="/graphics/workbench/interactionLinks/create-dark.png"
+  alt="Interaction Link Edit"
+/>
