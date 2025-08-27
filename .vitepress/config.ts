@@ -52,6 +52,26 @@ export default defineConfig({
               text: "Introduction",
               link: "/docs/workbench/introduction",
             },
+            {
+              text: "Compositions",
+              link: "/docs/workbench/compositions",
+            },
+            {
+              text: "Interaction Links",
+              link: "/docs/workbench/interactionLinks",
+            },
+            {
+              text: "Users",
+              link: "/docs/workbench/users",
+            },
+            {
+              text: "Tags",
+              link: "/docs/workbench/tags",
+            },
+            {
+              text: "Plugins",
+              link: "/docs/workbench/plugins",
+            },
           ],
         },
         {

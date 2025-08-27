@@ -1,10 +1,15 @@
 # raclette Workbench
 
+![Login](/graphics/workbench/login.png)
 The raclette Workbench is a built-in interface that ships with every Raclette installation. It serves as the central control panel for managing and configuring your project — without the need to write code.
 
 The workbench is primarily designed for **admin users**, not developers. It provides a visual interface for defining the structure, views, and interactions of the application.
 
 By default, the raclette Workbench is accessible at: [`http://localhost:8083/`](http://localhost:8083/)
+
+::: tip
+While the Workbench can in theory be used with touch devices, we do recommend using a device with mouse/keyboard within the workbench
+:::
 
 ## First-Time Setup
 
@@ -13,6 +18,22 @@ When opening the raclette Workbench for the first time, you’ll be guided throu
 - Choose a name for your application
 - Register an initial admin user
 - Finalize the project setup
+
+::: details Show Screenshots
+
+### Step 1
+
+![Wizard Step 1](/graphics/workbench/wizard/step1.png)
+
+### Step 2
+
+![Wizard Step 2](/graphics/workbench/wizard/step2.png)
+
+### Step 3
+
+![Wizard Step 3](/graphics/workbench/wizard/step3.png)
+
+:::
 
 Once the project is initialized, you can begin configuring it right away.
 
