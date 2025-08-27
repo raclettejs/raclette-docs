@@ -103,3 +103,43 @@ Once your development environment is running, Raclette exposes the following URL
   The visual configuration interface for managing views, users, permissions, and more.
 
 You can access both in your browser while Raclette is running.
+
+## Best Practices
+
+### Directory Structure
+
+Follow the recommended directory structure:
+
+- Place frontend-specific files in `services/frontend`
+- Place backend-specific files in `services/backend`
+- Place shared code in `services/backend/src/shared`
+- Use the `plugins` directory for reusable components
+
+### Docker Usage
+
+- Use direct mode (`yarn dev -d`) for faster development iterations
+- For full Docker integration, omit the `-d` flag
+- Filter logs to focus on relevant services with `--filter`
+
+### Configuration
+
+- Keep all configuration in `raclette.config.js`
+- Use environment variables for sensitive information
+- Create `.env` files for development and `.env.production` for production
+
+<!--
+### Module Development
+
+When creating Raclette modules:
+
+- Follow the `RacletteModule` interface
+- Use the `extendConfig` hook to modify the config
+- Provide clear documentation for module options
+- Test modules in isolation before integration
+-->
+
+### Performance Considerations
+
+- Use the virtual file system judiciously to avoid overhead
+- Prefer direct mode for development when possible
+- Consider using separate Docker volumes for node_modules to speed up builds
