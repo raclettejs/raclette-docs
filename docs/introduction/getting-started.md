@@ -13,11 +13,17 @@
 ### create-raclette-app
 
 With our CLI tool [create-raclette-app](https://www.npmjs.com/package/create-raclette-app) you can easily set up your initial raclette project.
+::: code-group
 
 ```sh [npm]
 npx create-raclette-app
 ```
 
+```sh [yarn]
+yarn create raclette-app
+```
+
+:::
 The wizard will guide you along and will create all needed files and folders for you. Following the "next steps" from the wizard.
 
 ---
