@@ -4,7 +4,7 @@ outline: deep
 
 # Plugin Metadata (`raclette.plugin.ts`)
 
-The `raclette.plugin.ts` file is the main configuration file for your Raclette plugin. It defines the plugin's metadata, entry points, and core configuration settings.
+The `raclette.plugin.ts` file is the main configuration file for your raclette plugin. It defines the plugin's metadata, entry points, and core configuration settings.
 
 ## Basic Structure
 
@@ -230,7 +230,7 @@ my-plugin/
 
 ## Validation
 
-The Raclette framework will validate your plugin metadata on load. Ensure:
+The raclette framework will validate your plugin metadata on load. Ensure:
 
 - `name` is unique across installed plugins
 - `version` follows semantic versioning format

@@ -1,10 +1,10 @@
-# Raclette Plugin Architecture: Server-Side Guide
+# raclette Plugin Architecture: Server-Side Guide
 
-This guide demonstrates how to create robust backend-side plugins in the Raclette framework. Plugins in Raclette are self-contained modules that can define their own business logic, database models, API endpoints, and services. This architectural pattern promotes modularity, reusability, and maintainability in your applications.
+This guide demonstrates how to create robust backend-side plugins in the raclette framework. Plugins in raclette are self-contained modules that can define their own business logic, database models, API endpoints, and services. This architectural pattern promotes modularity, reusability, and maintainability in your applications.
 
 ## Plugin Structure Overview
 
-A Raclette plugin follows a standardized directory structure that separates concerns and promotes code organization:
+A raclette plugin follows a standardized directory structure that separates concerns and promotes code organization:
 
 ```
 plugins/
@@ -424,7 +424,7 @@ async _removeTodo(id: string) {
 }
 ```
 
-## Integration with Raclette Framework
+## Integration with raclette Framework
 
 ### Authentication Integration
 
@@ -517,4 +517,4 @@ async _readTodos(
 }
 ```
 
-This architecture provides a robust foundation for building scalable, maintainable plugins in the Raclette framework. The separation of concerns, consistent patterns, and framework integration points ensure that your plugins will be reliable and easy to extend.
+This architecture provides a robust foundation for building scalable, maintainable plugins in the raclette framework. The separation of concerns, consistent patterns, and framework integration points ensure that your plugins will be reliable and easy to extend.

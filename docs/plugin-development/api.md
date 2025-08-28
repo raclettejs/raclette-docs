@@ -1,6 +1,6 @@
 # Plugin Frontend API
 
-The frontend-side configuration of a Raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin. If you do not provide a `index.ts` file you will receive a default configured pluginApi based on your route definitions.
+The frontend-side configuration of a raclette plugin is defined in the `index.ts` file of your plugin. This file defines the frontend functionality, components, and behavior of your plugin. If you do not provide a `index.ts` file you will receive a default configured pluginApi based on your route definitions.
 
 ## Basic Usage
 
@@ -27,7 +27,7 @@ export default defineRaclettePluginFrontend({
 
 ### `install`
 
-The install function is called when the plugin is initialized. It receives two parameters that provide access to the Raclette installation and core APIs.
+The install function is called when the plugin is initialized. It receives two parameters that provide access to the raclette installation and core APIs.
 
 ```typescript
 install: ($installApi: InstallApi, $corePluginApi: CorePluginApi) =>

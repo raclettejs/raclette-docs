@@ -1,7 +1,7 @@
 # raclette Workbench
 
 ![Login](/graphics/workbench/login.png)
-The raclette Workbench is a built-in interface that ships with every Raclette installation. It serves as the central control panel for managing and configuring your project — without the need to write code.
+The raclette Workbench is a built-in interface that ships with every raclette installation. It serves as the central control panel for managing and configuring your project — without the need to write code.
 
 The workbench is primarily designed for **admin users**, not developers. It provides a visual interface for defining the structure, views, and interactions of the application.
 

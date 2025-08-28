@@ -10,8 +10,8 @@ Will teach you how to read your previousely defined and created dataItems
 
 ## Prerequisites
 
-- Raclette CLI installed
-- Raclette Server running
+- raclette CLI installed
+- raclette Server running
 - Node.js 24+
 - You have finished the setting up a todo plugin example and it's up and running
 - You have created some todo items during the creating data on the backend example

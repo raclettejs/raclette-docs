@@ -2,15 +2,15 @@
 outline: deep
 ---
 
-# Raclette CLI
+# raclette CLI
 
-The Raclette CLI provides various commands to support local development, container management, and project scaffolding for microservice-based applications.
+The raclette CLI provides various commands to support local development, container management, and project scaffolding for microservice-based applications.
 
 ---
 
 ## 📦 Installation
 
-Once Raclette is installed and configured in your project, you can run CLI commands using:
+Once raclette is installed and configured in your project, you can run CLI commands using:
 
 ```bash
 raclette <command>
@@ -91,7 +91,7 @@ raclette update backend
 
 ### `raclette build`
 
-Builds the Raclette project for production.
+Builds the raclette project for production.
 
 This generates a production-specific `docker-compose` file and a production `tsconfig.json`.
 
@@ -130,7 +130,7 @@ raclette add-package both eslint --dev
 
 ### `raclette rebuild [services...]`
 
-Rebuilds Docker images for specified services. If no services are passed, Raclette detects file changes and rebuilds affected services automatically.
+Rebuilds Docker images for specified services. If no services are passed, raclette detects file changes and rebuilds affected services automatically.
 
 **Example:**
 
@@ -142,7 +142,7 @@ raclette rebuild frontend
 
 ### `raclette init`
 
-Initializes a new Raclette project (stubbed command for future scaffolding features).
+Initializes a new raclette project (stubbed command for future scaffolding features).
 
 **Example:**
 

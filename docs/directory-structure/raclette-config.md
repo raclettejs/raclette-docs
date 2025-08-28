@@ -1,18 +1,18 @@
 # `raclette.config.js`
 
-The `raclette.config.js` file is the main configuration file for your Raclette project. It allows you to customize and configure various aspects of the framework, from frontend settings to backend services and environment-specific variables.
+The `raclette.config.js` file is the main configuration file for your raclette project. It allows you to customize and configure various aspects of the framework, from frontend settings to backend services and environment-specific variables.
 
-This configuration file is automatically loaded by Raclette when your application starts, and it provides a centralized place to adjust the project's behavior to fit your specific needs.
+This configuration file is automatically loaded by raclette when your application starts, and it provides a centralized place to adjust the project's behavior to fit your specific needs.
 
 ## Example
 
-A basic, empty configuration file for Raclette might look like this:
+A basic, empty configuration file for raclette might look like this:
 
 ```js
 import { defineRacletteConfig } from "@raclettejs/core"
 
 export default defineRacletteConfig({
-  // Your Raclette configuration goes here
+  // Your raclette configuration goes here
 })
 ```
 

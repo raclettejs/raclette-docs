@@ -6,7 +6,7 @@ To avoid tracking dependencies in version control, make sure this directory is l
 
 :::
 
-The `.raclette` directory is the internal build output folder created automatically by the Raclette build process. It contains all generated files that are used to run the application, such as compiled code, configuration artifacts, and temporary resources.
+The `.raclette` directory is the internal build output folder created automatically by the raclette build process. It contains all generated files that are used to run the application, such as compiled code, configuration artifacts, and temporary resources.
 
 In most cases, you won't need to interact with this directory. It's primarily intended for internal use and can safely be ignored during normal development.
 

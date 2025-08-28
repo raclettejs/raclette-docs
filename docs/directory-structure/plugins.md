@@ -1,6 +1,6 @@
 # plugins
 
-The plugins directory allows you to extend your Raclette application through modular, encapsulated features. Each plugin can register both frontend and backend behavior, making it easy to build reusable functionality.
+The plugins directory allows you to extend your raclette application through modular, encapsulated features. Each plugin can register both frontend and backend behavior, making it easy to build reusable functionality.
 
 A plugin consists of a **frontend** and **backend** part:
 
@@ -33,7 +33,7 @@ This file is used to register backend-side logic for the plugin, such as adding 
 
 ---
 
-Plugins in Raclette are designed to be self-contained, making them easy to share, reuse, or disable. They integrate deeply into both frontend and backend layers of the application and are ideal for building domain-specific modules.
+Plugins in raclette are designed to be self-contained, making them easy to share, reuse, or disable. They integrate deeply into both frontend and backend layers of the application and are ideal for building domain-specific modules.
 
 ::: tip
 

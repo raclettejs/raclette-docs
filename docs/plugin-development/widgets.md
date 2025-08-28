@@ -1,6 +1,6 @@
 # Plugin Widgets
 
-Plugins in Raclette can define **widgets** — modular, reusable components that can be placed freely within the application UI. These widgets are typically used within compositions and can be dynamically configured through the admin interface.
+Plugins in raclette can define **widgets** — modular, reusable components that can be placed freely within the application UI. These widgets are typically used within compositions and can be dynamically configured through the admin interface.
 
 ## Widget Declaration
 

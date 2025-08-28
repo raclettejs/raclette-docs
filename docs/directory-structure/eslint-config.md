@@ -1,10 +1,10 @@
 # ESLint Configuration (`eslint.config.mjs`)
 
-Raclette comes with a built-in ESLint setup designed to provide sensible defaults for modern fullstack development. This configuration uses ESLint's new [flat config system](https://eslint.org/docs/latest/use/configure/configuration-files-new), and is fully integrated with Raclette's project structure.
+raclette comes with a built-in ESLint setup designed to provide sensible defaults for modern fullstack development. This configuration uses ESLint's new [flat config system](https://eslint.org/docs/latest/use/configure/configuration-files-new), and is fully integrated with raclette's project structure.
 
 ## Getting Started
 
-To activate Raclette's ESLint configuration, create an `eslint.config.mjs` file in the root of your project:
+To activate raclette's ESLint configuration, create an `eslint.config.mjs` file in the root of your project:
 
 ```js
 // eslint.config.mjs
@@ -18,7 +18,7 @@ export default withRaclette({
 })
 ```
 
-This setup wraps your custom configuration into Raclette’s default ESLint base, enabling a powerful and extendable linting system.
+This setup wraps your custom configuration into raclette default ESLint base, enabling a powerful and extendable linting system.
 
 ## Required Dependencies
 
@@ -64,7 +64,7 @@ export default withRaclette({
 ```js
 export default {
   eslint: {
-    useRecommended: true, // Set to false to disable Raclette defaults
+    useRecommended: true, // Set to false to disable raclette defaults
     rules: {
       indent: ["error", 4],
       quotes: ["error", "single"],

@@ -1,12 +1,12 @@
 # Architecture Overview
 
-Raclette is built on a modular and declarative architecture that simplifies how modern business applications are structured, configured, and rendered. At the core of Raclette lies a powerful engine — the **Core** — which handles state management, data access, user authentication, and more, while providing full flexibility to integrate with various frontend frameworks.
+raclette is built on a modular and declarative architecture that simplifies how modern business applications are structured, configured, and rendered. At the core of raclette lies a powerful engine — the **Core** — which handles state management, data access, user authentication, and more, while providing full flexibility to integrate with various frontend frameworks.
 
-This document outlines the key architectural components of a Raclette-based application and how they interact with one another.
+This document outlines the key architectural components of a raclette-based application and how they interact with one another.
 
 ## Core
 
-The **Raclette Core** is the foundation of every Raclette application. It provides:
+The **raclette Core** is the foundation of every raclette application. It provides:
 
 - **Authentication** and session management
 - A built-in **MongoDB-based database layer**
@@ -19,11 +19,11 @@ The Core **does not render any UI itself**. Instead, it exposes all necessary da
 - How the current UI is structured (via Compositions)
 - Application-wide configuration and metadata
 
-It’s this separation of data and rendering that makes Raclette so flexible and extensible.
+It’s this separation of data and rendering that makes raclette so flexible and extensible.
 
 ## raclette Workbench
 
-Every Raclette installation includes a built-in, standalone **raclette Workbench** — a web-based control center used to configure and manage your Raclette application without writing code.
+Every raclette installation includes a built-in, standalone **raclette Workbench** — a web-based control center used to configure and manage your raclette application without writing code.
 
 The Workbench allows you to:
 
@@ -37,18 +37,18 @@ Essentially, anything that doesn't require code changes can be configured here.
 
 ## Orchestrator
 
-The **Orchestrator** is a customizable project that sits on top of the Raclette Core. Its main job is to:
+The **Orchestrator** is a customizable project that sits on top of the raclette Core. Its main job is to:
 
 - Connect the Core to a specific UI framework (e.g., React, Vue, Svelte, Angular)
 - Decide how the application UI is rendered based on the data provided by the Core
 - Control the rendering logic of the frontend layer
 - Handle custom behavior and project-specific logic
 
-By separating rendering concerns into the Orchestrator, Raclette offers full flexibility and UI framework independence.
+By separating rendering concerns into the Orchestrator, raclette offers full flexibility and UI framework independence.
 
 ## Widgets
 
-**Widgets** are the smallest composable units in Raclette. Each widget combines:
+**Widgets** are the smallest composable units in raclette. Each widget combines:
 
 - A visual **UI component**
 - Its **business logic** and state configuration
@@ -74,11 +74,11 @@ Compositions are fully declarative. They act as blueprints for screens, making v
 - Which parameters should be passed
 - How the transition is handled (modal, navigation, etc.)
 
-InteractionLinks abstract away manual wiring of events. Instead, you declare **what should happen**, and Raclette takes care of the rest.
+InteractionLinks abstract away manual wiring of events. Instead, you declare **what should happen**, and raclette takes care of the rest.
 
 ## Global Store
 
-At the center of everything is Raclette’s **global Redux store**. It is the single source of truth for the application state and provides:
+At the center of everything is raclette’s **global Redux store**. It is the single source of truth for the application state and provides:
 
 - Visibility into active Widgets and Compositions
 - Access to global configuration, metadata, and context
@@ -105,6 +105,6 @@ This backend layer is fully extensible but ready to use out-of-the-box, so you c
 
 ## Summary
 
-Raclette provides a clear separation of concerns between configuration, logic, and rendering. The architecture can be visualized as:
+raclette provides a clear separation of concerns between configuration, logic, and rendering. The architecture can be visualized as:
 
 ![Architecture graphic](/graphics/architecture.jpeg)

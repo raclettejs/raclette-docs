@@ -66,7 +66,7 @@ See [Reference: raclette Config](/reference/raclette-config.md) for more.
 
 ## package.json
 
-To integrate Raclette into your development workflow, add the following entries to the `scripts` section of your project’s `package.json`:
+To integrate raclette into your development workflow, add the following entries to the `scripts` section of your project’s `package.json`:
 
 ```json
 "scripts": {
@@ -78,7 +78,7 @@ To integrate Raclette into your development workflow, add the following entries 
 },
 ```
 
-This setup allows you to interact with the Raclette CLI using familiar `yarn` commands. For example, you can start your development backend with:
+This setup allows you to interact with the raclette CLI using familiar `yarn` commands. For example, you can start your development backend with:
 
 ```bash
 yarn dev
@@ -94,7 +94,7 @@ For a complete list of available commands, refer to the [CLI documentation](/doc
 
 ## Local URLs
 
-Once your development environment is running, Raclette exposes the following URLs:
+Once your development environment is running, raclette exposes the following URLs:
 
 - **Frontend Application** → [http://localhost:8081](http://localhost:8081)  
   The rendered UI powered by your selected frontend framework (e.g. Vue or React).
@@ -102,7 +102,7 @@ Once your development environment is running, Raclette exposes the following URL
 - **raclette Workbench** → [http://localhost:8083](http://localhost:8083)  
   The visual configuration interface for managing views, users, permissions, and more.
 
-You can access both in your browser while Raclette is running.
+You can access both in your browser while raclette is running.
 
 ## Best Practices
 
@@ -130,7 +130,7 @@ Follow the recommended directory structure:
 <!--
 ### Module Development
 
-When creating Raclette modules:
+When creating raclette modules:
 
 - Follow the `RacletteModule` interface
 - Use the `extendConfig` hook to modify the config

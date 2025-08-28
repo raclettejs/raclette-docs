@@ -2,9 +2,9 @@
 outline: deep
 ---
 
-# What is Raclette?
+# What is raclette?
 
-**Raclette** is a fullstack framework designed specifically for building platforms and portals. It provides the essential building blocks that every business application needs—authentication, multi-tenancy, APIs, and UI components—so you can focus on your unique business logic.
+**raclette** is a fullstack framework designed specifically for building platforms and portals. It provides the essential building blocks that every business application needs—authentication, multi-tenancy, APIs, and UI components—so you can focus on your unique business logic.
 
 ## Core Concept
 
@@ -15,7 +15,7 @@ Every platform application follows the same pattern:
 3. UIs need dashboards, forms, and workflows
 4. Everything needs to scale across multiple tenants/organizations
 
-Raclette handles steps 1-4 out of the box. You handle your specific business requirements.
+raclette handles steps 1-4 out of the box. You handle your specific business requirements.
 
 ## Architecture
 
@@ -28,7 +28,7 @@ Raclette handles steps 1-4 out of the box. You handle your specific business req
           └─────────────────────────┼───────────────────────┘
                                     │
                         ┌───────────▼──────────────┐
-                        │     Raclette Core        │
+                        │     raclette Core        │
                         │                          │
                         │  • Auth & Permissions    │
                         │  • Multi-tenant Data     │
@@ -65,5 +65,5 @@ Raclette handles steps 1-4 out of the box. You handle your specific business req
 Ready to build your platform? Start with the [Getting Started Guide](/docs/introduction/getting-started) or explore the [API Reference](/reference/raclette-config).
 
 :::tip Development Philosophy
-Raclette follows the principle: **Common patterns should be effortless, custom logic should be powerful**. We handle the infrastructure so you can focus on what makes your platform unique.
+raclette follows the principle: **Common patterns should be effortless, custom logic should be powerful**. We handle the infrastructure so you can focus on what makes your platform unique.
 :::

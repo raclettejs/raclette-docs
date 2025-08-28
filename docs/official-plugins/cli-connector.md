@@ -1,6 +1,6 @@
 # CLI Connector Plugin
 
-The CLI Connector plugin enables Raclette developers to securely integrate existing Unix command-line tools into the Raclette GUI. It is also possible to fully execute remote commands on other machines.
+The CLI Connector plugin enables raclette developers to securely integrate existing Unix command-line tools into the raclette GUI. It is also possible to fully execute remote commands on other machines.
 
 This expands the raclette functionality by allowing developers to not only interact with APIs but also with existing CLI tooling and use them or by developing user interfaces for them.
 
@@ -12,7 +12,7 @@ This expands the raclette functionality by allowing developers to not only inter
 
 ### 1. Install the Plugin
 
-Add the CLI Connector plugin to your Raclette project:
+Add the CLI Connector plugin to your raclette project:
 
 ```bash
 yarn add @raclettejs/plugin-cli-connector
@@ -70,7 +70,7 @@ export const initializeCliCommands = (fastify: PluginFastifyInstance) => {
 
 ### 4. Call Initialization in Your App
 
-Ensure your initialization function is called when your Raclette application starts:
+Ensure your initialization function is called when your raclette application starts:
 
 ```typescript
 // In your main application file or plugin hook
@@ -437,7 +437,7 @@ The CLI Connector addresses three primary security challenges:
 
 | Role                      | Description                                                                            |
 | ------------------------- | -------------------------------------------------------------------------------------- |
-| **User**                  | Uses the Raclette GUI without necessarily knowing they're accessing command-line tools |
+| **User**                  | Uses the raclette GUI without necessarily knowing they're accessing command-line tools |
 | **User Admin**            | Uses the web interface with elevated privileges to monitor and manage processes        |
 | **Server Admin**          | Responsible for configuring which tools are exposed and how they're restricted         |
 | **JavaScript Programmer** | Customizes input forms and implements I/O sanitization hooks when needed               |

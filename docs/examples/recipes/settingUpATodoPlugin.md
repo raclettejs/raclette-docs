@@ -20,8 +20,8 @@ Will teach you how to setup everything you need to start implementing your busin
 
 ### Prerequisites
 
-- Raclette CLI installed
-- Raclette Server running
+- raclette CLI installed
+- raclette Server running
 - Node.js 24+
 
 ```variables
