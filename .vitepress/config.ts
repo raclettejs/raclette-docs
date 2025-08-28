@@ -11,8 +11,7 @@ export default defineConfig({
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
-  transformPageData: variablesConfig.transformPageData,
-  //  markdown: createVariablesConfig(),
+  markdown: createVariablesConfig(),
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
