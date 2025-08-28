@@ -1,4 +1,5 @@
-// TODO remove this once we properly compile the recipes with the cookingsteps outside of vitepress. This plugin is a mess
+// plugins/variables.ts
+import type { MarkdownRenderer } from "vitepress"
 import fs from "fs"
 import path from "path"
 import yaml from "js-yaml"
@@ -20,9 +21,6 @@ interface ParsedBlock {
   content: string
   data?: any
 }
-
-// Cache for processed files to avoid reprocessing
-const processedCache = new Map<string, { content: string; mtime: number }>()
 
 // Unified variables parser - handles both global and inline variables
 class VariablesParser {
@@ -299,158 +297,38 @@ class ContentProcessor {
   }
 }
 
-// Helper function to ensure proper spacing around Vue components
-function ensureVueComponentSpacing(content: string): string {
-  // Ensure proper spacing after Vue components for various markdown elements
-  let result = content
-
-  // Pattern to match content that needs spacing after Vue components
-  // This covers all VitePress markdown syntax that needs block-level parsing
-  const markdownBlockPatterns = [
-    // Headers
-    />\s*\n\s*(#{1,6}\s)/g,
-
-    // VitePress containers (alerts, custom containers)
-    />\s*\n\s*(:::[^:\n]*)/g,
-
-    // Code blocks
-    />\s*\n\s*(```)/g,
-
-    // Lists (unordered and ordered)
-    />\s*\n\s*([-*+]\s)/g,
-    />\s*\n\s*(\d+\.\s)/g,
-
-    // Blockquotes
-    />\s*\n\s*(>)/g,
-
-    // Tables (start with |)
-    />\s*\n\s*(\|)/g,
-
-    // Horizontal rules
-    />\s*\n\s*(---+|===+|\*\*\*+)/g,
-
-    // Math blocks (VitePress supports KaTeX)
-    />\s*\n\s*(\$\$)/g,
-
-    // HTML comments that might contain VitePress directives
-    />\s*\n\s*(<!--)/g,
-
-    // YAML frontmatter (though this should be at file start)
-    />\s*\n\s*(---\s*$)/g,
-
-    // Definition lists (if using markdown-it-deflist)
-    />\s*\n\s*([^:\n]+:(?:\s|$))/g,
-
-    // Task lists
-    />\s*\n\s*([-*+]\s*\[[ xX]\])/g,
-
-    // Footnote definitions
-    />\s*\n\s*(\[\^[^\]]+\]:)/g,
-
-    // Link reference definitions
-    />\s*\n\s*(\[[^\]]+\]:\s*)/g,
-
-    // VitePress specific: Badge syntax (if it starts a line)
-    />\s*\n\s*(<Badge\s)/g,
-  ]
-
-  // Apply spacing fixes for each pattern
-  for (const pattern of markdownBlockPatterns) {
-    result = result.replace(pattern, ">\n\n$1")
-  }
-
-  // Also ensure spacing before paragraphs that start with plain text
-  // (not already covered by the patterns above)
-  result = result.replace(/>\s*\n\s*([a-zA-Z])/g, (match, letter) => {
-    // Don't add spacing if this looks like it might be part of a larger construct
-    // This is a simple heuristic to avoid breaking inline content
-    return `>\n\n${letter}`
-  })
-
-  return result
-}
-
 // Global processor instance
-const processor = new ContentProcessor()
+const globalProcessor = new ContentProcessor()
 
-// Get processed content with caching
-function getProcessedContent(filePath: string, rootDir: string): string {
-  try {
-    const stats = fs.statSync(filePath)
-    const mtime = stats.mtimeMs
-
-    // Check cache
-    const cached = processedCache.get(filePath)
-    if (cached && cached.mtime === mtime) {
-      return cached.content
-    }
-
-    // Read and process file
-    const originalContent = fs.readFileSync(filePath, "utf-8")
-    const processedContent = processor.processContent(originalContent, {
-      variables: {},
-      filePath,
-      rootDir,
-    })
-
-    // Update cache
-    processedCache.set(filePath, { content: processedContent, mtime })
-
-    return processedContent
-  } catch (error) {
-    console.error(`Error processing file ${filePath}:`, error)
-    return fs.readFileSync(filePath, "utf-8")
-  }
-}
-
-// Main plugin setup for VitePress config
+// VitePress hook-based approach (use this in your config instead of the markdown renderer approach)
 export function createVariablesConfig(rootDir: string = process.cwd()) {
   return {
-    config(md: any) {
-      // Store processed content for each file
-      const processedFiles = new Map<string, string>()
-
-      const originalRender = md.render.bind(md)
-
-      md.render = function (src: string, env: any = {}) {
+    transformPageData(pageData: any) {
+      // Process the raw markdown content before VitePress processes it
+      if (pageData.content) {
         try {
-          let processedSrc = src
-          const filePath = env.path || env.relativePath
-
-          // If we have a file path, process the original file
-          if (filePath && fs.existsSync(filePath)) {
-            // Check if we already processed this file for this render cycle
-            if (!processedFiles.has(filePath)) {
-              processedSrc = getProcessedContent(filePath, rootDir)
-              processedFiles.set(filePath, processedSrc)
-            } else {
-              processedSrc = processedFiles.get(filePath)!
-            }
-          } else {
-            // Process the provided source directly
-            processedSrc = processor.processContent(src, {
+          const processedContent = globalProcessor.processContent(
+            pageData.content,
+            {
               variables: {},
-              filePath: filePath || "",
+              filePath: pageData.filePath || "",
               rootDir,
-            })
-          }
+            }
+          )
 
-          // Ensure proper spacing around Vue components to prevent markdown parsing issues
-          processedSrc = ensureVueComponentSpacing(processedSrc)
-
-          return originalRender(processedSrc, env)
+          // Update the page content
+          pageData.content = processedContent
         } catch (error) {
-          console.error("Error in variables plugin:", error)
-          return originalRender(src, env)
+          console.error("Error in variables plugin transformPageData:", error)
         }
       }
 
-      // Clear processed files cache on new builds
-      if (md.core && md.core.ruler) {
-        md.core.ruler.before("normalize", "clear_processed_cache", () => {
-          processedFiles.clear()
-        })
-      }
+      return pageData
+    },
+    // Keep the markdown config for backwards compatibility, but make it minimal
+    config: (md: MarkdownRenderer) => {
+      // Just log that we're using the transformPageData approach
+      console.log("Variables plugin: Using transformPageData approach")
     },
   }
 }

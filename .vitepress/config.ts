@@ -1,6 +1,8 @@
 import { defineConfig } from "vitepress"
 import { createVariablesConfig } from "./plugins/variables"
 
+const variablesConfig = createVariablesConfig()
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "raclette-docs",
