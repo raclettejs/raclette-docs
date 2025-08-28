@@ -10,10 +10,18 @@ As the Permission system is currently not fully rolled out, the only way to give
 
 In the user list view, you can create new users or edit existing ones.
 
-![User List](/graphics/workbench/users/list-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/users/list-light.png"
+  dark-src="/graphics/workbench/users/list-dark.png"
+  alt="User List"
+/>
 
 ## Create/Edit Users
 
 The Edit and Creation Dialogues are identical. Here you define the basic user data for login and identification purposes
 
-![User Edit](/graphics/workbench/users/edit-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/users/edit-light.png"
+  dark-src="/graphics/workbench/users/edit-dark.png"
+  alt="User Edit"
+/>

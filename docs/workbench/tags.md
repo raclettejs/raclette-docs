@@ -10,10 +10,18 @@ As the Permission system is currently not fully rolled out, the only way to give
 
 In the tag list view, you can create new tags or edit existing ones.
 
-![Tag List](/graphics/workbench/tags/list-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/tags/list-light.png"
+  dark-src="/graphics/workbench/tags/list-dark.png"
+  alt="Tag List"
+/>
 
 ## Create/Edit Tags
 
 The Edit and Creation Dialogues are identical. Here you can define the metadata of your tag
 
-![Tag Edit](/graphics/workbench/tags/edit-dark.png)
+<ThemeImage 
+  light-src="/graphics/workbench/tags/edit-light.png"
+  dark-src="/graphics/workbench/tags/edit-dark.png"
+  alt="Tag Edit"
+/>
