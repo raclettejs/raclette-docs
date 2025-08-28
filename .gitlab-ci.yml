@@ -1,0 +1,50 @@
+stages:
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  # Use GitLab's CI/CD variables for authentication
+  CI_REGISTRY: $CI_REGISTRY
+  CI_REGISTRY_USER: $CI_REGISTRY_USER
+  CI_REGISTRY_PASSWORD: $CI_REGISTRY_PASSWORD
+
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+# Deploy to server
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  script:
+    - |
+      # SSH into the server and deploy
+      ssh -o StrictHostKeyChecking=no -p ${SSH_PORT:-22} ${SSH_USER}@${SSH_HOST} << EOF
+
+      # Navigate to deployment directory
+      cd ${DEPLOYMENT_PATH}
+
+      # Login to registry
+      echo "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+
+      # Pull latest code and build
+      git stash
+      git pull || (echo "Git pull failed" && exit 1)
+
+      # Build the Docker image locally
+      docker-compose -f ./docker-compose.production.yml build
+
+      # Stop containers before bringing them up again
+      docker-compose -f ./docker-compose.production.yml down
+
+      # Start containers with the newly built images
+      docker-compose -f ./docker-compose.production.yml up -d
+
+      # Cleanup
+      docker system prune -f
+      EOF
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+      when: on_success
