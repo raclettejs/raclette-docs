@@ -12,6 +12,9 @@ export default defineConfig({
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
   markdown: createVariablesConfig(),
+  sitemap: {
+    hostname: "https://docs.raclettejs.com",
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
@@ -23,7 +26,6 @@ export default defineConfig({
       { text: "Docs", link: "/docs/introduction/getting-started" },
       { text: "Reference", link: "/reference/raclette-config" },
     ],
-
     sidebar: {
       "/docs/": [
         {
