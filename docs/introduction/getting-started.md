@@ -6,9 +6,9 @@
 
 - Node.js
 - yarn & npm
-- Docker
+- Docker/ Docker-Desktop
 - Terminal
-- Code Editor (VSCode is recommended)
+- Code Editor (OSS code / VsCode is recommended)
 
 ### create-raclette-app
 
