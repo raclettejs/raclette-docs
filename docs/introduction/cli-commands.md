@@ -55,7 +55,7 @@ Stops running Docker Compose services.
 **Example:**
 
 ```bash
-racletyarne down --keep-shared
+yarn down --keep-shared
 ```
 
 ---
