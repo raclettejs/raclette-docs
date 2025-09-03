@@ -9,11 +9,11 @@ The minimal `package.json` of your raclette application should look like:
   "name": "raclette-app",
   "type": "module",
   "scripts": {
-    "dev": "yarn dev",
-    "down": "yarn down",
-    "update": "yarn update",
-    "restart": "yarn restart",
-    "add-package": "yarn add-package"
+    "dev": "raclette dev",
+    "down": "raclette down",
+    "update": "raclette update",
+    "restart": "raclette restart",
+    "add-package": "raclette add-package"
   },
   "dependencies": {
     "@raclettejs/core": "latest",
