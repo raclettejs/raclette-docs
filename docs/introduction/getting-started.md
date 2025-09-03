@@ -70,11 +70,11 @@ To integrate raclette into your development workflow, add the following entries 
 
 ```json
 "scripts": {
-  "dev": "raclette dev",
-  "down": "raclette down",
-  "update": "raclette update",
-  "restart": "raclette restart",
-  "add-package": "raclette add-package"
+  "dev": "yarn dev",
+  "down": "yarn down",
+  "update": "yarn update",
+  "restart": "yarn restart",
+  "add-package": "yarn add-package"
 },
 ```
 
