@@ -1,6 +1,7 @@
 ---
 SCHEMANAME: Example
 DATATYPE: example
+BUSINESSLOGIC:
 ---
 
 ```typescript
@@ -25,7 +26,7 @@ export class {{$frontmatter.SCHEMANAME}}Service {
     this.{{$frontmatter.DATATYPE}}Model = model
   }
   [...]
-  ${BUSINESSLOGIC:/* YOUR BUSINESS LOGIC */}
+   {{$frontmatter.BUSINESSLOGIC}}
   [...]
 }
 
