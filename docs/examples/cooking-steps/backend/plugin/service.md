@@ -1,11 +1,16 @@
+---
+SCHEMANAME: Example
+DATATYPE: example
+---
+
 ```typescript
 import type {
-  ${SCHEMANAME:Example},
-  ${SCHEMANAME:Example} as ${SCHEMANAME:Example}Type,
-} from "./${DATATYPE:example}.schema"
+  {{$frontmatter.SCHEMANAME}},
+  {{$frontmatter.SCHEMANAME}} as {{$frontmatter.SCHEMANAME}}Type,
+} from "./{{$frontmatter.DATATYPE}}.schema"
 import type { QueryOptions } from "@_/types/service"
 import { v4 as uuidv4, validate } from "uuid"
-import { createTodoPayload } from "./helpers/${DATATYPE:example}Helper"
+import { createTodoPayload } from "./helpers/{{$frontmatter.DATATYPE}}Helper"
 import type {
   PluginFastifyInstance,
   FrontendPayload,
@@ -13,19 +18,19 @@ import type {
 } from "@raclettejs/core/types"
 import { Model } from "mongoose"
 
-export class ${SCHEMANAME:Example}Service {
-  private ${DATATYPE:example}Model: Model<Todo>
+export class {{$frontmatter.SCHEMANAME}}Service {
+  private {{$frontmatter.DATATYPE}}Model: Model<Todo>
 
-  constructor(model: Model<${SCHEMANAME:Example}>) {
-    this.${DATATYPE:example}Model = model
+  constructor(model: Model<{{$frontmatter.SCHEMANAME}}>) {
+    this.{{$frontmatter.DATATYPE}}Model = model
   }
   [...]
   ${BUSINESSLOGIC:/* YOUR BUSINESS LOGIC */}
   [...]
 }
 
-export const create${SCHEMANAME:Example}Service = (model: Model<${SCHEMANAME:Example}>) => {
-  return new ${SCHEMANAME:Example}Service(model)
+export const create{{$frontmatter.SCHEMANAME}}Service = (model: Model<{{$frontmatter.SCHEMANAME}}>) => {
+  return new {{$frontmatter.SCHEMANAME}}Service(model)
 }
 
 ```

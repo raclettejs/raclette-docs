@@ -1,19 +1,28 @@
+---
+IMPORTEXPORTCOMPONENTS:
+INSTALLFUNCTIONBODY:
+DATADEFINITIONS:
+EXPORTCOMPONENTS:
+GERMANTRANSLATION:
+ENGLISHTRANSLATION:
+---
+
 ```typescript
 import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
-${IMPORTEXPORTCOMPONENTS:}
+{{$frontmatter.IMPORTEXPORTCOMPONENTS}}
 
 export default defineRaclettePluginFrontend({
-  ${INSTALLFUNCTIONBODY:}
-  ${DATADEFINITIONS:}
-  ${EXPORTCOMPONENTS:}
+  {{$frontmatter.INSTALLFUNCTIONBODY}}
+  {{$frontmatter.DATADEFINITIONS}}
+  {{$frontmatter.EXPORTCOMPONENTS}}
   i18n: {
     de: {
       someText: "Etwas Text",
-      ${GERMANTRANSLATION:}
+      {{$frontmatter.GERMANTRANSLATION}}
     },
     en: {
       someText: "Some Text",
-      ${ENGLISHTRANSLATION:}
+      {{$frontmatter.ENGLISHTRANSLATION}}
     },
   },
 })

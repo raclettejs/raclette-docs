@@ -1,14 +1,32 @@
+---
+DATAALIAS: data
+QUERYALIAS: query
+EXECUTEALIAS: execute
+ISLOADINGALIAS: isLoading
+BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
+ERRORALIAS: error
+QUERY_PARAMS: null
+ROUTENAME: getAll
+DATATYPE: example
+IMMEDIATE: false
+USESTORE: true | false
+NOTIFY: true | false
+RESPONSETYPE: json | stream
+MODE: "none" | "cors"
+CALLBACK: (result) => {}
+---
+
 ```typescript
 const { $data, [...] } = usePluginApi()
-const { ${DATAALIAS:data}, ${QUERYALIAS:query}, ${EXECUTEALIAS:execute}, ${ISLOADINGALIAS:isLoading}, ${ERRORALIAS:error} } = $data.${DATATYPE:example}.${ROUTENAME:getAll}({
-  params: ${QUERY_PARAMS:null},
+const {{{$frontmatter.DATAALIAS}}, ${{$frontmatter.QUERYALIAS}}, {{$frontmatter.EXECUTEALIAS}}, {{$frontmatter.ISLOADINGALIAS}}, {{$frontmatter.ERRORALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
+  params: {{$frontmatter.QUERY_PARAMS}},
   options: {
-    immediate: ${IMMEDIATE:false | true},
-    cb: ${CALLBACK:(result) => {}},
-    useStore: ${USESTORE:true | false},
-    notify: ${NOTIFY:true | false},
-    responseType: "${RESPONSETYPE:json | stream}",
-    mode: ${MODE:"none" | "cors"},
+    immediate: {{$frontmatter.IMMEDIATE}},
+    cb: {{$frontmatter.CALLBACK}},
+    useStore: {{$frontmatter.USESTORE}},
+    notify: {{$frontmatter.NOTIFY}},
+    responseType: "{{$frontmatter.RESPONSETYPE}}",
+    mode: {{$frontmatter.MODE}},
   },
 })
 ```

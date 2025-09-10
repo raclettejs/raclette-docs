@@ -1,7 +1,5 @@
 import { defineConfig } from "vitepress"
-import { createVariablesConfig } from "./plugins/variables"
-
-const variablesConfig = createVariablesConfig()
+import recipeDocsPlugin from "./plugins/recipe-plugin"
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -11,7 +9,9 @@ export default defineConfig({
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
-  markdown: createVariablesConfig(),
+  vite: {
+    plugins: [recipeDocsPlugin()],
+  },
   sitemap: {
     hostname: "https://docs.raclettejs.com",
   },

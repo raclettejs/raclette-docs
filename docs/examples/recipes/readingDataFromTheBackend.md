@@ -1,3 +1,15 @@
+---
+PLUGINNAME: example-todoplugin
+DATATYPE: todo
+BROADCASTCHANNELS: todoUpdated
+STOREACTIONTYPE: dataPush
+BODYSCHEMA: todoUpdateSchema
+SCHEMANAME: Todo
+ROUTENAME: getAll
+ROUTEMETHOD: get
+RESPONSETYPE: json
+---
+
 # Reading Data from the Server
 
 **Estimated Time:** 5min
@@ -15,18 +27,6 @@ Will teach you how to read your previousely defined and created dataItems
 - Node.js 24+
 - You have finished the setting up a todo plugin example and it's up and running
 - You have created some todo items during the creating data on the backend example
-
-```variables
-PLUGINNAME: example-todoplugin
-DATATYPE: todo
-BROADCASTCHANNELS: todoUpdated
-STOREACTIONTYPE: dataPush
-BODYSCHEMA: todoUpdateSchema
-SCHEMANAME: Todo
-ROUTENAME: getAll
-ROUTEMETHOD: get
-RESPONSETYPE: json
-```
 
 ## Reading data in our widget
 
