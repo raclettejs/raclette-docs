@@ -263,44 +263,40 @@ export function recipeDocsPlugin(): Plugin {
     content: string,
     variables: VariableContext
   ): string {
-    // Replace {{$frontmatter.VARIABLE}} patterns
-    return content.replace(
-      /\{\{\$frontmatter\.([^}]+)\}\}/g,
-      (match, varName) => {
-        // Handle fallback syntax: VARIABLE:fallback
-        const [primaryVar, ...fallbackParts] = varName.split(":")
-        const cleanVarName = primaryVar.trim()
-        const fallback = fallbackParts.join(":").trim()
+    // Replace both {{$frontmatter.VARIABLE}} and __VARIABLE__ patterns
+    return content
+      .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, (match, varName) => {
+        return replaceVariable(match, varName, variables)
+      })
+      .replace(/__([A-Z_][A-Z0-9_]*)__/g, (match, varName) => {
+        return replaceVariable(match, varName, variables)
+      })
+  }
 
-        const value = variables[cleanVarName]
+  function replaceVariable(
+    match: string,
+    varName: string,
+    variables: VariableContext
+  ): string {
+    // Handle fallback syntax: VARIABLE:fallback
+    const [primaryVar, ...fallbackParts] = varName.split(":")
+    const cleanVarName = primaryVar.trim()
+    const fallback = fallbackParts.join(":").trim()
 
-        if (value !== undefined && value !== null) {
-          return String(value)
-        } else if (fallback) {
-          return fallback
-        } else {
-          // Variable not found, log and render empty string
-          console.log(
-            `[recipe-docs] Variable '${cleanVarName}' not found - rendering empty string`
-          )
-          return ""
-        }
-      }
-    )
+    const value = variables[cleanVarName]
+
+    if (value !== undefined && value !== null) {
+      return String(value)
+    } else if (fallback) {
+      return fallback
+    } else {
+      // Variable not found, log and render empty string
+      console.log(
+        `[recipe-docs] Variable '${cleanVarName}' not found - rendering empty string`
+      )
+      return ""
+    }
   }
 }
 
 export default recipeDocsPlugin
-
-// Usage in vite.config.ts:
-/*
-import { defineConfig } from 'vite'
-import recipeDocsPlugin from './plugins/recipe-docs'
-
-export default defineConfig({
-  plugins: [
-    recipeDocsPlugin(),
-    // ... other VitePress plugins
-  ],
-})
-*/

@@ -5,11 +5,10 @@ BUSINESSLOGIC:
 
 ```typescript
 import type { PluginFastifyInstance } from "@raclettejs/core"
-{{$frontmatter.IMPORT}}
+__IMPORT__
 
 export const registerRoutes = async (fastify: PluginFastifyInstance) => {
   // Register individual routes
-  {{$frontmatter.BUSINESSLOGIC}}
+  __BUSINESSLOGIC__
 }
-
 ```

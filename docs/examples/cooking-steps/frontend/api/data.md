@@ -5,14 +5,14 @@ EXECUTEALIAS: execute
 ISLOADINGALIAS: isLoading
 BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
 ERRORALIAS: error
-QUERY_PARAMS: null
+QUERY_PARAMS: {}
 ROUTENAME: getAll
 DATATYPE: example
 IMMEDIATE: false
 USESTORE: true | false
 NOTIFY: true | false
 RESPONSETYPE: json | stream
-MODE: "none" | "cors"
+MODE: none | cors
 CALLBACK: (result) => {}
 ---
 
@@ -26,7 +26,7 @@ const {{{$frontmatter.DATAALIAS}}, ${{$frontmatter.QUERYALIAS}}, {{$frontmatter.
     useStore: {{$frontmatter.USESTORE}},
     notify: {{$frontmatter.NOTIFY}},
     responseType: "{{$frontmatter.RESPONSETYPE}}",
-    mode: {{$frontmatter.MODE}},
+    mode: "{{$frontmatter.MODE}}",
   },
 })
 ```
