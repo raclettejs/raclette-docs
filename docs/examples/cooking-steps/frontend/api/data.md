@@ -2,6 +2,7 @@
 DATAALIAS: data
 QUERYALIAS: query
 EXECUTEALIAS: execute
+RESPONSEALIAS: response
 ISLOADINGALIAS: isLoading
 BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
 ERRORALIAS: error
@@ -13,13 +14,15 @@ USESTORE: true | false
 NOTIFY: true | false
 RESPONSETYPE: json | stream
 MODE: none | cors
+QUERY_ID: false
 CALLBACK: (result) => {}
 ---
 
 ```typescript
 const { $data, [...] } = usePluginApi()
-const {{{$frontmatter.DATAALIAS}}, ${{$frontmatter.QUERYALIAS}}, {{$frontmatter.EXECUTEALIAS}}, {{$frontmatter.ISLOADINGALIAS}}, {{$frontmatter.ERRORALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
+const {{{$frontmatter.DATAALIAS}}, {{$frontmatter.RESPONSEALIAS}}, {{$frontmatter.QUERYALIAS}}, {{$frontmatter.EXECUTEALIAS}}, {{$frontmatter.ISLOADINGALIAS}}, {{$frontmatter.ERRORALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
   params: {{$frontmatter.QUERY_PARAMS}},
+  id: {{$frontmatter.QUERY_ID}},
   options: {
     immediate: {{$frontmatter.IMMEDIATE}},
     cb: {{$frontmatter.CALLBACK}},
@@ -34,6 +37,7 @@ const {{{$frontmatter.DATAALIAS}}, ${{$frontmatter.QUERYALIAS}}, {{$frontmatter.
 ::: details Returns
 
 - data - The resultobject
+- response - The response from the server
 - query - the query object
 - execute - an awaitable funciton to trigger the action call
 - isLoading - a boolean indicator for the loading/fetch state
@@ -43,6 +47,7 @@ const {{{$frontmatter.DATAALIAS}}, ${{$frontmatter.QUERYALIAS}}, {{$frontmatter.
 
 ::: details Props
 
+- id - if set this will be used instead of the query instance nanoId
 - params - The object you want to send to the backend
 - options
   - immediate - If true, the action will be executed right away, defaults to false
