@@ -13,7 +13,7 @@ IMMEDIATE: false
 USESTORE: true | false
 NOTIFY: true | false
 RESPONSETYPE: json | stream
-MODE: none | cors
+MODE: none || cors
 QUERY_ID: false
 CALLBACK: (result) => {}
 ---
@@ -52,7 +52,7 @@ const {{{$frontmatter.DATAALIAS}}, {{$frontmatter.RESPONSEALIAS}}, {{$frontmatte
 - options
   - immediate - If true, the action will be executed right away, defaults to false
   - cb - A function which will get called after the action is resolved. Receives the result object
-  - useStore - If false, will not write the data to the redux store, defaults to true
+  - useStore - If false, will not write the data to the redux store. The data return will also not be available, use response instead. defaults to true
   - notify - if false, will not write into the notification que and snackbar, defaults to true
   - responseType - only used if you want to explicitly receive a http stream. Set to stream in that case, defaults to json
   - mode - if responseType is stream, you can set mode "cors" here
