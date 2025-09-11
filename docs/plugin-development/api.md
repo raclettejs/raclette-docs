@@ -290,6 +290,7 @@ const { $data } = usePluginApi()
 const {
   data: weatherData,
   query: weatherQuery,
+  response,
   execute,
   isLoading,
   error,
