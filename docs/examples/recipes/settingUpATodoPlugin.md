@@ -192,12 +192,9 @@ WIDGETDESCRIPTION: Write {{$frontmatter.SCHEMANAME}}s on a list
 We have now prepared everything to render our i18n keys in the Frontend. Therefor we need to supply a widget entry file. This Files needs to end on `*Widget.vue` to be detected as such. Lets create the `./plugins/{{$frontmatter.PLUGINNAME}}/frontend/widgets/{{$frontmatter.WIDGETNAME}}/{{$frontmatter.WIDGETNAME}}Widget.vue`
 
 <!--@include: ../cooking-steps/frontend/plugin/widgets/entryVue.md{
-IMPORTS: |
-  import { usePluginApi } from "@raclettejs/core/orchestrator/composables"
-WIDGETTEMPLATE: |
-  {{$i18n.t('someText')}}
-BUSINESSLOGIC: |
-  const { $i18n } = usePluginApi()
+IMPORTS: import { usePluginApi } from "@raclettejs/core/orchestrator/composables"
+WIDGETTEMPLATE: {{$i18n.t('someText')}}
+BUSINESSLOGIC: const { $i18n } = usePluginApi()
 }-->
 
 ### Head to the Worbench and bring your hotsauce!

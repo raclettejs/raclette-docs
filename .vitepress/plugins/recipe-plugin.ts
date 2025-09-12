@@ -263,14 +263,71 @@ export function recipeDocsPlugin(): Plugin {
     content: string,
     variables: VariableContext
   ): string {
-    // Replace both {{$frontmatter.VARIABLE}} and __VARIABLE__ patterns
-    return content
-      .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, (match, varName) => {
-        return replaceVariable(match, varName, variables)
-      })
-      .replace(/__([A-Z_][A-Z0-9_]*)__/g, (match, varName) => {
-        return replaceVariable(match, varName, variables)
-      })
+    // Split into lines for processing
+    const lines = content.split("\n")
+
+    const processedLines = lines.map((line) => {
+      // Check if line contains only whitespace and a single variable
+      const variableMatches = [
+        ...line.matchAll(/\{\{\$frontmatter\.([^}]+)\}\}/g),
+        ...line.matchAll(/__([A-Z_][A-Z0-9_]*)__/g),
+      ]
+
+      // If line has only one variable and nothing else meaningful, handle specially
+      if (variableMatches.length === 1) {
+        const restOfLine = line
+          .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, "")
+          .replace(/__([A-Z_][A-Z0-9_]*)__/g, "")
+          .trim()
+
+        if (restOfLine === "" || /^[\s,]*$/.test(restOfLine)) {
+          // Line contains only the variable (and maybe whitespace/comma)
+          const match = variableMatches[0]
+          const varName = match[1]
+          const value = getVariableValue(varName, variables)
+
+          if (value.length === 0) {
+            // Return null to indicate this line should be removed
+            return null
+          }
+        }
+      }
+
+      // Regular replacement for all other cases
+      return line
+        .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, (match, varName) => {
+          return replaceVariable(match, varName, variables)
+        })
+        .replace(/__([A-Z_][A-Z0-9_]*)__/g, (match, varName) => {
+          return replaceVariable(match, varName, variables)
+        })
+    })
+
+    // Filter out null lines (empty variables on their own lines)
+    return processedLines.filter((line) => line !== null).join("\n")
+  }
+
+  function getVariableValue(
+    varName: string,
+    variables: VariableContext
+  ): string {
+    const [primaryVar, ...fallbackParts] = varName.split(":")
+    const cleanVarName = primaryVar.trim()
+    const fallback = fallbackParts.join(":").trim()
+
+    const value = variables[cleanVarName]
+    let stringValue = value !== undefined && value !== null ? String(value) : ""
+
+    // Handle YAML block scalars - remove trailing newlines for inline usage
+    stringValue = stringValue.replace(/\n+$/, "")
+
+    if (stringValue.length > 0) {
+      return stringValue
+    } else if (fallback) {
+      return fallback
+    } else {
+      return ""
+    }
   }
 
   function replaceVariable(
@@ -278,24 +335,17 @@ export function recipeDocsPlugin(): Plugin {
     varName: string,
     variables: VariableContext
   ): string {
-    // Handle fallback syntax: VARIABLE:fallback
-    const [primaryVar, ...fallbackParts] = varName.split(":")
-    const cleanVarName = primaryVar.trim()
-    const fallback = fallbackParts.join(":").trim()
+    const value = getVariableValue(varName, variables)
 
-    const value = variables[cleanVarName]
-
-    if (value !== undefined && value !== null) {
-      return String(value)
-    } else if (fallback) {
-      return fallback
-    } else {
-      // Variable not found, log and render empty string
+    if (value.length === 0) {
       console.log(
-        `[recipe-docs] Variable '${cleanVarName}' not found - rendering empty string`
+        `[recipe-docs] Variable '${varName
+          .split(":")[0]
+          .trim()}' is empty - replacing with empty string`
       )
-      return ""
     }
+
+    return value
   }
 }
 
