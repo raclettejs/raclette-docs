@@ -118,9 +118,9 @@ After defining our action and the corresponding outputs we can now trigger the a
 const createData = async (newItem) => {
   // log the action outputs before and after to see what happens!
   console.log(data, query, execute, isLoading, error)
-  const createdItem = await execute(newItem)
+  const { result, response } = await execute(newItem)
   // log the action outputs before and after to see what happens!
-  console.log(createdItem)
+  console.log(result, response)
   console.log(data, query, execute, isLoading, error)
 }
 ```

@@ -44,9 +44,9 @@ After defining our action and the corresponding outputs we can now trigger the a
 const getData = async (newItem) => {
   // log the action outputs before and after to see what happens!
   console.log(data, query, execute, isLoading, error)
-  const allItems = await execute()
+  const { response, result } = await execute()
   // log the action outputs before and after to see what happens!
-  console.log(allItems)
+  console.log(response, result)
   console.log(data, query, execute, isLoading, error)
 }
 ```
