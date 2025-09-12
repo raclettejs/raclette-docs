@@ -41,7 +41,7 @@ const {{{$frontmatter.DATA_ALIAS}},{{$frontmatter.DATAARR_ALIAS}}, {{$frontmatte
 - {{$frontmatter.DATAARR_ALIAS}} - The resultArray
 - {{$frontmatter.RESPONSE_ALIAS}} - The response from the server
 - {{$frontmatter.QUERY_ALIAS}} - the query object (only in reading queries)
-- {{$frontmatter.EXECUTE_ALIAS}} - an awaitable funciton to trigger the action call
+- {{$frontmatter.EXECUTE_ALIAS}} - an awaitable funciton to trigger the action call. The response and result returned from this functions are not reactive! Use {{$frontmatter.DATAARR_ALIAS}} or {{$frontmatter.DATA_ALIAS}}
 - {{$frontmatter.ISLOADING_ALIAS}} - a boolean indicator for the loading/fetch state
 - {{$frontmatter.ERROR_ALIAS}} - contains the error object if errors are catched
 

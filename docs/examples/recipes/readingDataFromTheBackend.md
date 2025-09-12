@@ -50,3 +50,7 @@ const getData = async (newItem) => {
   console.log(data, query, execute, isLoading, error)
 }
 ```
+
+::: tip
+Be aware that the returns of execute are not reactive like the data and dataArr
+:::
