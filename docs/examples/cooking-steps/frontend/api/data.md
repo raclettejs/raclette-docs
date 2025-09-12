@@ -1,11 +1,12 @@
 ---
-DATAALIAS: data
-QUERYALIAS: query
-EXECUTEALIAS: execute
-RESPONSEALIAS: response
-ISLOADINGALIAS: isLoading
+DATA_ALIAS: data
+DATAARR_ALIAS: dataArr
+QUERY_ALIAS: query
+EXECUTE_ALIAS: execute
+RESPONSE_ALIAS: response
+ISLOADING_ALIAS: isLoading
 BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
-ERRORALIAS: error
+ERROR_ALIAS: error
 QUERY_PARAMS: {}
 ROUTENAME: getAll
 DATATYPE: example
@@ -13,14 +14,14 @@ IMMEDIATE: false
 USESTORE: true | false
 NOTIFY: true | false
 RESPONSETYPE: json | stream
-MODE: none || cors
+MODE: none | cors
 QUERY_ID: false
 CALLBACK: (result) => {}
 ---
 
 ```typescript
 const { $data, [...] } = usePluginApi()
-const {{{$frontmatter.DATAALIAS}}, {{$frontmatter.RESPONSEALIAS}}, {{$frontmatter.QUERYALIAS}}, {{$frontmatter.EXECUTEALIAS}}, {{$frontmatter.ISLOADINGALIAS}}, {{$frontmatter.ERRORALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
+const {{{$frontmatter.DATA_ALIAS}},{{$frontmatter.DATAARR_ALIAS}}, {{$frontmatter.RESPONSE_ALIAS}}, {{$frontmatter.QUERY_ALIAS}}, {{$frontmatter.EXECUTE_ALIAS}}, {{$frontmatter.ISLOADING_ALIAS}}, {{$frontmatter.ERROR_ALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
   params: {{$frontmatter.QUERY_PARAMS}},
   id: {{$frontmatter.QUERY_ID}},
   options: {
@@ -36,12 +37,13 @@ const {{{$frontmatter.DATAALIAS}}, {{$frontmatter.RESPONSEALIAS}}, {{$frontmatte
 
 ::: details Returns
 
-- data - The resultobject
-- response - The response from the server
-- query - the query object
-- execute - an awaitable funciton to trigger the action call
-- isLoading - a boolean indicator for the loading/fetch state
-- error - contains the error object if errors are catched
+- {{$frontmatter.DATA_ALIAS}} - The resultobject
+- {{$frontmatter.DATAARR_ALIAS}} - The resultArray
+- {{$frontmatter.RESPONSE_ALIAS}} - The response from the server
+- {{$frontmatter.QUERY_ALIAS}} - the query object (only in reading queries)
+- {{$frontmatter.EXECUTE_ALIAS}} - an awaitable funciton to trigger the action call
+- {{$frontmatter.ISLOADING_ALIAS}} - a boolean indicator for the loading/fetch state
+- {{$frontmatter.ERROR_ALIAS}} - contains the error object if errors are catched
 
 ::::
 
