@@ -21,7 +21,7 @@ CALLBACK: (result) => {}
 
 ```typescript
 const { $data, [...] } = usePluginApi()
-const {{{$frontmatter.DATA_ALIAS}},{{$frontmatter.DATAARR_ALIAS}}, {{$frontmatter.RESPONSE_ALIAS}}, {{$frontmatter.QUERY_ALIAS}}, {{$frontmatter.EXECUTE_ALIAS}}, {{$frontmatter.ISLOADING_ALIAS}}, {{$frontmatter.ERROR_ALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
+const {{{$frontmatter.DATA_ALIAS}}, {{$frontmatter.DATAARR_ALIAS}}, {{$frontmatter.RESPONSE_ALIAS}}, {{$frontmatter.QUERY_ALIAS}}, {{$frontmatter.EXECUTE_ALIAS}}, {{$frontmatter.ISLOADING_ALIAS}}, {{$frontmatter.ERROR_ALIAS}} } = $data.{{$frontmatter.DATATYPE}}.{{$frontmatter.ROUTENAME}}({
   params: {{$frontmatter.QUERY_PARAMS}},
   id: {{$frontmatter.QUERY_ID}},
   options: {
