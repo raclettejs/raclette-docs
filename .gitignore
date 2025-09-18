@@ -19,5 +19,4 @@ logs
 # Vitepress
 .vitepress/cache
 .vitepress/dist
-
-.vscode
+.vitepress/.temp

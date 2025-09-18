@@ -1,8 +1,14 @@
+---
+IMPORTS: 
+WIDGETTEMPLATE:
+BUSINESSLOGIC: 
+---
+
 ```vue
-<template>${WIDGETTEMPLATE:}</template>
+<template>{{$frontmatter.WIDGETTEMPLATE}}</template>
 
 <script setup lang="ts">
-${IMPORTS:}
+{{$frontmatter.IMPORTS}}
 
 const props = defineProps({
   uuid: {
@@ -11,6 +17,6 @@ const props = defineProps({
   },
 })
 
-${BUSINESSLOGIC:}
+{{$frontmatter.BUSINESSLOGIC}}
 </script>
 ```

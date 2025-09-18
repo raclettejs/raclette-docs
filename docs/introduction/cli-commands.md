@@ -13,14 +13,14 @@ The raclette CLI provides various commands to support local development, contain
 Once raclette is installed and configured in your project, you can run CLI commands using:
 
 ```bash
-raclette <command>
+yarn <command>
 ```
 
 ---
 
 ## 🔧 Available Commands
 
-### `raclette dev`
+### `yarn dev`
 
 Starts the local development environment using Docker Compose or optionally runs services directly.
 
@@ -38,12 +38,12 @@ Starts the local development environment using Docker Compose or optionally runs
 **Example:**
 
 ```bash
-raclette dev --filter frontend
+yarn dev --filter frontend
 ```
 
 ---
 
-### `raclette down`
+### `yarn down`
 
 Stops running Docker Compose services.
 
@@ -55,24 +55,24 @@ Stops running Docker Compose services.
 **Example:**
 
 ```bash
-raclette down --keep-shared
+yarn down --keep-shared
 ```
 
 ---
 
-### `raclette restart [services...]`
+### `yarn restart [services...]`
 
 Restarts one or more specific Docker services by name.
 
 **Example:**
 
 ```bash
-raclette restart frontend backend
+yarn restart frontend backend
 ```
 
 ---
 
-### `raclette update [target]`
+### `yarn update [target]`
 
 Updates project dependencies by running internal package update scripts inside containers.
 
@@ -84,12 +84,12 @@ Updates project dependencies by running internal package update scripts inside c
 **Example:**
 
 ```bash
-raclette update backend
+yarn update backend
 ```
 
 ---
 
-### `raclette build`
+### `yarn build`
 
 Builds the raclette project for production.
 
@@ -98,12 +98,12 @@ This generates a production-specific `docker-compose` file and a production `tsc
 **Example:**
 
 ```bash
-raclette build
+yarn build
 ```
 
 ---
 
-### `raclette add-package <target> <package...>`
+### `yarn add-package <target> <package...>`
 
 Adds one or more npm packages to a specific project target.
 
@@ -122,40 +122,40 @@ Adds one or more npm packages to a specific project target.
 **Examples:**
 
 ```bash
-raclette add-package frontend lodash
-raclette add-package both eslint --dev
+yarn add-package frontend lodash
+yarn add-package both eslint --dev
 ```
 
 ---
 
-### `raclette rebuild [services...]`
+### `yarn rebuild [services...]`
 
 Rebuilds Docker images for specified services. If no services are passed, raclette detects file changes and rebuilds affected services automatically.
 
 **Example:**
 
 ```bash
-raclette rebuild frontend
+yarn rebuild frontend
 ```
 
 ---
 
-### `raclette init`
+### `yarn init`
 
 Initializes a new raclette project (stubbed command for future scaffolding features).
 
 **Example:**
 
 ```bash
-raclette init
+yarn init
 ```
 
 ---
 
 ## 🧠 Tips
 
-- If you add new packages, consider running `raclette update` or restarting services with `raclette restart frontend backend` to apply changes.
+- If you add new packages, consider running `yarn update` or restarting services with `yarn restart frontend backend` to apply changes.
 - For complete rebuilds, use:
   ```bash
-  raclette dev --force-rebuild
+  yarn dev --force-rebuild
   ```

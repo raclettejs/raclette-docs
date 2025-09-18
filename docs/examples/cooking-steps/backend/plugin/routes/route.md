@@ -1,3 +1,14 @@
+---
+SCHEMANAME: Example
+DATATYPE: example
+STOREACTIONTYPE: dataUpdate
+BROADCASTCHANNELS: exampleUpdated
+BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
+ROUTEMETHOD: get
+BODYSCHEMA: exampleBaseSchema
+ROUTENAME: get
+---
+
 ```typescript
 import type { Static } from "@sinclair/typebox"
 import type { FastifyReply, FastifyRequest } from "fastify"
@@ -17,7 +28,7 @@ export default (fastify: PluginFastifyInstance) => {
     reply: FastifyReply,
   ) => {
     try {
-      ${BUSINESSLOGIC:/* YOUR BUSINESS LOGIC */}
+      {{$frontmatter.BUSINESSLOGIC}}
     } catch (err: any) {
       fastify.log.error(err.message)
       return reply.internalServerError(err.message)
@@ -28,14 +39,14 @@ export default (fastify: PluginFastifyInstance) => {
     handler,
     onRequest: [fastify.authenticate],
     config: {
-      type: "${STOREACTIONTYPE:dataUpdate}",
-      broadcastChannels: ["${BROADCASTCHANNELS:exampleUpdated}"],
+      type: "{{$frontmatter.dataUpdate}}",
+      broadcastChannels: ["{{$frontmatter.BROADCASTCHANNELS}}"],
     },
     schema: {
-      summary: "Example ${DATATYPE:example} ${ROUTEMETHOD} Route",
-      description: "Example ${DATATYPE:example} ${ROUTENAME} Route",
-      tags: ["myApp/${DATATYPE:example}"],
-      body: ${BODYSCHEMA:exampleBaseSchema},
+      summary: "Example {{$frontmatter.DATATYPE}} {{$frontmatter.ROUTEMETHOD}} Route",
+      description: "Example {{$frontmatter.DATATYPE}} {{$frontmatter.ROUTENAME}} Route",
+      tags: ["myApp/{{$frontmatter.DATATYPE}}"],
+      body: {{$frontmatter.BODYSCHEMA}},
     },
   }
 }

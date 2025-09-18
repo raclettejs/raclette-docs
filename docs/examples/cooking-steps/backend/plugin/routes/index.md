@@ -1,10 +1,14 @@
+---
+IMPORT:
+BUSINESSLOGIC:
+---
+
 ```typescript
 import type { PluginFastifyInstance } from "@raclettejs/core"
-${IMPORT}
+__IMPORT__
 
 export const registerRoutes = async (fastify: PluginFastifyInstance) => {
   // Register individual routes
-  ${BUSINESSLOGIC}
+  __BUSINESSLOGIC__
 }
-
 ```

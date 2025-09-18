@@ -166,6 +166,12 @@ See [SocketConfig](#socketconfig) for full details.
 
 - Type: `Record<string, any>` _(optional)_
 
+### backend.cacheTTL
+
+- Type: `number` _(optional)_  
+  Defines a default time to live for backend cache entries.  
+  If a default TTL is set, a -1 TTL must be explicitly passed to cache.cache() to have no TTL.
+
 ## typescript
 
 - Type: `object` _(optional)_

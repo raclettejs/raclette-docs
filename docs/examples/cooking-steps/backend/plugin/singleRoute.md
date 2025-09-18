@@ -1,26 +1,37 @@
+---
+SCHEMANAME: Example
+DATATYPE: example
+STOREACTIONTYPE: dataUpdate
+BROADCASTCHANNELS: exampleUpdated
+BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
+ROUTEMETHOD: get
+BODYSCHEMA: exampleBaseSchema
+ROUTENAME: get
+---
+
 ```typescript
 import type { PluginFastifyInstance } from "@raclettejs/core"
 import type { FastifyRequest, FastifyReply } from "fastify"
 import payloadHelper from "./payloadHelper"
 
 export const registerRoutes = async (fastify: PluginFastifyInstance) => {
-  fastify.${ROUTEMETHOD:get}("/${DATATYPE:example}/${ROUTENAME:get}", {
+  fastify.{{$frontmatter.ROUTEMETHOD}}("/{{$frontmatter.DATATYPE}}/{{$frontmatter.ROUTENAME}}", {
     handler: async (
       req: FastifyRequest,
       reply: FastifyReply
     ) => {
-      ${BUSINESSLOGIC:/* YOUR BUSINESS LOGIC */}
+      {{$frontmatter.BUSINESSLOGIC}}
     },
     onRequest: [fastify.authenticate],
     config: {
-      type: "${STOREACTIONTYPE:dataUpdate}",
-      broadcastChannels: ["${BROADCASTCHANNELS:exampleUpdated}"],
+      type: "{{$frontmatter.dataUpdate}}",
+      broadcastChannels: ["{{$frontmatter.BROADCASTCHANNELS}}"],
     },
     schema: {
-      summary: "Example ${DATATYPE:example} ${ROUTEMETHOD} Route",
-      description: "Example ${DATATYPE:example} ${ROUTENAME} Route",
-      tags: ["myApp/${DATATYPE:example}"],
-      body: ${BODYSCHEMA:exampleBaseSchema},
+      summary: "Example {{$frontmatter.DATATYPE}} {{$frontmatter.ROUTEMETHOD}} Route",
+      description: "Example {{$frontmatter.DATATYPE}} {{$frontmatter.ROUTENAME}} Route",
+      tags: ["myApp/{{$frontmatter.DATATYPE}}"],
+      body: {{$frontmatter.BODYSCHEMA}},
     },
   })
 }

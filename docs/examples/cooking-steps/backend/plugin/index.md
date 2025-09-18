@@ -1,16 +1,21 @@
+---
+SCHEMANAME: Example
+DATATYPE: example
+---
+
 ```typescript
 import type {
   PluginOptions,
   PluginFastifyInstance,
 } from "@raclettejs/core"
-import { createModels } from "./${DATATYPE:example}.model"
+import { createModels } from "./{{$frontmatter.DATATYPE}}.model"
 import { registerRoutes } from "./routes"
-import { registerPayload } from "./helpers/${DATATYPE:example}Helper"
-import { register${SCHEMANAME:Example}Schemas } from "./${DATATYPE:example}.schema"
-import { register${SCHEMANAME:Example}Crud } from "./helpers/crud"
-import { create${SCHEMANAME:Example}Service } from "./${DATATYPE:example}.service"
+import { registerPayload } from "./helpers/{{$frontmatter.DATATYPE}}Helper"
+import { register{{$frontmatter.SCHEMANAME}}Schemas } from "./{{$frontmatter.DATATYPE}}.schema"
+import { register{{$frontmatter.SCHEMANAME}}Crud } from "./helpers/crud"
+import { create{{$frontmatter.SCHEMANAME}}Service } from "./{{$frontmatter.DATATYPE}}.service"
 
-const ${DATATYPE:example}Plugin = async (
+const {{$frontmatter.DATATYPE}}Plugin = async (
   fastify: PluginFastifyInstance,
   _opts: PluginOptions,
 ) => {
@@ -21,9 +26,9 @@ const ${DATATYPE:example}Plugin = async (
    */
   const models = createModels(fastify)
 
-  const ${DATATYPE:example}Service = create${SCHEMANAME:Example}Service(models.${DATATYPE:example})
+  const {{$frontmatter.DATATYPE}}Service = create{{$frontmatter.SCHEMANAME}}Service(models.{{$frontmatter.DATATYPE}})
 
-  fastify.custom.${DATATYPE:example}Service = ${DATATYPE:example}Service
+  fastify.custom.{{$frontmatter.DATATYPE}}Service = {{$frontmatter.DATATYPE}}Service
 
   /*
    * ---------------------------------------------------------------------
@@ -38,15 +43,15 @@ const ${DATATYPE:example}Plugin = async (
     throw error // Let the application handle the error
   }
   registerPayload(fastify)
-  register${SCHEMANAME:Example}Schemas(fastify)
-  register${SCHEMANAME:Example}Crud(fastify)
+  register{{$frontmatter.SCHEMANAME}}Schemas(fastify)
+  register{{$frontmatter.SCHEMANAME}}Crud(fastify)
 
   fastify.registerForFrontendGeneration({
     entityMapping: {
-      ${DATATYPE:example}: "${DATATYPE:example}",
+      {{$frontmatter.DATATYPE}}: "{{$frontmatter.DATATYPE}}",
     },
   })
 }
-export default ${DATATYPE:example}Plugin
+export default {{$frontmatter.DATATYPE}}Plugin
 
 ```

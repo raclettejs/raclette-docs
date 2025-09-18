@@ -1,10 +1,14 @@
+---
+SCHEMANAME: Example
+---
+
 ```typescript
 import type { PluginMetadata } from "@raclettejs/core"
 
 export default {
-  name: "Example ${SCHEMANAME:Example} Plugin",
+  name: "My {{$frontmatter.SCHEMANAME}} Plugin",
   author: "CheesyMcCheeseFace",
   version: "0.0.1",
-  description: "My Awesome ${SCHEMANAME:Example} Plugin",
+  description: "My Awesome {{$frontmatter.SCHEMANAME}} Plugin",
 } satisfies PluginMetadata
 ```

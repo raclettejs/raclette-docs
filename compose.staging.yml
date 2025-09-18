@@ -1,0 +1,21 @@
+services:
+  vitepress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: ${IMAGE_TAG}
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.raclettejsdocspreview.rule=Host(`docs-preview.raclettejs.com`)"
+      - "traefik.http.routers.raclettejsdocspreview.entrypoints=websecure"
+      - "traefik.http.routers.raclettejsdocspreview.tls=true"
+      - "traefik.http.routers.raclettejsdocspreview.service=raclettejsdocspreview"
+      - "traefik.http.services.raclettejsdocspreview.loadbalancer.server.port=80"
+    restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
