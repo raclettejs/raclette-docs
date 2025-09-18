@@ -15,3 +15,7 @@ services:
       - "traefik.http.routers.raclettejsdocs.service=raclettejsdocs"
       - "traefik.http.services.raclettejsdocs.loadbalancer.server.port=80"
     restart: unless-stopped
+
+networks:
+  traefik:
+    external: true
