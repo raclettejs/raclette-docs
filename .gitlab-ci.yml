@@ -1,50 +1,259 @@
 stages:
+  - build
   - deploy
+  - verify
 
 variables:
   DOCKER_DRIVER: overlay2
-  # Use GitLab's CI/CD variables for authentication
-  CI_REGISTRY: $CI_REGISTRY
-  CI_REGISTRY_USER: $CI_REGISTRY_USER
-  CI_REGISTRY_PASSWORD: $CI_REGISTRY_PASSWORD
+  DOCKER_TLS_CERTDIR: "/certs"
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+  LATEST_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-latest
+  SSH_PORT: "22"
+  # Required variables (set in GitLab CI/CD settings):
+  # SSH_PRIVATE_KEY_B64, SSH_USER, SSH_HOST, DEPLOYMENT_PATH
+  # Optional: SSH_PORT (defaults to 22)
 
-before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+.ssh_setup: &ssh_setup
+  - apk add --no-cache openssh-client
   - eval $(ssh-agent -s)
   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - ssh-keyscan -H -p ${SSH_PORT} ${SSH_HOST} >> ~/.ssh/known_hosts
 
-# Deploy to server
-deploy:
+.deploy_script_template: &deploy_script
   stage: deploy
-  tags:
-    - docker
+  image: alpine:latest
+  before_script:
+    - *ssh_setup
   script:
     - |
-      # SSH into the server and deploy
-      ssh -o StrictHostKeyChecking=no -p ${SSH_PORT:-22} ${SSH_USER}@${SSH_HOST} << EOF
+      # Determine environment-specific settings
+      if [ "$CI_COMMIT_BRANCH" = "staging" ]; then
+        COMPOSE_FILE="compose.staging.yml"
+        PROJECT_NAME="${CI_PROJECT_NAME}-staging"
+        BRANCH="staging"
+      else
+        COMPOSE_FILE="compose.production.yml"
+        PROJECT_NAME="${CI_PROJECT_NAME}-production"
+        BRANCH="main"
+      fi
 
-      # Navigate to deployment directory
-      cd ${DEPLOYMENT_PATH}
+      PROJECT_PATH="${DEPLOYMENT_PATH}/${PROJECT_NAME}"
+
+      # Create deploy script with proper error handling
+      cat > deploy.sh << 'EOF'
+      #!/bin/bash
+      set -euo pipefail
+
+      PROJECT_PATH="$1"
+      IMAGE_TAG="$2"
+      COMPOSE_FILE="$3"
+      BRANCH="$4"
+      REGISTRY_USER="$5"
+      REGISTRY_PASSWORD="$6"
+      REGISTRY_URL="$7"
+      REPO_URL="$8"
+
+      echo "🚀 Starting deployment of $IMAGE_TAG to: $PROJECT_PATH"
+      
+      # Create project directory
+      if ! mkdir -p "$PROJECT_PATH"; then
+        echo "❌ Failed to create project directory: $PROJECT_PATH"
+        exit 1
+      fi
+      
+      cd "$PROJECT_PATH"
+
+      # Update repository - use deploy key instead of job token for security
+      echo "📡 Updating repository..."
+      if [ -d .git ]; then
+        if ! git fetch origin; then
+          echo "❌ Failed to fetch from origin"
+          exit 1
+        fi
+        if ! git checkout "$BRANCH"; then
+          echo "❌ Failed to checkout branch: $BRANCH"
+          exit 1
+        fi
+        if ! git reset --hard "origin/$BRANCH"; then
+          echo "❌ Failed to reset to origin/$BRANCH"
+          exit 1
+        fi
+      else
+        if ! git clone -b "$BRANCH" "$REPO_URL" .; then
+          echo "❌ Failed to clone repository"
+          exit 1
+        fi
+      fi
 
       # Login to registry
-      echo "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+      echo "🔐 Logging into container registry..."
+      if ! echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin "$REGISTRY_URL"; then
+        echo "❌ Failed to login to registry"
+        exit 1
+      fi
 
-      # Pull latest code and build
-      git stash
-      git pull || (echo "Git pull failed" && exit 1)
+      # Pull and deploy
+      echo "📦 Pulling container images..."
+      export IMAGE_TAG="$IMAGE_TAG"
+      if ! docker compose -f "$COMPOSE_FILE" pull; then
+        echo "❌ Failed to pull container images"
+        exit 1
+      fi
 
-      # Build the Docker image locally
-      docker-compose -f ./docker-compose.production.yml build
+      echo "🔄 Starting services..."
+      if ! docker compose -f "$COMPOSE_FILE" up -d --remove-orphans; then
+        echo "❌ Failed to start services"
+        exit 1
+      fi
 
-      # Stop containers before bringing them up again
-      docker-compose -f ./docker-compose.production.yml down
-
-      # Start containers with the newly built images
-      docker-compose -f ./docker-compose.production.yml up -d
-
-      # Cleanup
-      docker system prune -f
+      echo "✅ Deployment completed successfully"
+      docker compose -f "$COMPOSE_FILE" ps
       EOF
+
+      # Use a more secure approach - create the repo URL without exposing tokens
+      REPO_URL="https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+
+      # Transfer and execute deploy script
+      scp -P ${SSH_PORT} deploy.sh ${SSH_USER}@${SSH_HOST}:/tmp/deploy-${PROJECT_NAME}.sh
+      
+      if ! ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} "chmod +x /tmp/deploy-${PROJECT_NAME}.sh && /tmp/deploy-${PROJECT_NAME}.sh '${PROJECT_PATH}' '${IMAGE_TAG}' '${COMPOSE_FILE}' '${BRANCH}' '${CI_REGISTRY_USER}' '${CI_REGISTRY_PASSWORD}' '${CI_REGISTRY}' '${REPO_URL}'"; then
+        echo "❌ Deployment failed on remote server"
+        exit 1
+      fi
+
+      echo "🎉 Deployment pipeline completed successfully"
+
+build:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - |
+      echo "🔨 Building Docker image..."
+      if ! docker build -t $IMAGE_TAG -t $LATEST_TAG .; then
+        echo "❌ Docker build failed"
+        exit 1
+      fi
+      
+      echo "📤 Pushing images to registry..."
+      if ! docker push $IMAGE_TAG; then
+        echo "❌ Failed to push $IMAGE_TAG"
+        exit 1
+      fi
+      
+      if ! docker push $LATEST_TAG; then
+        echo "❌ Failed to push $LATEST_TAG"
+        exit 1
+      fi
+      
+      echo "✅ Build and push completed successfully"
   rules:
-    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
-      when: on_success
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "staging"
+    - when: manual
+
+deploy_staging:
+  <<: *deploy_script
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging"
+
+deploy_production:
+  <<: *deploy_script
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+
+verify_deployment:
+  stage: verify
+  image: alpine:latest
+  before_script:
+    - *ssh_setup
+  script:
+    - |
+      # Determine environment settings
+      if [ "$CI_COMMIT_BRANCH" = "staging" ]; then
+        PROJECT_NAME="${CI_PROJECT_NAME}-staging"
+        COMPOSE_FILE="compose.staging.yml"
+      else
+        PROJECT_NAME="${CI_PROJECT_NAME}-production" 
+        COMPOSE_FILE="compose.production.yml"
+      fi
+
+      PROJECT_PATH="${DEPLOYMENT_PATH}/${PROJECT_NAME}"
+
+      echo "🔍 Verifying deployment for $PROJECT_NAME..."
+
+      # Create verification script with proper error handling
+      cat > verify.sh << 'EOF'
+      #!/bin/bash
+      set -euo pipefail
+
+      PROJECT_PATH="$1"
+      COMPOSE_FILE="$2"
+      EXPECTED_IMAGE="$3"
+
+      cd "$PROJECT_PATH"
+
+      echo "=== Verifying deployment ==="
+      echo "Expected image: $EXPECTED_IMAGE"
+
+      # Check if containers are running
+      echo "📋 Checking container status..."
+      RUNNING_CONTAINERS=$(docker compose -f "$COMPOSE_FILE" ps -q)
+      if [ -z "$RUNNING_CONTAINERS" ]; then
+        echo "❌ No containers are running"
+        echo "📝 Recent logs:"
+        docker compose -f "$COMPOSE_FILE" logs --tail=50
+        exit 1
+      fi
+
+      # Check container health
+      UNHEALTHY=0
+      echo "🏥 Checking container health..."
+      for container in $RUNNING_CONTAINERS; do
+        if ! STATUS=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null); then
+          echo "❌ Failed to inspect container: $container"
+          UNHEALTHY=1
+          continue
+        fi
+        
+        if ! NAME=$(docker inspect --format='{{.Name}}' "$container" 2>/dev/null | sed 's/^\///'); then
+          NAME="unknown-$container"
+        fi
+        
+        if [ "$STATUS" = "running" ]; then
+          echo "✅ $NAME: running"
+        else
+          echo "❌ $NAME: $STATUS" 
+          UNHEALTHY=1
+        fi
+      done
+
+      if [ $UNHEALTHY -eq 1 ]; then
+        echo "❌ Some containers are not healthy"
+        echo "📊 Container overview:"
+        docker compose -f "$COMPOSE_FILE" ps
+        echo "📝 Recent logs:"
+        docker compose -f "$COMPOSE_FILE" logs --tail=30
+        exit 1
+      fi
+
+      echo "🎉 All containers are running successfully!"
+      docker compose -f "$COMPOSE_FILE" ps
+      EOF
+
+      scp -P ${SSH_PORT} verify.sh ${SSH_USER}@${SSH_HOST}:/tmp/verify-${PROJECT_NAME}.sh
+      
+      if ! ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} "chmod +x /tmp/verify-${PROJECT_NAME}.sh && /tmp/verify-${PROJECT_NAME}.sh '${PROJECT_PATH}' '${COMPOSE_FILE}' '${IMAGE_TAG}'"; then
+        echo "❌ Deployment verification failed"
+        exit 1
+      fi
+      
+      echo "✅ Deployment verification completed successfully"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "staging"

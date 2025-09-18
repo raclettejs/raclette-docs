@@ -1,14 +1,22 @@
+---
+DATATYPE: example
+PLUGINNAME: example-plugin
+STOREACTIONTYPE: dataPush | dataUpdate | dataCreate | dataDelete | dataHardDelete | dataMove | dataRestore
+ROUTEMETHOD: get | delete | patch | post
+ROUTENAME: getAll
+---
+
 ```typescript
 import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
 
 export default defineRaclettePluginFrontend({
   data: {
-    ${DATATYPE:example}: {
+    {{$frontmatter.DATATYPE}}: {
       operations: {
-        ${ROUTENAME:getAll}: {
-          target: "/${PLUGINNAME:example-plugin}/${ROUTENAME:getAll}",
-          method: "${ROUTEMETHOD:get | delete | patch | post}",
-          storeActionType: "${STOREACTIONTYPE:dataPush | dataUpdate | dataCreate | dataDelete | dataHardDelete | dataMove | dataRestore}",
+        {{$frontmatter.ROUTENAME}}: {
+          target: "/{{$frontmatter.PLUGINNAME}}/{{$frontmatter.ROUTENAME}}",
+          method: "{{$frontmatter.ROUTEMETHOD}}",
+          storeActionType: "{{$frontmatter.STOREACTIONTYPE}}",
         },
       },
     },

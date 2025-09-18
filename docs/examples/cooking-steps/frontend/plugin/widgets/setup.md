@@ -1,12 +1,18 @@
+---
+WIDGETTITLE: My Example Widget
+WIDGETCOLOR: #6CB5D1
+WIDGETDESCRIPTION: An example widget
+---
+
 ```typescript
 import type { WidgetDeclaration } from "@raclettejs/core"
 
 export const details = {
-  title: "${WIDGETTITLE:My Example Widget}",
-  color: "${WIDGETCOLOR:#6CB5D1}",
+  title: "{{$frontmatter.WIDGETTITLE}}",
+  color: "{{$frontmatter.WIDGETCOLOR}}",
   icon: new URL("./icon.svg", import.meta.url).href,
   images: [new URL("./screenshot.png", import.meta.url).href],
-  description: "${WIDGETDESCRIPTION:An example widget}",
+  description: "{{$frontmatter.WIDGETDESCRIPTION}}",
 } satisfies WidgetDeclaration
 const config = {}
 
