@@ -1,17 +1,48 @@
 import { Plugin } from "vite"
 import { readFileSync, existsSync } from "fs"
-import { resolve, dirname } from "path"
+import { resolve, dirname, relative } from "path"
+
+/**
+ * Recipe Docs Plugin for VitePress
+ *
+ * Processes markdown files with:
+ * - Frontmatter variable inheritance
+ * - Recursive includes with variable overrides
+ * - YAML-style inline variable definitions
+ * - Build-time validation
+ *
+ * @example
+ * ```markdown
+ * ---
+ * VARIABLE: value
+ * MULTILINE: |
+ *   Line 1
+ *   Line 2
+ * ---
+ *
+ * <!--@include: ./snippet.md
+ * OVERRIDE: new value
+ * -->
+ *
+ * Content with {{$frontmatter.VARIABLE}}
+ * ```
+ */
 
 interface VariableContext {
-  [key: string]: any
+  [key: string]: string
 }
 
-interface IncludeMatch {
-  full: string
-  path: string
-  inlineVars: VariableContext
-  startIndex: number
-  endIndex: number
+interface ProcessingContext {
+  filePath: string
+  includeChain: string[]
+  variables: VariableContext
+}
+
+class RecipeDocsError extends Error {
+  constructor(message: string, public filePath?: string) {
+    super(message)
+    this.name = "RecipeDocsError"
+  }
 }
 
 export function recipeDocsPlugin(): Plugin {
@@ -20,7 +51,6 @@ export function recipeDocsPlugin(): Plugin {
     enforce: "pre",
 
     transform(code: string, id: string) {
-      // Only process markdown files
       if (!id.endsWith(".md")) {
         return null
       }
@@ -32,320 +62,393 @@ export function recipeDocsPlugin(): Plugin {
           map: null,
         }
       } catch (error) {
-        console.error(`[recipe-docs] Error processing ${id}:`, error)
-        return null
+        if (error instanceof RecipeDocsError) {
+          this.error(error)
+        }
+        throw error
       }
     },
   }
 
   function processMarkdownFile(filePath: string, content: string): string {
-    // Extract frontmatter manually (simple approach)
-    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+    const { frontmatter, body } = extractFrontmatter(content)
 
-    let frontmatter: VariableContext = {}
-    let markdownContent = content
-
-    if (frontmatterMatch) {
-      const yamlContent = frontmatterMatch[1]
-      markdownContent = frontmatterMatch[2]
-
-      // Parse YAML frontmatter manually (simple key-value pairs and basic structures)
-      frontmatter = parseSimpleYaml(yamlContent)
-    }
-
-    // Process includes recursively
-    let processedContent = processIncludes(
-      markdownContent,
+    const context: ProcessingContext = {
       filePath,
-      frontmatter
-    )
-
-    // Interpolate variables in the final content
-    processedContent = interpolateVariables(processedContent, frontmatter)
-
-    // Reconstruct the file with original frontmatter
-    if (frontmatterMatch) {
-      return `---\n${frontmatterMatch[1]}\n---\n${processedContent}`
+      includeChain: [filePath],
+      variables: frontmatter,
     }
 
-    return processedContent
+    const processedBody = processIncludes(body, context)
+    const finalContent = interpolateVariables(processedBody, context)
+
+    return finalContent
   }
 
-  function parseSimpleYaml(yamlContent: string): VariableContext {
+  // ============================================================================
+  // Frontmatter Parsing
+  // ============================================================================
+
+  function extractFrontmatter(content: string): {
+    frontmatter: VariableContext
+    body: string
+  } {
+    const frontmatterMatch = content.match(
+      /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/
+    )
+
+    if (!frontmatterMatch) {
+      return { frontmatter: {}, body: content }
+    }
+
+    const yamlContent = frontmatterMatch[1]
+    const body = frontmatterMatch[2]
+
+    try {
+      const frontmatter = parseYaml(yamlContent)
+      return { frontmatter, body }
+    } catch (error) {
+      throw new RecipeDocsError(
+        `Failed to parse frontmatter: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+    }
+  }
+
+  function parseYaml(yamlContent: string): VariableContext {
     const result: VariableContext = {}
-    const lines = yamlContent.split("\n")
+    const lines = yamlContent.split(/\r?\n/)
 
-    let currentKey = ""
-    let currentValue = ""
-    let inMultilineValue = false
-    let indentLevel = 0
-
-    for (const line of lines) {
+    let i = 0
+    while (i < lines.length) {
+      const line = lines[i]
       const trimmedLine = line.trim()
 
       if (!trimmedLine || trimmedLine.startsWith("#")) {
+        i++
         continue
       }
 
-      // Check for key-value pairs
-      if (trimmedLine.includes(":") && !inMultilineValue) {
-        // Save previous key if exists
-        if (currentKey) {
-          result[currentKey] = processYamlValue(currentValue.trim())
-        }
-
-        const colonIndex = trimmedLine.indexOf(":")
-        currentKey = trimmedLine.slice(0, colonIndex).trim()
-        const valueStart = trimmedLine.slice(colonIndex + 1).trim()
-
-        if (valueStart === "|" || valueStart === ">") {
-          // Start of multiline value
-          inMultilineValue = true
-          currentValue = ""
-          indentLevel = line.length - line.trimLeft().length
-        } else if (valueStart === "") {
-          // Empty value or start of nested structure
-          currentValue = ""
-          inMultilineValue = false
-        } else {
-          // Simple single-line value
-          currentValue = valueStart
-          inMultilineValue = false
-        }
-      } else if (inMultilineValue) {
-        // Handle multiline values
-        const lineIndent = line.length - line.trimLeft().length
-        if (lineIndent > indentLevel || trimmedLine) {
-          currentValue +=
-            (currentValue ? "\n" : "") + line.slice(indentLevel + 2) // +2 for the pipe/gt char
-        } else {
-          // End of multiline value
-          inMultilineValue = false
-          result[currentKey] = currentValue.trim()
-          currentKey = ""
-          currentValue = ""
-        }
+      const colonIndex = trimmedLine.indexOf(":")
+      if (colonIndex === -1) {
+        i++
+        continue
       }
-    }
 
-    // Handle last key
-    if (currentKey) {
-      result[currentKey] = processYamlValue(currentValue.trim())
+      const key = trimmedLine.slice(0, colonIndex).trim()
+      const valueStart = trimmedLine.slice(colonIndex + 1).trim()
+
+      if (valueStart === "|" || valueStart === ">") {
+        // Block scalar
+        const { value, nextIndex } = parseBlockScalar(
+          lines,
+          i,
+          line.length - line.trimStart().length,
+          valueStart === "|"
+        )
+        result[key] = value
+        i = nextIndex
+      } else {
+        // Simple value
+        result[key] = parseSimpleValue(valueStart)
+        i++
+      }
     }
 
     return result
   }
 
-  function processYamlValue(value: string): any {
-    // Handle basic YAML value types
-    if (value === "true") return true
-    if (value === "false") return false
-    if (value === "null") return null
-    if (/^\d+$/.test(value)) return parseInt(value, 10)
-    if (/^\d*\.\d+$/.test(value)) return parseFloat(value)
+  function parseBlockScalar(
+    lines: string[],
+    startIndex: number,
+    baseIndent: number,
+    isLiteral: boolean
+  ): { value: string; nextIndex: number } {
+    const blockLines: string[] = []
+    let i = startIndex + 1
 
-    // Handle arrays (simple format: - item)
-    if (value.includes("\n-")) {
-      return value
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.startsWith("-"))
-        .map((line) => line.slice(1).trim())
+    while (i < lines.length) {
+      const line = lines[i]
+      const lineIndent = line.length - line.trimStart().length
+
+      if (line.trim() === "") {
+        blockLines.push("")
+        i++
+        continue
+      }
+
+      if (lineIndent > baseIndent) {
+        blockLines.push(line)
+        i++
+      } else {
+        break
+      }
+    }
+
+    if (blockLines.length === 0) {
+      return { value: "", nextIndex: i }
+    }
+
+    // Remove common indentation
+    const nonEmptyLines = blockLines.filter((l) => l.trim())
+    const minIndent = Math.min(
+      ...nonEmptyLines.map((l) => l.length - l.trimStart().length)
+    )
+
+    const dedentedLines = blockLines.map((l) => {
+      if (!l.trim()) return ""
+      return l.slice(minIndent)
+    })
+
+    if (isLiteral) {
+      return { value: dedentedLines.join("\n"), nextIndex: i }
+    } else {
+      // Folded scalar
+      const value = dedentedLines
+        .join("\n")
+        .replace(/\n+/g, "\n")
+        .replace(/\n/g, " ")
+        .trim()
+      return { value, nextIndex: i }
+    }
+  }
+
+  function parseSimpleValue(value: string): string {
+    if (!value) return ""
+
+    // Strip outermost quotes (both single and double)
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      return value.slice(1, -1)
     }
 
     return value
   }
+
+  // ============================================================================
+  // Include Processing
+  // ============================================================================
 
   function processIncludes(
     content: string,
-    currentFilePath: string,
-    baseVariables: VariableContext
+    context: ProcessingContext
   ): string {
-    const includeRegex = /<!--@include:\s*([^{]+?)(?:\{([^}]*)\})?\s*-->/gs
-    let processedContent = content
-    const matches: IncludeMatch[] = []
-    let match: RegExpExecArray | null
+    // Match: <!--@include: path/to/file.md ... -->
+    const includeRegex = /<!--@include:\s*([^\s\n]+?)(\s+[\s\S]*?)?-->/g
+    const matches: Array<{
+      fullMatch: string
+      path: string
+      inlineVars: VariableContext
+      start: number
+      end: number
+    }> = []
 
-    // Collect all matches
+    let match: RegExpExecArray | null
     while ((match = includeRegex.exec(content)) !== null) {
       const [fullMatch, pathPart, inlineVarsPart] = match
-      const path = pathPart.trim()
-
-      // Parse inline variables
-      const inlineVars: VariableContext = {}
-      if (inlineVarsPart) {
-        parseInlineVariables(inlineVarsPart.trim(), inlineVars)
-      }
 
       matches.push({
-        full: fullMatch,
-        path,
-        inlineVars,
-        startIndex: match.index,
-        endIndex: match.index + fullMatch.length,
+        fullMatch,
+        path: pathPart.trim(),
+        inlineVars: parseYaml(inlineVarsPart?.trim() || ""),
+        start: match.index,
+        end: match.index + fullMatch.length,
       })
     }
 
-    // Process matches in reverse order to maintain string positions
-    matches.reverse().forEach((includeMatch) => {
-      const includedContent = loadAndProcessInclude(
-        includeMatch.path,
-        currentFilePath,
-        baseVariables,
-        includeMatch.inlineVars
-      )
-
-      processedContent =
-        processedContent.slice(0, includeMatch.startIndex) +
-        includedContent +
-        processedContent.slice(includeMatch.endIndex)
-    })
-
-    return processedContent
-  }
-
-  function parseInlineVariables(
-    inlineVarsPart: string,
-    inlineVars: VariableContext
-  ) {
-    // Parse inline variables as YAML-like structure
-    try {
-      const parsed = parseSimpleYaml(inlineVarsPart)
-      Object.assign(inlineVars, parsed)
-    } catch (error) {
-      console.warn("[recipe-docs] Failed to parse inline variables:", error)
+    // Process matches in reverse to maintain string positions
+    let result = content
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const { path, inlineVars, start, end } = matches[i]
+      const includedContent = loadInclude(path, inlineVars, context)
+      result = result.slice(0, start) + includedContent + result.slice(end)
     }
+
+    return result
   }
 
-  function loadAndProcessInclude(
+  function loadInclude(
     includePath: string,
-    currentFilePath: string,
-    baseVariables: VariableContext,
-    inlineVars: VariableContext
+    inlineVars: VariableContext,
+    parentContext: ProcessingContext
   ): string {
-    // Resolve the include path relative to current file
-    const currentDir = dirname(currentFilePath)
+    const currentDir = dirname(parentContext.filePath)
     const resolvedPath = resolve(currentDir, includePath)
 
     if (!existsSync(resolvedPath)) {
-      console.warn(`[recipe-docs] Include file not found: ${includePath}`)
-      return `<!-- Include not found: ${includePath} -->`
-    }
-
-    // Read and process the include file
-    const includeContent = readFileSync(resolvedPath, "utf-8")
-    const processedInclude = processMarkdownFile(resolvedPath, includeContent)
-
-    // Extract frontmatter from processed include for variable context
-    const frontmatterMatch = processedInclude.match(
-      /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
-    )
-    let includeFrontmatter: VariableContext = {}
-    let includeMarkdown = processedInclude
-
-    if (frontmatterMatch) {
-      includeFrontmatter = parseSimpleYaml(frontmatterMatch[1])
-      includeMarkdown = frontmatterMatch[2]
-    }
-
-    // Create merged variable context with proper fallback inheritance
-    const mergedVariables: VariableContext = {
-      ...includeFrontmatter, // Fallback values from include file
-      ...baseVariables, // Variables from parent context
-      ...inlineVars, // Inline variables have highest precedence
-    }
-
-    // Interpolate variables in the included content (without frontmatter)
-    return interpolateVariables(includeMarkdown, mergedVariables)
-  }
-
-  function interpolateVariables(
-    content: string,
-    variables: VariableContext
-  ): string {
-    // Split into lines for processing
-    const lines = content.split("\n")
-
-    const processedLines = lines.map((line) => {
-      // Check if line contains only whitespace and a single variable
-      const variableMatches = [
-        ...line.matchAll(/\{\{\$frontmatter\.([^}]+)\}\}/g),
-        ...line.matchAll(/__([A-Z_][A-Z0-9_]*)__/g),
-      ]
-
-      // If line has only one variable and nothing else meaningful, handle specially
-      if (variableMatches.length === 1) {
-        const restOfLine = line
-          .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, "")
-          .replace(/__([A-Z_][A-Z0-9_]*)__/g, "")
-          .trim()
-
-        if (restOfLine === "" || /^[\s,]*$/.test(restOfLine)) {
-          // Line contains only the variable (and maybe whitespace/comma)
-          const match = variableMatches[0]
-          const varName = match[1]
-          const value = getVariableValue(varName, variables)
-
-          if (value.length === 0) {
-            // Return null to indicate this line should be removed
-            return null
-          }
-        }
-      }
-
-      // Regular replacement for all other cases
-      return line
-        .replace(/\{\{\$frontmatter\.([^}]+)\}\}/g, (match, varName) => {
-          return replaceVariable(match, varName, variables)
-        })
-        .replace(/__([A-Z_][A-Z0-9_]*)__/g, (match, varName) => {
-          return replaceVariable(match, varName, variables)
-        })
-    })
-
-    // Filter out null lines (empty variables on their own lines)
-    return processedLines.filter((line) => line !== null).join("\n")
-  }
-
-  function getVariableValue(
-    varName: string,
-    variables: VariableContext
-  ): string {
-    const [primaryVar, ...fallbackParts] = varName.split(":")
-    const cleanVarName = primaryVar.trim()
-    const fallback = fallbackParts.join(":").trim()
-
-    const value = variables[cleanVarName]
-    let stringValue = value !== undefined && value !== null ? String(value) : ""
-
-    // Handle YAML block scalars - remove trailing newlines for inline usage
-    stringValue = stringValue.replace(/\n+$/, "")
-
-    if (stringValue.length > 0) {
-      return stringValue
-    } else if (fallback) {
-      return fallback
-    } else {
-      return ""
-    }
-  }
-
-  function replaceVariable(
-    match: string,
-    varName: string,
-    variables: VariableContext
-  ): string {
-    const value = getVariableValue(varName, variables)
-
-    if (value.length === 0) {
-      console.log(
-        `[recipe-docs] Variable '${varName
-          .split(":")[0]
-          .trim()}' is empty - replacing with empty string`
+      const relPath = relative(process.cwd(), parentContext.filePath)
+      throw new RecipeDocsError(
+        `Include file not found: "${includePath}"\n  Referenced in: ${relPath}`,
+        parentContext.filePath
       )
     }
 
-    return value
+    if (parentContext.includeChain.includes(resolvedPath)) {
+      const chain = [...parentContext.includeChain, resolvedPath]
+        .map((p) => relative(process.cwd(), p))
+        .join("\n    → ")
+      throw new RecipeDocsError(
+        `Circular include detected:\n    ${chain}`,
+        parentContext.filePath
+      )
+    }
+
+    const includeContent = readFileSync(resolvedPath, "utf-8")
+    const { frontmatter: includeFrontmatter, body: includeBody } =
+      extractFrontmatter(includeContent)
+
+    // Variable precedence: inline > parent > included file
+    const mergedVariables: VariableContext = {
+      ...includeFrontmatter,
+      ...parentContext.variables,
+      ...inlineVars,
+    }
+
+    const includeContext: ProcessingContext = {
+      filePath: resolvedPath,
+      includeChain: [...parentContext.includeChain, resolvedPath],
+      variables: mergedVariables,
+    }
+
+    const processedBody = processIncludes(includeBody, includeContext)
+    return interpolateVariables(processedBody, includeContext)
+  }
+
+  // ============================================================================
+  // Variable Interpolation
+  // ============================================================================
+
+  function interpolateVariables(
+    content: string,
+    context: ProcessingContext
+  ): string {
+    // Handle escaped variables
+    content = content.replace(/\\(\{\{\s*\$frontmatter\.[^}]+\}\})/g, "$1")
+
+    // Identify lines with only empty variables (for removal)
+    const linesToRemove = identifyEmptyVariableLines(content, context)
+
+    // Replace all variables
+    const variableRegex = /\{\{\s*\$frontmatter\.([^}]+?)\}\}/g
+    const result = content.replace(variableRegex, (match, varExpr, offset) => {
+      if (offset > 0 && content[offset - 1] === "\\") {
+        return match
+      }
+
+      return replaceVariable(varExpr, content, offset, context)
+    })
+
+    // Remove empty variable lines and clean up spacing
+    return cleanupResult(result, linesToRemove)
+  }
+
+  function identifyEmptyVariableLines(
+    content: string,
+    context: ProcessingContext
+  ): Set<number> {
+    const linesToRemove = new Set<number>()
+    const lines = content.split("\n")
+    const variableRegex = /\{\{\s*\$frontmatter\.([^}]+?)\}\}/g
+
+    lines.forEach((line, lineIndex) => {
+      const matches = [...line.matchAll(variableRegex)]
+      if (matches.length === 0) return
+
+      const allVariablesEmpty = matches.every((match) => {
+        const varName = match[1].split(":")[0].trim()
+        const value = context.variables[varName]
+        return varName in context.variables && !value
+      })
+
+      const lineWithoutVars = line.replace(variableRegex, "")
+      const hasOtherContent = lineWithoutVars.trim().length > 0
+
+      if (allVariablesEmpty && !hasOtherContent) {
+        linesToRemove.add(lineIndex)
+      }
+    })
+
+    return linesToRemove
+  }
+
+  function replaceVariable(
+    varExpr: string,
+    content: string,
+    offset: number,
+    context: ProcessingContext
+  ): string {
+    const [varName, ...fallbackParts] = varExpr.split(":")
+    const cleanVarName = varName.trim()
+    const fallback = fallbackParts.join(":").trim()
+
+    const hasVariable = cleanVarName in context.variables
+    const value = context.variables[cleanVarName]
+
+    let replacementValue = ""
+
+    if (hasVariable) {
+      if (value) {
+        replacementValue = value
+      } else {
+        return ""
+      }
+    } else if (fallback) {
+      replacementValue = fallback
+    } else {
+      throwUndefinedVariableError(cleanVarName, context)
+    }
+
+    // Apply indentation for multiline values
+    if (replacementValue.includes("\n")) {
+      return applyIndentation(replacementValue, content, offset)
+    }
+
+    return replacementValue
+  }
+
+  function applyIndentation(
+    value: string,
+    content: string,
+    offset: number
+  ): string {
+    const lineStart = content.lastIndexOf("\n", offset - 1) + 1
+    const lineBeforeVar = content.substring(lineStart, offset)
+    const indentation = lineBeforeVar.match(/^(\s*)/)?.[1] || ""
+
+    const valueLines = value.split("\n")
+    return valueLines
+      .map((line, idx) => (idx === 0 ? line : indentation + line))
+      .join("\n")
+  }
+
+  function cleanupResult(result: string, linesToRemove: Set<number>): string {
+    const lines = result.split("\n")
+    const filteredLines = lines.filter((_, idx) => !linesToRemove.has(idx))
+
+    // Collapse multiple spaces (but preserve leading indentation)
+    const finalLines = filteredLines.map((line) =>
+      line.replace(/(\S)  +/g, "$1 ")
+    )
+
+    return finalLines.join("\n")
+  }
+
+  function throwUndefinedVariableError(
+    varName: string,
+    context: ProcessingContext
+  ): never {
+    const relPath = relative(process.cwd(), context.filePath)
+    const availableVars = Object.keys(context.variables).join(", ")
+    throw new RecipeDocsError(
+      `Undefined variable: "{{$frontmatter.${varName}}}"\n` +
+        `  File: ${relPath}\n` +
+        `  Available variables: ${availableVars || "(none)"}\n` +
+        `  Tip: Add the variable to frontmatter (even if empty) to suppress this error`,
+      context.filePath
+    )
   }
 }
 

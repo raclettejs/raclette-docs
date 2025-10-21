@@ -106,12 +106,12 @@ const TodoSchema: Schema = new Schema(
     tags: { type: Array, required: false },
     owner: {
       type: Schema.Types.String,
-      ref: "pacifico_core_user",
+      ref: "raclette__core-user",
       required: true,
     },
     lastEditor: {
       type: Schema.Types.String,
-      ref: "pacifico_core_user",
+      ref: "raclette__core-user",
       required: true,
     },
   },
@@ -492,7 +492,7 @@ return {
 ```typescript
 owner: {
   type: Schema.Types.String,
-  ref: "pacifico_core_user", // Reference to user collection
+  ref: "raclette__core-user", // Reference to user collection
   required: true,
 }
 ```

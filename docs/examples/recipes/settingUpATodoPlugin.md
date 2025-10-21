@@ -89,78 +89,78 @@ In our `./plugins/{{$frontmatter.PLUGINNAME}}/backend/helpers/{{$frontmatter.DAT
 
 In our `./plugins/{{$frontmatter.PLUGINNAME}}/backend/{{$frontmatter.DATATYPE}}.service.ts` we want to define all necessary services. For now we will only provide the ability to query all {{$frontmatter.DATATYPE}}s
 
-<!--@include: ../cooking-steps/backend/plugin/service.md{
+<!--@include: ../cooking-steps/backend/plugin/service.md
 BUSINESSLOGIC: |
   async _read{{$frontmatter.SCHEMANAME}}s(
-      fastify: PluginFastifyInstance,
-      filter: Record<string, any> = { isDeleted: false },
-      options: QueryOptions = {},
-    ): Promise<{{$frontmatter.SCHEMANAME}}Type[]> {
-      filter = { isDeleted: false, ...filter }
+    fastify: PluginFastifyInstance,
+    filter: Record<string, any> = { isDeleted: false },
+    options: QueryOptions = {},
+  ): Promise<{{$frontmatter.SCHEMANAME}}Type[]> {
+    filter = { isDeleted: false, ...filter }
 
-      try {
-        // Start building the query
-        let query = this.{{$frontmatter.DATATYPE}}Model.find(filter)
+    try {
+      // Start building the query
+      let query = this.{{$frontmatter.DATATYPE}}Model.find(filter)
 
-        // Apply pagination if provided
-        if (options.limit !== undefined) {
-          query = query.limit(options.limit)
-        }
-        if (options.offset !== undefined) {
-          query = query.skip(options.offset)
-        }
-
-        // Apply population if provided
-        if (options.populate && Array.isArray(options.populate)) {
-          options.populate.forEach((populateOption) => {
-            query = query.populate(populateOption as any)
-          })
-        }
-
-        // Execute query
-        return await query.lean()
-      } catch (err: any) {
-        fastify.log.error(err.message)
-        throw err
+      // Apply pagination if provided
+      if (options.limit !== undefined) {
+        query = query.limit(options.limit)
       }
-    }
-
-    /**
-    * Read {{$frontmatter.DATATYPE}}s by ID or filter parameters with payload wrapping
-    */
-    async read{{$frontmatter.SCHEMANAME}}s(
-      fastify: PluginFastifyInstance,
-      requestData: FrontendPayloadRequestData,
-      filter: { id?: string } = {},
-    ): Promise<FrontendPayload<{{$frontmatter.SCHEMANAME}}Type[]>> {
-      try {
-        const {{$frontmatter.DATATYPE}}s = await this._read{{$frontmatter.SCHEMANAME}}s(fastify, filter)
-
-        return create{{$frontmatter.SCHEMANAME}}Payload(fastify, {{$frontmatter.DATATYPE}}s, requestData)
-      } catch (err: any) {
-        fastify.log.error(err.message)
-        throw err
+      if (options.offset !== undefined) {
+        query = query.skip(options.offset)
       }
+
+      // Apply population if provided
+      if (options.populate && Array.isArray(options.populate)) {
+        options.populate.forEach((populateOption) => {
+          query = query.populate(populateOption as any)
+        })
+      }
+
+      // Execute query
+      return await query.lean()
+    } catch (err: any) {
+      fastify.log.error(err.message)
+      throw err
     }
-}-->
+  }
+
+  /**
+  * Read {{$frontmatter.DATATYPE}}s by ID or filter parameters with payload wrapping
+  */
+  async read{{$frontmatter.SCHEMANAME}}s(
+    fastify: PluginFastifyInstance,
+    requestData: FrontendPayloadRequestData,
+    filter: { id?: string } = {},
+  ): Promise<FrontendPayload<{{$frontmatter.SCHEMANAME}}Type[]>> {
+    try {
+      const {{$frontmatter.DATATYPE}}s = await this._read{{$frontmatter.SCHEMANAME}}s(fastify, filter)
+
+      return create{{$frontmatter.SCHEMANAME}}Payload(fastify, {{$frontmatter.DATATYPE}}s, requestData)
+    } catch (err: any) {
+      fastify.log.error(err.message)
+      throw err
+    }
+  }
+-->
 
 ### Declare an index.ts for your routes and a simple getAll route
 
 At first lets create a super simple getAll route for our datatype. Therefor we create a `./plugins/{{$frontmatter.PLUGINNAME}}/backend/routes/{{$frontmatter.DATATYPE}}.get-all.ts`
 
-<!--@include: ../cooking-steps/backend/plugin/routes/route.md{
+<!--@include: ../cooking-steps/backend/plugin/routes/route.md
 BUSINESSLOGIC: |
   const payload = await fastify.custom.{{$frontmatter.DATATYPE}}Service.read{{$frontmatter.SCHEMANAME}}s(fastify, req.requestParams)
         return payload
-}-->
+-->
 
 In our `./plugins/{{$frontmatter.PLUGINNAME}}/backend/routes/index.ts` we want define all our routes
 
-<!--@include: ../cooking-steps/backend/plugin/routes/index.md{
+<!--@include: ../cooking-steps/backend/plugin/routes/index.md
 IMPORT: import getAllRoute from "./route.{{$frontmatter.DATATYPE}}.get-all"
 BUSINESSLOGIC: |
     await fastify.get("/{{$frontmatter.DATATYPE}}/all", getAllRoute(fastify))
-}-->
+-->
 
 ### Glue it together with cheese
 
@@ -182,20 +182,20 @@ At first we will define `./plugins/{{$frontmatter.PLUGINNAME}}/frontend/index.ts
 
 Now we want to provide some widget meta data for later usage in the drag and drop editor and the frontend itself. We do this in the `./plugins/{{$frontmatter.PLUGINNAME}}/frontend/widgets/{{$frontmatter.WIDGETNAME}}/index.ts`.
 
-<!--@include: ../cooking-steps/frontend/plugin/widgets/setup.md{
+<!--@include: ../cooking-steps/frontend/plugin/widgets/setup.md
 WIDGETTITLE: My {{$frontmatter.WIDGETNAME}} widget
 WIDGETDESCRIPTION: Write {{$frontmatter.SCHEMANAME}}s on a list
-}-->
+-->
 
 ### Define the widgets Entryfile
 
 We have now prepared everything to render our i18n keys in the Frontend. Therefor we need to supply a widget entry file. This Files needs to end on `*Widget.vue` to be detected as such. Lets create the `./plugins/{{$frontmatter.PLUGINNAME}}/frontend/widgets/{{$frontmatter.WIDGETNAME}}/{{$frontmatter.WIDGETNAME}}Widget.vue`
 
-<!--@include: ../cooking-steps/frontend/plugin/widgets/entryVue.md{
+<!--@include: ../cooking-steps/frontend/plugin/widgets/entryVue.md
 IMPORTS: import { usePluginApi } from "@raclettejs/core/orchestrator/composables"
 WIDGETTEMPLATE: {{$i18n.t('someText')}}
 BUSINESSLOGIC: const { $i18n } = usePluginApi()
-}-->
+-->
 
 ### Head to the Worbench and bring your hotsauce!
 

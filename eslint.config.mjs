@@ -40,6 +40,7 @@ export const racletteEslintConfig = [
       "**/coverage/**",
       "**/*.d.ts",
       ".raclette/**",
+      "**/examples/**/*.md",
     ],
   },
 

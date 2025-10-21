@@ -6,8 +6,6 @@ stages:
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
-  LATEST_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-latest
   SSH_PORT: "22"
   # Required variables (set in GitLab CI/CD settings):
   # SSH_PRIVATE_KEY_B64, SSH_USER, SSH_HOST, DEPLOYMENT_PATH
@@ -39,6 +37,10 @@ variables:
       fi
 
       PROJECT_PATH="${DEPLOYMENT_PATH}/${PROJECT_NAME}"
+
+      # Sanitize branch name for Docker tag
+      SANITIZED_BRANCH=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+      IMAGE_TAG="$CI_REGISTRY_IMAGE:$SANITIZED_BRANCH-$CI_COMMIT_SHORT_SHA"
 
       # Create deploy script with proper error handling
       cat > deploy.sh << 'EOF'
@@ -127,6 +129,9 @@ build:
   services:
     - docker:24.0.5-dind
   before_script:
+    - export SANITIZED_BRANCH=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - export IMAGE_TAG="$CI_REGISTRY_IMAGE:$SANITIZED_BRANCH-$CI_COMMIT_SHORT_SHA"
+    - export LATEST_TAG="$CI_REGISTRY_IMAGE:$SANITIZED_BRANCH-latest"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - |
@@ -185,6 +190,10 @@ verify_deployment:
       fi
 
       PROJECT_PATH="${DEPLOYMENT_PATH}/${PROJECT_NAME}"
+
+      # Sanitize branch name for Docker tag
+      SANITIZED_BRANCH=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+      IMAGE_TAG="$CI_REGISTRY_IMAGE:$SANITIZED_BRANCH-$CI_COMMIT_SHORT_SHA"
 
       echo "🔍 Verifying deployment for $PROJECT_NAME..."
 
