@@ -1,11 +1,11 @@
 ---
-IMPORTS: 
-WIDGETTEMPLATE:
-BUSINESSLOGIC: 
+IMPORTS:
+WIDGETTEMPLATE: <!-- your template here -->
+BUSINESSLOGIC:
 ---
 
 ```vue
-<template>{{$frontmatter.WIDGETTEMPLATE}}</template>
+<template>{{ $frontmatter.WIDGETTEMPLATE }}</template>
 
 <script setup lang="ts">
 {{$frontmatter.IMPORTS}}

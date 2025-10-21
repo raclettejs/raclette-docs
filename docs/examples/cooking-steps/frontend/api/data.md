@@ -13,8 +13,8 @@ DATATYPE: example
 IMMEDIATE: false
 USESTORE: true | false
 NOTIFY: true | false
-RESPONSETYPE: json | stream
-MODE: none | cors
+RESPONSETYPE: '"json" | "stream"'
+MODE: '"none" | "cors"'
 QUERY_ID: false
 CALLBACK: (result) => {}
 ---
@@ -29,8 +29,8 @@ const {{{$frontmatter.DATA_ALIAS}}, {{$frontmatter.DATAARR_ALIAS}}, {{$frontmatt
     cb: {{$frontmatter.CALLBACK}},
     useStore: {{$frontmatter.USESTORE}},
     notify: {{$frontmatter.NOTIFY}},
-    responseType: "{{$frontmatter.RESPONSETYPE}}",
-    mode: "{{$frontmatter.MODE}}",
+    responseType: {{$frontmatter.RESPONSETYPE}},
+    mode: {{$frontmatter.MODE}},
   },
 })
 ```

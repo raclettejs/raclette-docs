@@ -2,7 +2,7 @@
 SCHEMANAME: Example
 DATATYPE: example
 STOREACTIONTYPE: dataUpdate
-BROADCASTCHANNELS: exampleUpdated
+BROADCASTCHANNELS: '"exampleUpdated"'
 BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
 ROUTEMETHOD: get
 BODYSCHEMA: exampleBaseSchema
@@ -24,8 +24,8 @@ export const registerRoutes = async (fastify: PluginFastifyInstance) => {
     },
     onRequest: [fastify.authenticate],
     config: {
-      type: "{{$frontmatter.dataUpdate}}",
-      broadcastChannels: ["{{$frontmatter.BROADCASTCHANNELS}}"],
+      type: {{$frontmatter.STOREACTIONTYPE}},
+      broadcastChannels: [{{$frontmatter.BROADCASTCHANNELS}}],
     },
     schema: {
       summary: "Example {{$frontmatter.DATATYPE}} {{$frontmatter.ROUTEMETHOD}} Route",

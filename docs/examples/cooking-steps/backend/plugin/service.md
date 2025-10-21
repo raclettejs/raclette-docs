@@ -1,7 +1,7 @@
 ---
 SCHEMANAME: Example
 DATATYPE: example
-BUSINESSLOGIC:
+BUSINESSLOGIC: /* YOUR BUSINESS LOGIC */
 ---
 
 ```typescript

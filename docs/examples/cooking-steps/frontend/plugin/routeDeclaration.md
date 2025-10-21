@@ -1,8 +1,8 @@
 ---
 DATATYPE: example
 PLUGINNAME: example-plugin
-STOREACTIONTYPE: dataPush | dataUpdate | dataCreate | dataDelete | dataHardDelete | dataMove | dataRestore
-ROUTEMETHOD: get | delete | patch | post
+STOREACTIONTYPE: '"dataPush" | "dataUpdate" | "dataCreate" | "dataDelete" | "dataHardDelete" | "dataMove" | "dataRestore"'
+ROUTEMETHOD: '"get" | "delete" | "patch" | "post"'
 ROUTENAME: getAll
 ---
 
@@ -15,8 +15,8 @@ export default defineRaclettePluginFrontend({
       operations: {
         {{$frontmatter.ROUTENAME}}: {
           target: "/{{$frontmatter.PLUGINNAME}}/{{$frontmatter.ROUTENAME}}",
-          method: "{{$frontmatter.ROUTEMETHOD}}",
-          storeActionType: "{{$frontmatter.STOREACTIONTYPE}}",
+          method: {{$frontmatter.ROUTEMETHOD}},
+          storeActionType: {{$frontmatter.STOREACTIONTYPE}},
         },
       },
     },

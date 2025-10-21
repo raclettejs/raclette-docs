@@ -1,5 +1,5 @@
 ---
-IMPORTEXPORTCOMPONENTS:
+IMPORT:
 INSTALLFUNCTIONBODY:
 DATADEFINITIONS:
 EXPORTCOMPONENTS:
@@ -9,7 +9,7 @@ ENGLISHTRANSLATION:
 
 ```typescript
 import { defineRaclettePluginFrontend } from "@raclettejs/core/frontend"
-{{$frontmatter.IMPORTEXPORTCOMPONENTS}}
+{{$frontmatter.IMPORT}}
 
 export default defineRaclettePluginFrontend({
   {{$frontmatter.INSTALLFUNCTIONBODY}}

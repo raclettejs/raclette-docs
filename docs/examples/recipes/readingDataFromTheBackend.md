@@ -1,13 +1,13 @@
 ---
 PLUGINNAME: example-todoplugin
 DATATYPE: todo
-BROADCASTCHANNELS: todoUpdated
+BROADCASTCHANNELS: '"todoUpdated", "dataUpdated"'
 STOREACTIONTYPE: dataPush
 BODYSCHEMA: todoUpdateSchema
 SCHEMANAME: Todo
 ROUTENAME: getAll
 ROUTEMETHOD: get
-RESPONSETYPE: json
+RESPONSETYPE: '"json"'
 ---
 
 # Reading Data from the Server
