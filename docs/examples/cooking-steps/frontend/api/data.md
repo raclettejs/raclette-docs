@@ -17,6 +17,8 @@ RESPONSETYPE: '"json" | "stream"'
 MODE: '"none" | "cors"'
 QUERY_ID: false
 CALLBACK: (result) => {}
+USECACHE: true | false
+QUERYCONFIG: {}
 ---
 
 ```typescript
@@ -29,9 +31,11 @@ const {{{$frontmatter.DATA_ALIAS}}, {{$frontmatter.DATAARR_ALIAS}}, {{$frontmatt
     cb: {{$frontmatter.CALLBACK}},
     useStore: {{$frontmatter.USESTORE}},
     notify: {{$frontmatter.NOTIFY}},
+    useCache: {{$frontmatter.USECACHE}},
     responseType: {{$frontmatter.RESPONSETYPE}},
     mode: {{$frontmatter.MODE}},
   },
+  config: {{$frontmatter.QUERYCONFIG}}
 })
 ```
 
