@@ -29,11 +29,11 @@ const {{{$frontmatter.DATA_ALIAS}}, {{$frontmatter.DATAARR_ALIAS}}, {{$frontmatt
   options: {
     immediate: {{$frontmatter.IMMEDIATE}},
     cb: {{$frontmatter.CALLBACK}},
-    useStore: {{$frontmatter.USESTORE}},
     notify: {{$frontmatter.NOTIFY}},
-    useCache: {{$frontmatter.USECACHE}},
     responseType: {{$frontmatter.RESPONSETYPE}},
     mode: {{$frontmatter.MODE}},
+    useCache: {{$frontmatter.USECACHE}},
+    useStore: {{$frontmatter.USESTORE}},
   },
   config: {{$frontmatter.QUERYCONFIG}}
 })
