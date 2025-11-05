@@ -15,12 +15,16 @@ export function stripVitePressComponents(content: string): string {
   // Remove <style> blocks
   result = result.replace(/<style[\s\S]*?<\/style>/gi, "")
 
-  // Remove VitePress containers (:::tip, :::warning, etc.)
-  // Keep the content, just remove the markers
-  result = result.replace(/^:::\s*(\w+)(?:\s+(.+?))?$/gm, "")
-  result = result.replace(/^:::$/gm, "")
+  // Extract alt text from Vue components before removing them
+  // Match both alt="..." and :alt="..."
+  result = result.replace(
+    /<([A-Z]\w+)[^>]*(?::?alt=["']([^"']+)["'])[^>]*(?:\/>|>[\s\S]*?<\/\1>)/g,
+    (match, componentName, altText) => {
+      return altText ? `![${altText}](${componentName})` : ""
+    }
+  )
 
-  // Remove Vue components (simple pattern - adjust as needed)
+  // Remove remaining Vue components (without alt text)
   result = result.replace(/<[A-Z]\w+[^>]*>[\s\S]*?<\/[A-Z]\w+>/g, "")
   result = result.replace(/<[A-Z]\w+[^>]*\/>/g, "")
 

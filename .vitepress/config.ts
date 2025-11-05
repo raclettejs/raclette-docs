@@ -129,8 +129,21 @@ export default defineConfig({
           ],
         },
         {
+          text: "Coding with Ai",
+          items: [
+            {
+              text: "Introduction",
+              link: "/docs/coding-with-ai/introduction",
+            },
+          ],
+        },
+        {
           text: "Official Plugins",
           items: [
+            {
+              text: "Plugin Boilerplate (temporary)",
+              link: "/docs/official-plugins/boilerplate",
+            },
             {
               text: "CLI Connector",
               link: "/docs/official-plugins/cli-connector",

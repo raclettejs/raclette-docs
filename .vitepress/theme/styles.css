@@ -20,3 +20,8 @@
   --vp-c-text-2: #dacdc2;
   --vp-c-text-3: #c1af9e;
 }
+.included-article {
+  padding-left: 10px;
+  border-left: 6px solid #dd8b41;
+  border-radius: 20px;
+}
