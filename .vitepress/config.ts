@@ -10,7 +10,13 @@ export default defineConfig({
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
   vite: {
-    plugins: [recipeDocsPlugin()],
+    plugins: [
+      recipeDocsPlugin({
+        exportCompiled: true,
+        exportPath: "./generatedMarkdown",
+        exportExclude: ["index.md", "README.md", "LICENSE.md"],
+      }),
+    ],
   },
   sitemap: {
     hostname: "https://docs.raclettejs.com",
