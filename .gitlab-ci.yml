@@ -4,12 +4,10 @@ stages:
   - verify
 
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
+  SSH_USER: ""
+  SSH_HOST: ""
+  DEPLOYMENT_PATH: ""
   SSH_PORT: "22"
-  # Required variables (set in GitLab CI/CD settings):
-  # SSH_PRIVATE_KEY_B64, SSH_USER, SSH_HOST, DEPLOYMENT_PATH
-  # Optional: SSH_PORT (defaults to 22)
 
 .ssh_setup: &ssh_setup
   - apk add --no-cache openssh-client

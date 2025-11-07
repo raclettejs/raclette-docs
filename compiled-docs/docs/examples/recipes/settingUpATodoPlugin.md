@@ -31,8 +31,10 @@ example-todo/
 ├── raclette.plugin.ts
 ├── frontend/
 │ ├── index.ts
+│ ├── components/
+│ │ └── TodoComponent
 │ └── widgets/
-│ └── TodoList/
+│ ├── TodoList/
 │ ├── TodoListWidget.vue
 │ ├── icon.svg
 │ ├── screenshot.png

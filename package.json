@@ -6,19 +6,22 @@
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "export:compiled": "tsx ./.vitepress/export-compiled.ts"
+    "export:compiled": "tsx ./.vitepress/export-compiled.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
     "latest": "^0.2.0"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "eslint": "^9.0.0",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-vue": "^10.4.0",
+    "husky": "^9.1.7",
     "tsx": "^4.20.6",
     "vitepress": "1.6.4"
-  }
+  },
+  "prepare": "husky",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -1,6 +1,4 @@
-<!-- keep me -->
-
-## Understanding the Plugin Boilerplate
+# Understanding the Plugin Boilerplate
 
 ### Getting the Plugin Boilerplate
 

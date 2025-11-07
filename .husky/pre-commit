@@ -1,0 +1,4 @@
+echo '#!/usr/bin/env sh'
+yarn run export:compiled
+
+git add ./compiled-docs
