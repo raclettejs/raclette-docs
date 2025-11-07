@@ -4,6 +4,7 @@ PLUGINNAME: example-todo
 DATATYPE: todo
 WIDGETNAME: TodoList
 SCHEMANAME: Todo
+COMPONENTNAME: TodoComponent
 ---
 
 <!--@include: ../wip.md-->
@@ -34,21 +35,23 @@ Will teach you how to setup everything you need to start implementing your busin
 {{$frontmatter.PLUGINNAME}}/
 ├── raclette.plugin.ts
 ├── frontend/
-│   ├── index.ts
-│   └── widgets/
-│       └── {{$frontmatter.WIDGETNAME}}/
-│           ├── {{$frontmatter.WIDGETNAME}}Widget.vue
-│           ├── icon.svg
-│           ├── screenshot.png
-│           └── setup.ts
+│    ├── index.ts
+│    ├── components/
+│    │    └── {{$frontmatter.COMPONENTNAME}}
+│    └── widgets/
+│        ├── {{$frontmatter.WIDGETNAME}}/
+│        ├── {{$frontmatter.WIDGETNAME}}Widget.vue
+│        ├── icon.svg
+│        ├── screenshot.png
+│        └── setup.ts
 └── backend/
     ├── index.ts
     ├── {{$frontmatter.DATATYPE}}.model.ts
     ├── {{$frontmatter.DATATYPE}}.schema.ts
     ├── {{$frontmatter.DATATYPE}}.service.ts
     ├── helpers/
-    │   ├── index.ts
-    │   └── {{$frontmatter.DATATYPE}}Helper.ts
+    │    ├── index.ts
+    │    └── {{$frontmatter.DATATYPE}}Helper.ts
     └── routes/
         ├── index.ts
         └── route.{{$frontmatter.DATATYPE}}.[action].ts

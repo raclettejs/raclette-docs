@@ -1,0 +1,8 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "racletteJS",
+  "description": "A typescript framework/engine for modular platform and portal development",
+  "folders": ["compiled-docs"],
+  "excludeFolders": ["docs", "reference"],
+  "excludeFiles": ["LICENSE.md", "CHANGELOG.md"]
+}

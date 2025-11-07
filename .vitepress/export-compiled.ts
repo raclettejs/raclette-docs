@@ -23,6 +23,7 @@ const config: ExportConfig = {
   exportExclude: [
     "index.md",
     "README.md",
+    "generated-md-HEADER.md",
     "LICENSE.md",
     "node_modules/**",
     ".vitepress/**",

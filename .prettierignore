@@ -1,2 +1,3 @@
 # Ignore all Example files
 **/examples/**/*.md
+**/boilerplate.md

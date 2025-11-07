@@ -9,12 +9,18 @@ export default defineConfig({
   head: [["link", { rel: "icon", href: "/favicon.svg" }]],
   // https://vitepress.dev/reference/site-config#cleanurls
   cleanUrls: true,
+  srcExclude: ["**/compiled-docs/**/*.md"],
   vite: {
     plugins: [
       recipeDocsPlugin({
-        exportCompiled: true,
-        exportPath: "./generatedMarkdown",
-        exportExclude: ["index.md", "README.md", "LICENSE.md"],
+        exportCompiled: false,
+        exportPath: "./compiled-docs",
+        exportExclude: [
+          "index.md",
+          "README.md",
+          "LICENSE.md",
+          "generated-md-HEADER.md",
+        ],
       }),
     ],
   },
