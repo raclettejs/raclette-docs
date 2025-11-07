@@ -1,7 +1,7 @@
 ---
 DATATYPE: example
 PLUGINNAME: example-plugin
-STOREACTIONTYPE: '"dataPush" | "dataUpdate" | "dataCreate" | "dataDelete" | "dataHardDelete" | "dataMove" | "dataRestore"'
+STOREACTIONTYPE: '"dataRead" | "dataUpdate" | "dataCreate" | "dataDelete" | "dataHardDelete" | "dataMove" | "dataRestore"'
 ROUTEMETHOD: '"get" | "delete" | "patch" | "post"'
 ROUTENAME: getAll
 ---
@@ -30,6 +30,6 @@ export default defineRaclettePluginFrontend({
 
 - target - The target URI
 - method - the http method to use
-- storeActionType - determines how a response from this endpoint is interpreted by the store can be "dataPush, dataUpdate, dataCreate, dataDelete, dataHardDelete, dataMove, dataRestore"
+- storeActionType - determines how a response from this endpoint is interpreted by the store can be "dataRead, dataUpdate, dataCreate, dataDelete, dataHardDelete, dataMove, dataRestore"
 
 ::::

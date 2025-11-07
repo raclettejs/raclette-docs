@@ -2,7 +2,7 @@
 PLUGINNAME: example-todoplugin
 DATATYPE: todo
 BROADCASTCHANNELS: '"todoUpdated", "dataUpdated"'
-STOREACTIONTYPE: dataPush
+STOREACTIONTYPE: dataRead
 BODYSCHEMA: todoUpdateSchema
 SCHEMANAME: Todo
 ROUTENAME: getAll

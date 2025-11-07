@@ -8,7 +8,7 @@ export default defineRaclettePluginFrontend({
         getAll: {
           target: "/example-plugin/getAll",
           method: "get" | "delete" | "patch" | "post",
-          storeActionType: "dataPush" | "dataUpdate" | "dataCreate" | "dataDelete" | "dataHardDelete" | "dataMove" | "dataRestore",
+          storeActionType: "dataRead" | "dataUpdate" | "dataCreate" | "dataDelete" | "dataHardDelete" | "dataMove" | "dataRestore",
         },
       },
     },
@@ -22,6 +22,6 @@ export default defineRaclettePluginFrontend({
 
 - target - The target URI
 - method - the http method to use
-- storeActionType - determines how a response from this endpoint is interpreted by the store can be "dataPush, dataUpdate, dataCreate, dataDelete, dataHardDelete, dataMove, dataRestore"
+- storeActionType - determines how a response from this endpoint is interpreted by the store can be "dataRead, dataUpdate, dataCreate, dataDelete, dataHardDelete, dataMove, dataRestore"
 
 ::::
