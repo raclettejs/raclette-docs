@@ -22,13 +22,13 @@ Starts the local development environment using Docker Compose or optionally runs
 
 **Options:**
 
-- `-d, --direct` 
+- `-d, --direct`  
   Run services directly (not in containers).
-- `-q, --quiet` 
+- `-q, --quiet`  
   Run Docker Compose in detached mode without following logs.
-- `--filter <services>` 
+- `--filter <services>`  
   Filter logs to specific services (comma-separated). Default: `frontend,backend`.
-- `--force-rebuild` 
+- `--force-rebuild`  
   Force rebuild of Docker images, even if no files changed.
 
 **Example:**
@@ -45,7 +45,7 @@ Stops running Docker Compose services.
 
 **Options:**
 
-- `--keep-shared` 
+- `--keep-shared`  
   Stops only project-specific services, keeping shared services (like MongoDB or Redis) running.
 
 **Example:**
@@ -74,7 +74,7 @@ Updates project dependencies by running internal package update scripts inside c
 
 **Arguments:**
 
-- `target`: One of `frontend`, `backend`, or `both`. 
+- `target`: One of `frontend`, `backend`, or `both`.  
   Default: `both`.
 
 **Example:**
@@ -110,9 +110,9 @@ Adds one or more npm packages to a specific project target.
 
 **Options:**
 
-- `--dev` 
+- `--dev`  
   Install as a development dependency.
-- `--no-update` 
+- `--no-update`  
   Skip automatic dependency update after adding the package(s).
 
 **Examples:**

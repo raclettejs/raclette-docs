@@ -109,10 +109,19 @@ function cleanupResult(result: string, linesToRemove: Set<number>): string {
   const lines = result.split("\n")
   const filteredLines = lines.filter((_, idx) => !linesToRemove.has(idx))
 
-  // Collapse multiple spaces (but preserve leading indentation)
-  const finalLines = filteredLines.map((line) =>
-    line.replace(/(\S)  +/g, "$1 ")
-  )
+  // Only collapse excessive spaces in regular text (3+ spaces that aren't part of code blocks or special formatting)
+  // This preserves alignment in ASCII art, tables, and code examples
+  const finalLines = filteredLines.map((line) => {
+    // Skip lines that look like they might be ASCII art, tables, or code
+    // (contain box-drawing characters, or are inside code blocks)
+    if (line.match(/[│├└─┐┘┌┤┴┬┼]/)) {
+      return line
+    }
+
+    // Only collapse 3+ spaces in regular prose (but not leading indentation)
+    // This is more conservative and won't break aligned content
+    return line.replace(/([^\s])\s{3,}([^\s])/g, "$1 $2")
+  })
 
   return finalLines.join("\n")
 }

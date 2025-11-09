@@ -16,26 +16,26 @@ raclette handles steps 1-4 out of the box. You handle your specific business req
 ## Architecture
 
 ```
-┌────────────────────┐ ┌──────────────────┐ ┌─────────────────┐
-│ raclette Workbench │ │ Your Frontend │ │ Mobile App │
-│ (Built-in) │ │ (Vue/React/etc.) │ │ (Upcomgin) │
-└─────────┬──────────┘ └─────────┬────────┘ └─────────┬───────┘
-          │ │ │
+┌────────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ raclette Workbench │    │   Your Frontend  │    │   Mobile App    │
+│   (Built-in)       │    │ (Vue/React/etc.) │    │   (Upcomgin)    │
+└─────────┬──────────┘    └─────────┬────────┘    └─────────┬───────┘
+          │                         │                       │
           └─────────────────────────┼───────────────────────┘
                                     │
                         ┌───────────▼──────────────┐
-                        │ raclette Core │
-                        │ │
-                        │ • Auth & Permissions │
-                        │ • Multi-tenant Data │
-                        │ • Auto-generated APIs │
-                        │ • Workflow Engine │
-                        │ • Plugin System │
+                        │     raclette Core        │
+                        │                          │
+                        │  • Auth & Permissions    │
+                        │  • Multi-tenant Data     │
+                        │  • Auto-generated APIs   │
+                        │  • Workflow Engine       │
+                        │  • Plugin System         │
                         └────────────┬─────────────┘
                                      │
                         ┌────────────▼─────────────┐
-                        │ Database │
-                        │ │
+                        │        Database          │
+                        │                          │
                         └──────────────────────────┘
 ```
 

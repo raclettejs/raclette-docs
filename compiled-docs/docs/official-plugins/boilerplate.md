@@ -24,10 +24,10 @@ This is where the magic happens. The boilerplate includes a `*Widget.vue` file (
 
 ```
 racletteJS Core
-      ↕️ (talks via pluginAPI)
-YourPluginWidget.vue ← The bridge
-      ↕️ (your choice: props, models, events)
-Your Components ← Total freedom here!
+      ↕️  (talks via pluginAPI)
+YourPluginWidget.vue  ← The bridge
+      ↕️  (your choice: props, models, events)
+Your Components  ← Total freedom here!
 ```
 
 ### What You Can Customize

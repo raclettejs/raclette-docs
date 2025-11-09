@@ -10,15 +10,15 @@ A widget should be organized in the following folderstructure:
 
 ```
 my-plugin/
-├── raclette.plugin.ts # Main plugin configuration
-├── frontend/ # Frontend-side code (if frontendDir specified)
-│ ├── [...] # See plugin metadata for more
-│ └── widgets/ # Plugin widgets
-│ └── FOLDERNAME/ # Your custom Widget folder name (optional)
-│ └── NameWidget.vue # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
-│ └── setup.ts # Contains details and config for the widget
-└── backend/ # Server-side code (if backendDir specified)
-    └── [...] # See plugin metadata for more
+├── raclette.plugin.ts            # Main plugin configuration
+├── frontend/                       # Frontend-side code (if frontendDir specified)
+│   ├── [...]                     # See plugin metadata for more
+│   └── widgets/                  # Plugin widgets
+│       └── FOLDERNAME/           # Your custom Widget folder name (optional)
+│           └── NameWidget.vue    # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
+│           └── setup.ts          # Contains details and config for the widget
+└── backend/                       # Server-side code (if backendDir specified)
+    └── [...]                     # See plugin metadata for more
 
 ```
 

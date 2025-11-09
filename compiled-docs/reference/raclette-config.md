@@ -17,17 +17,17 @@ Configuration of system services used in development and runtime.
 
 Frontend development backend.
 
-- `enabled`: `boolean` 
+- `enabled`: `boolean`  
   Whether the client service is enabled.
-- `port`: `number` 
+- `port`: `number`  
   Port the client runs on.
-- `name?`: `string` _(optional)_ 
+- `name?`: `string` _(optional)_  
   Custom name for the client container.
-- `nodeModulesVolume?`: `string` _(optional)_ 
+- `nodeModulesVolume?`: `string` _(optional)_  
   Volume name for sharing `node_modules`.
-- `installPackages?`: `string[]` _(optional)_ 
+- `installPackages?`: `string[]` _(optional)_  
   Additional packages to install.
-- `volumes?`: `VolumeDefinition[]` _(optional)_ 
+- `volumes?`: `VolumeDefinition[]` _(optional)_  
   Additional volumes to mount.
 
 ### services.backend
@@ -38,7 +38,7 @@ Backend service configuration.
 - `port`: `number`
 - `name?`: `string` _(optional)_
 - `nodeModulesVolume?`: `string` _(optional)_
-- `enableDebug?`: `boolean` _(optional)_ 
+- `enableDebug?`: `boolean` _(optional)_  
   Enables debug mode.
 - `installPackages?`: `string[]` _(optional)_
 - `volumes?`: `VolumeDefinition[]` _(optional)_
@@ -62,7 +62,7 @@ Redis service definition.
 - `port`: `number`
 - `name?`: `string` _(optional)_
 - `volume?`: `string` _(optional)_
-- `db?`: `number` _(optional)_ 
+- `db?`: `number` _(optional)_  
   Redis DB index to use.
 - `volumes?`: `VolumeDefinition[]` _(optional)_
 
@@ -99,12 +99,12 @@ Environment-specific values injected at runtime.
 
 ### env.development
 
-- Type: `Record<string, any>` 
+- Type: `Record<string, any>`  
   Environment variables for development mode.
 
 ### env.production
 
-- Type: `Record<string, any>` 
+- Type: `Record<string, any>`  
   Environment variables for production mode.
 
 ### env.[custom]
@@ -119,7 +119,7 @@ Global configuration for frontend and backend
 
 ### global.requireAuthentication
 
-- Type: `boolean` _(optional)_ 
+- Type: `boolean` _(optional)_  
   Defines if a login is required.
 
 ## frontend
@@ -130,22 +130,22 @@ Frontend configuration.
 
 ### frontend.framework
 
-- Type: `"vue"` | `"react"` 
+- Type: `"vue"` | `"react"`  
   Defines the primary frontend framework.
 
 ### frontend.vue.plugins?
 
-- Type: `string[]` _(optional)_ 
+- Type: `string[]` _(optional)_  
   Vue plugins to register.
 
 ### frontend.react.plugins?
 
-- Type: `string[]` _(optional)_ 
+- Type: `string[]` _(optional)_  
   React plugins to register.
 
 ### frontend.custom?
 
-- Type: `Record<string, any>` _(optional)_ 
+- Type: `Record<string, any>` _(optional)_  
   Custom frontend options.
 
 ## backend
@@ -164,8 +164,8 @@ See [SocketConfig](#socketconfig) for full details.
 
 ### backend.cacheTTL
 
-- Type: `number` _(optional)_ 
-  Defines a default time to live for backend cache entries. 
+- Type: `number` _(optional)_  
+  Defines a default time to live for backend cache entries.  
   If a default TTL is set, a -1 TTL must be explicitly passed to cache.cache() to have no TTL.
 
 ## typescript
@@ -176,7 +176,7 @@ TypeScript-specific overrides.
 
 ### typescript.compilerOptions?
 
-- Type: `Record<string, any>` _(optional)_ 
+- Type: `Record<string, any>` _(optional)_  
   Pass-through compiler options.
 
 ## eslint
@@ -203,7 +203,7 @@ ESLint configuration.
 
 ### eslint.useRecommended?
 
-- Type: `boolean` _(optional)_ 
+- Type: `boolean` _(optional)_  
   Enable recommended ESLint config.
 
 ### eslint.env?
@@ -214,9 +214,9 @@ ESLint configuration.
 
 Defines a volume mount between host and container.
 
-- `source`: `string` 
+- `source`: `string`  
   Named volume or host path.
-- `target`: `string` 
+- `target`: `string`  
   Container path.
 - `type?`: `"bind"` | `"volume"` | `"tmpfs"` _(optional)_
 - `readonly?`: `boolean` _(optional)_

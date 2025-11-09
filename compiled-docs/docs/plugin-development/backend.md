@@ -10,13 +10,13 @@ A raclette plugin follows a standardized directory structure that separates conc
 plugins/
 └── your_plugin_name/
     └── backend/
-        ├── index.ts # Plugin entry point and registration
-        ├── [model].model.ts # Database models (Mongoose schemas)
-        ├── [model].schema.ts # TypeBox schemas for validation
-        ├── [model].service.ts # Business logic and data operations
+        ├── index.ts              # Plugin entry point and registration
+        ├── [model].model.ts      # Database models (Mongoose schemas)
+        ├── [model].schema.ts     # TypeBox schemas for validation
+        ├── [model].service.ts    # Business logic and data operations
         └── routes/
-            ├── index.ts # Route registration
-            └── route.[model].[action].ts # Individual route handlers
+            ├── index.ts          # Route registration
+            └── route.[model].[action].ts  # Individual route handlers
 ```
 
 The plugin name in the directory structure (`your_plugin_name`) becomes the plugin identifier and is used throughout the framework for namespacing and organization.

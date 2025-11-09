@@ -38,10 +38,10 @@ This is where the magic happens. The boilerplate includes a `*Widget.vue` file (
 
 ```
 racletteJS Core
-      ↕️ (talks via pluginAPI)
-YourPluginWidget.vue ← The bridge
-      ↕️ (your choice: props, models, events)
-Your Components ← Total freedom here!
+      ↕️  (talks via pluginAPI)
+YourPluginWidget.vue  ← The bridge
+      ↕️  (your choice: props, models, events)
+Your Components  ← Total freedom here!
 ```
 
 ### What You Can Customize
@@ -129,12 +129,12 @@ my-plugin/
 ├── raclette.plugin.ts # Main plugin configuration
 ├── frontend/ # Frontend-side code (if frontendDir specified)
 │ ├── [...] # See plugin metadata for more
-│ ├── composables ← Organize these however you want
-│ ├── components ← Organize these however you want
+│ ├── composables  ← Organize these however you want
+│ ├── components  ← Organize these however you want
 │ └── widgets/ # Plugin widgets
-│ └── FOLDERNAME/ # Your custom Widget folder name (optional)
-│ ├── NameWidget.vue # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
-│ └── setup.ts # Contains details and config for the widget
+│     └── FOLDERNAME/ # Your custom Widget folder name (optional)
+│         ├── NameWidget.vue # The widget File. Needs to follow this structure "[CustomName]Widget.vue"
+│         └── setup.ts # Contains details and config for the widget
 └── backend/ # Server-side code (if backendDir specified)
     └── [...] # See plugin metadata for more
 ```
@@ -161,7 +161,7 @@ Tell your AI: "I need the component to render data in a datatable, use the provi
 
 ### 2. Separate Concerns
 
-Good vibes: Keep core logic in `*Widget.vue`, UI and custom component logic in child components 
+Good vibes: Keep core logic in `*Widget.vue`, UI and custom component logic in child components  
 Bad vibes: Mixing everything together (you'll thank yourself later)
 
 ### 3. Use Props and Models Wisely

@@ -15,12 +15,12 @@ This structure enables clean separation of concerns while maintaining a coherent
 plugins/
 └── [plugin-name]/
     ├── frontend/
-    │ ├── index.ts # Exports plugin's frontend API
-    │ └── ... # Optional: your content
+    │   ├── index.ts                # Exports plugin's frontend API
+    │   └── ...                     # Optional: your content
     └── backend/
-        ├── index.ts # Registers the plugin's backend-side behavior
-        ├── routes.ts # Optional: plugin-specific API routes
-        └── ... # Optional: your content
+        ├── index.ts                # Registers the plugin's backend-side behavior
+        ├── routes.ts               # Optional: plugin-specific API routes
+        └── ...                     # Optional: your content
 ```
 
 ## Frontend-Side Plugin (`frontend/index.ts`)

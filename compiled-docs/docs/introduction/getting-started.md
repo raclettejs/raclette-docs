@@ -96,10 +96,10 @@ For a complete list of available commands, refer to the [CLI documentation](/doc
 
 Once your development environment is running, raclette exposes the following URLs:
 
-- **Frontend Application** → [http://localhost:8081](http://localhost:8081) 
+- **Frontend Application** → [http://localhost:8081](http://localhost:8081)  
   The rendered UI powered by your selected frontend framework (e.g. Vue or React).
 
-- **raclette Workbench** → [http://localhost:8083](http://localhost:8083) 
+- **raclette Workbench** → [http://localhost:8083](http://localhost:8083)  
   The visual configuration interface for managing views, users, permissions, and more.
 
 You can access both in your browser while raclette is running.

@@ -178,8 +178,8 @@ Hooks transform input and output data. For long-running processes (jobs), it is 
 
 ### Single-Run Processes: `/script/:cmd`
 
-**Endpoint**: `POST /script/:cmd` 
-**Request Body**: `{ args?: string[], input?: string }` 
+**Endpoint**: `POST /script/:cmd`  
+**Request Body**: `{ args?: string[], input?: string }`  
 **Response**: `{ stdout: string, stderr: string, status: number|string }`
 
 For short-running programs (default timeout: 2 seconds). Executes synchronously and returns complete results.
@@ -193,8 +193,8 @@ POST /plugin/raclette/plugin-cli-connector/script/list-files
 
 ### Long-Running Processes: `/run/:cmd`
 
-**Endpoint**: `POST /run/:cmd` 
-**Request Body**: `{ args?: string[] }` 
+**Endpoint**: `POST /run/:cmd`  
+**Request Body**: `{ args?: string[] }`  
 **Response**: `123456` (job ID)
 
 Starts a process and returns a job ID for interaction. Use this for commands that take longer than a few seconds.
@@ -215,8 +215,8 @@ POST /plugin/raclette/plugin-cli-connector/run/backup-database
 
 ### Job Management: `/job/:id`
 
-**Endpoint**: `POST /job/:id` 
-**Request Body**: `{ input?: string, signal?: string }` 
+**Endpoint**: `POST /job/:id`  
+**Request Body**: `{ input?: string, signal?: string }`  
 **Response**: `{ done?: number|string, stdin: string[], stdout: string[], stderr: string[] }`
 
 Interact with running processes and retrieve output incrementally. `stdout` and `stderr` can be transformed via hooks.
@@ -231,14 +231,14 @@ Interact with running processes and retrieve output incrementally. `stdout` and 
 
 ### Job Listing: `/jobs`
 
-**Endpoint**: `GET /jobs` 
+**Endpoint**: `GET /jobs`  
 **Response**: `[{ id: string, cmd: string, argv: string[], done?: number|string }, ...]`
 
 List all known processes. Restricted to admin users.
 
 ### Script Listing: `/scripts`
 
-**Endpoint**: `GET /scripts` 
+**Endpoint**: `GET /scripts`  
 **Response**: `["script1", "script2", ...]`
 
 List all registered script names.

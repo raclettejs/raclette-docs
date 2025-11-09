@@ -30,23 +30,23 @@ Will teach you how to setup everything you need to start implementing your busin
 example-todo/
 ├── raclette.plugin.ts
 ├── frontend/
-│ ├── index.ts
-│ ├── components/
-│ │ └── TodoComponent
-│ └── widgets/
-│ ├── TodoList/
-│ ├── TodoListWidget.vue
-│ ├── icon.svg
-│ ├── screenshot.png
-│ └── setup.ts
+│    ├── index.ts
+│    ├── components/
+│    │    └── TodoComponent
+│    └── widgets/
+│        ├── TodoList/
+│        ├── TodoListWidget.vue
+│        ├── icon.svg
+│        ├── screenshot.png
+│        └── setup.ts
 └── backend/
     ├── index.ts
     ├── todo.model.ts
     ├── todo.schema.ts
     ├── todo.service.ts
     ├── helpers/
-    │ ├── index.ts
-    │ └── todoHelper.ts
+    │    ├── index.ts
+    │    └── todoHelper.ts
     └── routes/
         ├── index.ts
         └── route.todo.[action].ts
