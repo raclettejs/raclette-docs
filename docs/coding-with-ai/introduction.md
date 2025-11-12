@@ -2,6 +2,10 @@
 
 Welcome to the fun part! racletteJS is designed to be modular at scale and to make **vibe coding** with AI assistants not just possible, but actually enjoyable and maintainable. For simple use cases there is no need to be a "real developer" – if you can describe what you want and work with an AI, you can build plugins.
 
+> ⚠️ **CRITICAL INFORMATION**
+>
+> racletteJS is still evolving. We keep the MCP server updated through Context7, but the framework isn’t yet ready for production use unless you have some development experience. Updates can sometimes require manual adjustments. We’re actively working on an AI-assisted solution to make this process easier in the future.
+
 ## Why racletteJS Supports Vibe Coding
 
 Here's the secret sauce: racletteJS plugins use straightforward TypeScript and Vue. No weird abstractions, no complex build chains to explain to your AI. The boilerplate handles all the gnarly stuff (frontend/backend communication, core integration), so your AI can focus on what you're actually trying to build.
