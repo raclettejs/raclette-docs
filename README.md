@@ -13,7 +13,7 @@
 
 ## About raclette
 
-**raclette** is the framework for platform and portal development. Built for innovators who want to focus on their unique value proposition, not infrastructure. It's (almost!) **open source** and completely **free to use — forever**.
+**raclette** is the framework for platform and portal development. Built for innovators who want to focus on their unique value proposition, not infrastructure. It's **open source** and completely **free to use — forever**.
 
 Build SaaS products, customer portals, and business tools faster than ever – modular, open, sustainable. For prototypes. For products. For growth.
 
