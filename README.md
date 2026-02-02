@@ -8,7 +8,7 @@
 ## Quick Links
 
 - 📚 **[Documentation](https://docs.raclettejs.com/)** - Complete guide and API reference
-- 🌐 **[raclette.js Website](https://raclettejs.com)** - Main project website
+- 🌐 **[racletteJS Website](https://raclettejs.com)** - Main project website
 - 💻 **[GitLab Repository](https://gitlab.com/raclettejs/raclette-core)** - Source code and issues
 
 ## About raclette
