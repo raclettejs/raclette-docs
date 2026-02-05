@@ -1,4 +1,6 @@
 {
-  "url": "https://context7.com/gitlab_raclettejs/docs",
-  "public_key": "pk_0hOcCed7PKQrJMrfXQhCB"
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "racletteJS",
+  "description": "A typescript framework/engine for modular platform and portal development",
+  "folders": ["compiled-docs"]
 }
