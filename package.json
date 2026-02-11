@@ -2,6 +2,7 @@
   "name": "raclette-documentation",
   "type": "module",
   "license": "MIT",
+  "version": "0.1.19",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
